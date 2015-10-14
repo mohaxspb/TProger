@@ -1,4 +1,4 @@
-package ru.kuchanov.material.activity;
+package ru.kuchanov.tproger.activity;
 
 import android.animation.Animator;
 import android.content.Context;
@@ -29,10 +29,10 @@ import android.widget.LinearLayout;
 
 import java.lang.reflect.Method;
 
-import ru.kuchanov.material.DrawerUpdateSelected;
-import ru.kuchanov.material.ImageChanger;
-import ru.kuchanov.material.NavigationViewOnNavigationItemSelectedListener;
-import ru.kuchanov.material.R;
+import ru.kuchanov.tproger.DrawerUpdateSelected;
+import ru.kuchanov.tproger.ImageChanger;
+import ru.kuchanov.tproger.NavigationViewOnNavigationItemSelectedListener;
+import ru.kuchanov.tproger.R;
 
 public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger
 {
@@ -125,8 +125,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         this.updateNavigationViewState(this.checkedDrawerItemId);
 
 
-        this.pager.setAdapter(new ru.kuchanov.material.PagerAdapter(this.getSupportFragmentManager(), 3));
-        this.pager.addOnPageChangeListener(new ru.kuchanov.material.PagerAdapterOnPageChangeListener(this, this));
+        this.pager.setAdapter(new ru.kuchanov.tproger.PagerAdapter(this.getSupportFragmentManager(), 3));
+        this.pager.addOnPageChangeListener(new ru.kuchanov.tproger.PagerAdapterOnPageChangeListener(this, this));
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Tab 111111111111"));
@@ -134,7 +134,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         tabLayout.addTab(tabLayout.newTab().setText("Tab 333333333333"));
 
         pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.setOnTabSelectedListener(new ru.kuchanov.material.TabLayoutOnTabSelectedListener(this, pager));
+        tabLayout.setOnTabSelectedListener(new ru.kuchanov.tproger.TabLayoutOnTabSelectedListener(this, pager));
 
         CollapsingToolbarLayout collapsingToolbarLayout;
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);

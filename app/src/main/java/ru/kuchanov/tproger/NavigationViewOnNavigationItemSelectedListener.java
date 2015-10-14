@@ -1,4 +1,4 @@
-package ru.kuchanov.material;
+package ru.kuchanov.tproger;
 
 import android.content.res.TypedArray;
 import android.graphics.Color;

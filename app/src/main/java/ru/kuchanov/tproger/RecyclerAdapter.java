@@ -1,4 +1,4 @@
-package ru.kuchanov.material;
+package ru.kuchanov.tproger;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

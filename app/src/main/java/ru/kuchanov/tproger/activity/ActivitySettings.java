@@ -1,4 +1,4 @@
-package ru.kuchanov.material.activity;
+package ru.kuchanov.tproger.activity;
 
 import android.app.ActionBar;
 import android.content.Context;
@@ -14,10 +14,10 @@ import android.view.MenuItem;
 
 import java.util.List;
 
-import ru.kuchanov.material.R;
-import ru.kuchanov.material.fragment.FragmentPreferenceAbout;
-import ru.kuchanov.material.fragment.FragmentPreferenceDesign;
-import ru.kuchanov.material.fragment.FragmentPreferenceNotifications;
+import ru.kuchanov.tproger.R;
+import ru.kuchanov.tproger.fragment.FragmentPreferenceAbout;
+import ru.kuchanov.tproger.fragment.FragmentPreferenceDesign;
+import ru.kuchanov.tproger.fragment.FragmentPreferenceNotifications;
 
 
 /**

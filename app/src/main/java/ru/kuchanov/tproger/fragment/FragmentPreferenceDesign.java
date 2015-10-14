@@ -1,9 +1,9 @@
-package ru.kuchanov.material.fragment;
+package ru.kuchanov.tproger.fragment;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 
-import ru.kuchanov.material.R;
+import ru.kuchanov.tproger.R;
 
 /**
  * Created by Юрий on 21.09.2015 16:36.

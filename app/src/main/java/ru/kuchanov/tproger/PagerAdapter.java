@@ -1,12 +1,12 @@
-package ru.kuchanov.material;
+package ru.kuchanov.tproger;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import ru.kuchanov.material.fragment.FragmentTab2;
-import ru.kuchanov.material.fragment.FragmentTab1;
-import ru.kuchanov.material.fragment.FragmentTab3;
+import ru.kuchanov.tproger.fragment.FragmentTab1;
+import ru.kuchanov.tproger.fragment.FragmentTab2;
+import ru.kuchanov.tproger.fragment.FragmentTab3;
 
 /**
  * Created by Юрий on 17.09.2015.

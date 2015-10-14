@@ -1,4 +1,4 @@
-package ru.kuchanov.material.utils;
+package ru.kuchanov.tproger.utils;
 
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;

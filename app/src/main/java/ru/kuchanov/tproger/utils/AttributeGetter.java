@@ -1,4 +1,4 @@
-package ru.kuchanov.material.utils;
+package ru.kuchanov.tproger.utils;
 
 import android.content.Context;
 import android.content.res.TypedArray;

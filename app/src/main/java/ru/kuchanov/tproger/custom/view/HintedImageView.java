@@ -4,7 +4,7 @@ HintedImageView.java
 Created by Kuchanov Yuri,
 mohax.spb@gmail.com
  */
-package ru.kuchanov.material.custom.view;
+package ru.kuchanov.tproger.custom.view;
 
 import android.content.Context;
 import android.text.TextUtils;

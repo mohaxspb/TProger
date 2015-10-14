@@ -1,4 +1,4 @@
-package ru.kuchanov.material;
+package ru.kuchanov.tproger;
 
 /**
  * Created by Юрий on 19.09.2015.
