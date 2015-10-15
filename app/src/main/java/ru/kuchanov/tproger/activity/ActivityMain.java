@@ -8,7 +8,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
@@ -25,21 +24,24 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import java.lang.reflect.Method;
 
 import ru.kuchanov.tproger.DrawerUpdateSelected;
 import ru.kuchanov.tproger.ImageChanger;
 import ru.kuchanov.tproger.NavigationViewOnNavigationItemSelectedListener;
+import ru.kuchanov.tproger.PagerAdapterMain;
+import ru.kuchanov.tproger.PagerAdapterOnPageChangeListener;
 import ru.kuchanov.tproger.R;
 
 public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger
 {
     protected static final String NAV_ITEM_ID = "NAV_ITEM_ID";
     protected static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
+
     private final static String LOG = ActivityMain.class.getSimpleName();
-    final int[] coverImgsIds = {R.drawable.drawer_header, R.drawable.cremlin, R.drawable.petergof};
+
+    protected final int[] coverImgsIds = {R.drawable.drawer_header, R.drawable.cremlin, R.drawable.petergof};
     protected Toolbar toolbar;
     protected NavigationView navigationView;
     protected ImageView cover;
@@ -51,7 +53,10 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     protected SharedPreferences pref;
     protected boolean isCollapsed;
     private Context ctx;
-    private View cover2;
+    protected View cover2;
+    protected AppBarLayout appBar;
+//    protected CollapsingToolbarLayout collapsingToolbarLayout;
+    protected TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -60,41 +65,80 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
         this.ctx = this;
 
-        //set theme before super and set content to apply it
-//get default settings to get all settings later
+        //get default settings to get all settings later
         PreferenceManager.setDefaultValues(this, R.xml.pref_design, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_notification, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_about, true);
         this.pref = PreferenceManager.getDefaultSharedPreferences(this);
+        //set theme before super and set content to apply it
         int themeId = (pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false)) ? R.style.My_Theme_Dark : R.style.My_Theme_Light;
         this.setTheme(themeId);
         //call super after setTheme to set it 0_0
         super.onCreate(savedInstanceState);
 
-        if (null == savedInstanceState)
+        setContentView(R.layout.activity_main);
+
+        restoreState(savedInstanceState);
+
+        setUpNavigationDrawer();
+        setUpPagerAndTabs();
+
+        appBar = (AppBarLayout) this.findViewById(R.id.app_bar_layout);
+        appBar.setExpanded(isCollapsed, true);
+        appBar.addOnOffsetChangedListener(onOffsetChangedListener);
+
+        setUpBackgroundAnimation();
+    }
+
+    private void restoreState(Bundle state)
+    {
+        if (state == null)
         {
             checkedDrawerItemId = R.id.tab_1;
             isCollapsed = true;
         }
         else
         {
-            checkedDrawerItemId = savedInstanceState.getInt(NAV_ITEM_ID, R.id.tab_1);
-            isCollapsed = savedInstanceState.getBoolean(KEY_IS_COLLAPSED, false);
+            checkedDrawerItemId = state.getInt(NAV_ITEM_ID, R.id.tab_1);
+            isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
         }
+    }
 
-        setContentView(R.layout.activity_main);
+    private void setUpBackgroundAnimation()
+    {
+        cover = (ImageView) findViewById(R.id.cover);
+        cover.setAlpha(0f);
+        cover.setScaleX(1.3f);
+        cover.setScaleY(1.3f);
+        cover.animate().alpha(1).setDuration(600);
 
         cover2 = findViewById(R.id.cover_2_inside);
         cover2.setAlpha(0);
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.navigation_view);
-        this.pager = (ViewPager) this.findViewById(R.id.pager);
+        this.startAnimation();
+    }
 
+    private void setUpPagerAndTabs()
+    {
+        pager = (ViewPager) this.findViewById(R.id.pager);
+        pager.setAdapter(new PagerAdapterMain(this.getSupportFragmentManager(), 3));
+        pager.addOnPageChangeListener(new PagerAdapterOnPageChangeListener(this, this));
+
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 111111111111"));
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 222222222222"));
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 333333333333"));
+
+        pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new ru.kuchanov.tproger.TabLayoutOnTabSelectedListener(this, pager));
+    }
+
+    protected void setUpNavigationDrawer()
+    {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        final ActionBar actionBar = getSupportActionBar();
 
+        final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null)
         {
             actionBar.setDisplayShowTitleEnabled(false);
@@ -102,7 +146,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             actionBar.setDisplayHomeAsUpEnabled(true);
             mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.hello_world, R.string.hello_world)
             {
-
                 public void onDrawerClosed(View view)
                 {
                     supportInvalidateOptionsMenu();
@@ -116,73 +159,46 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 }
             };
             mDrawerToggle.setDrawerIndicatorEnabled(true);
+            drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawerLayout.setDrawerListener(mDrawerToggle);
         }
         NavigationViewOnNavigationItemSelectedListener navList;
         navList = new NavigationViewOnNavigationItemSelectedListener(this, drawerLayout, pager);
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(navList);
 
-        this.updateNavigationViewState(this.checkedDrawerItemId);
+        updateNavigationViewState(this.checkedDrawerItemId);
+    }
 
-
-        this.pager.setAdapter(new ru.kuchanov.tproger.PagerAdapter(this.getSupportFragmentManager(), 3));
-        this.pager.addOnPageChangeListener(new ru.kuchanov.tproger.PagerAdapterOnPageChangeListener(this, this));
-
-        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 111111111111"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 222222222222"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 333333333333"));
-
-        pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.setOnTabSelectedListener(new ru.kuchanov.tproger.TabLayoutOnTabSelectedListener(this, pager));
-
-        CollapsingToolbarLayout collapsingToolbarLayout;
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setTitleEnabled(false);
-
-        final AppBarLayout appBar = (AppBarLayout) this.findViewById(R.id.app_bar_layout);
-        appBar.setExpanded(isCollapsed, true);
-        cover = (ImageView) findViewById(R.id.cover);
-        cover.setAlpha(0f);
-        cover.setScaleX(1.3f);
-        cover.setScaleY(1.3f);
-        cover.animate().alpha(1).setDuration(600);
-
-        final LinearLayout cover2 = (LinearLayout) findViewById(R.id.cover_2);
-
-        AppBarLayout.OnOffsetChangedListener mListener = new AppBarLayout.OnOffsetChangedListener()
+    protected AppBarLayout.OnOffsetChangedListener onOffsetChangedListener = new AppBarLayout.OnOffsetChangedListener()
+    {
+        @Override
+        public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset)
         {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset)
-            {
-                //move backgroubng image and its bottom border
-                cover.setY(verticalOffset * 0.7f);
-                cover2.setY(verticalOffset * 0.7f);
+            //move backgroubng image and its bottom border
+            cover.setY(verticalOffset * 0.7f);
+            cover2.setY(verticalOffset * 0.7f);
 
-                if (verticalOffset < -appBarLayout.getHeight() * 0.7f)
+            if (verticalOffset < -appBarLayout.getHeight() * 0.7f)
+            {
+                if (cover.getAlpha() != 0)
                 {
-                    if (cover.getAlpha() != 0)
-                    {
-                        cover.animate().alpha(0).setDuration(600);
-                    }
-                }
-                else
-                {
-                    //show cover if we start to expand collapsingToolbarLayout
-                    int heightOfToolbarAndStatusBar = toolbar.getHeight() + getStatusBarHeight();
-                    int s = appBarLayout.getHeight() - heightOfToolbarAndStatusBar;
-                    isCollapsed = (verticalOffset > -s);// ? false : true;
-                    if (cover.getAlpha() < 1 && isCollapsed)
-                    {
-                        cover.animate().alpha(1).setDuration(600);
-                    }
+                    cover.animate().alpha(0).setDuration(600);
                 }
             }
-        };
-        appBar.addOnOffsetChangedListener(mListener);
-
-        this.startAnimation();
-    }
+            else
+            {
+                //show cover if we start to expand collapsingToolbarLayout
+                int heightOfToolbarAndStatusBar = toolbar.getHeight() + getStatusBarHeight();
+                int s = appBarLayout.getHeight() - heightOfToolbarAndStatusBar;
+                isCollapsed = (verticalOffset > -s);// ? false : true;
+                if (cover.getAlpha() < 1 && isCollapsed)
+                {
+                    cover.animate().alpha(1).setDuration(600);
+                }
+            }
+        }
+    };
 
     public int getStatusBarHeight()
     {

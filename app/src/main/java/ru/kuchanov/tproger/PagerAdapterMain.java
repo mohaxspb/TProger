@@ -11,11 +11,11 @@ import ru.kuchanov.tproger.fragment.FragmentTab3;
 /**
  * Created by Юрий on 17.09.2015.
  */
-public class PagerAdapter extends FragmentStatePagerAdapter
+public class PagerAdapterMain extends FragmentStatePagerAdapter
 {
     int mNumOfTabs;
 
-    public PagerAdapter(FragmentManager fm, int NumOfTabs) {
+    public PagerAdapterMain(FragmentManager fm, int NumOfTabs) {
         super(fm);
         this.mNumOfTabs = NumOfTabs;
     }
