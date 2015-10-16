@@ -1,5 +1,6 @@
 package ru.kuchanov.tproger.utils;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 
@@ -21,5 +22,16 @@ public class ScreenProperties
         DisplayMetrics displaymetrics = new DisplayMetrics();
         act.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         return displaymetrics.heightPixels;
+    }
+
+    public static int getStatusBarHeight(Context ctx)
+    {
+        int result = 0;
+        int resourceId = ctx.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0)
+        {
+            result = ctx.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 }

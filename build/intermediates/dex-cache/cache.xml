@@ -2,25 +2,11 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\com.octo.android.robospice\robospice-ormlite\1.4.11\686fb739d1606b8db5eadd68e54c74769a361a06\robospice-ormlite-1.4.11.jar"
+        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\com.octo.android.robospice\robospice-ormlite\1.4.14\cf81c48c00306144ffa48befe3f7a317ac2eb052\robospice-ormlite-1.4.14.jar"
         jumboMode="false"
         revision="23.0.1"
-        sha1="686fb739d1606b8db5eadd68e54c74769a361a06">
-        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\robospice-ormlite-1.4.11-d535117d9e02b65fbc424cc8e71f16d727a15aa2.jar" />
-    </item>
-    <item
-        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\com.j256.ormlite\ormlite-core\4.48\e579bd2905d0399af5029aaaf9817d5fa0ca88a5\ormlite-core-4.48.jar"
-        jumboMode="false"
-        revision="23.0.1"
-        sha1="e579bd2905d0399af5029aaaf9817d5fa0ca88a5">
-        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\ormlite-core-4.48-295cc13012372e265ec8d7a670638add33ab840f.jar" />
-    </item>
-    <item
-        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\com.j256.ormlite\ormlite-android\4.48\afa06f539a4026c10b247386312aa67404b80a16\ormlite-android-4.48.jar"
-        jumboMode="false"
-        revision="23.0.1"
-        sha1="afa06f539a4026c10b247386312aa67404b80a16">
-        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\ormlite-android-4.48-7dc63719b0deda2e615b58a9a5b75ca3670d4e46.jar" />
+        sha1="cf81c48c00306144ffa48befe3f7a317ac2eb052">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\robospice-ormlite-1.4.14-7b9c3715af523c89a0ef8a7214d4ae35e7c1427f.jar" />
     </item>
 
 </items>
