@@ -12,13 +12,13 @@ import java.util.ArrayList;
  * Created by Юрий on 16.10.2015 16:43.
  * For ExpListTest.
  */
-public class Request extends SpiceRequest<Model>
+public class RoboSpiceRequestModel extends SpiceRequest<Model>
 {
-    public static final String LOG=Request.class.getSimpleName();
+    public static final String LOG=RoboSpiceRequestModel.class.getSimpleName();
 
     Context ctx;
 
-    public Request(Context ctx)
+    public RoboSpiceRequestModel(Context ctx)
     {
         super(Model.class);
 

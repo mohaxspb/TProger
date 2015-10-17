@@ -1,4 +1,4 @@
-package ru.kuchanov.tproger;
+package ru.kuchanov.tproger.navigation;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

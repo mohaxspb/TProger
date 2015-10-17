@@ -1,4 +1,4 @@
-package ru.kuchanov.tproger;
+package ru.kuchanov.tproger.navigation;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;

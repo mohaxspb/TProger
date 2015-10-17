@@ -1,4 +1,4 @@
-package ru.kuchanov.tproger.robospice;
+package ru.kuchanov.tproger.robospice.db;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
@@ -11,13 +11,13 @@ import java.util.Collection;
  * For ExpListTest.
  */
 @DatabaseTable
-public class ArrayListModel
+public class Articles
 {
     @DatabaseField(id = true)
     private int id;
 
     @ForeignCollectionField(eager = false)
-    private Collection<Model> result;
+    private Collection<Article> result;
 
     public int getId()
     {
@@ -29,12 +29,12 @@ public class ArrayListModel
         this.id = id;
     }
 
-    public Collection<Model> getResult()
+    public Collection<Article> getResult()
     {
         return result;
     }
 
-    public void setResult(Collection<Model> result)
+    public void setResult(Collection<Article> result)
     {
         this.result = result;
     }

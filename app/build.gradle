@@ -49,4 +49,8 @@ dependencies {
     //ormLite
     compile 'com.j256.ormlite:ormlite-core:4.48'
     compile 'com.j256.ormlite:ormlite-android:4.48'
+    //OkHttp
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
+    //Jsoup
+    compile 'org.jsoup:jsoup:1.8.3'
 }

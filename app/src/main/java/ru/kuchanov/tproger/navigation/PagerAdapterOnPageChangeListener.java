@@ -1,6 +1,8 @@
-package ru.kuchanov.tproger;
+package ru.kuchanov.tproger.navigation;
 
 import android.support.v4.view.ViewPager;
+
+import ru.kuchanov.tproger.R;
 
 public class PagerAdapterOnPageChangeListener implements ViewPager.OnPageChangeListener
 {

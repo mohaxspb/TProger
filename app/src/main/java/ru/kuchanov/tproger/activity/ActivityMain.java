@@ -32,16 +32,17 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import java.lang.reflect.Method;
 
-import ru.kuchanov.tproger.DrawerUpdateSelected;
-import ru.kuchanov.tproger.ImageChanger;
-import ru.kuchanov.tproger.NavigationViewOnNavigationItemSelectedListener;
-import ru.kuchanov.tproger.PagerAdapterMain;
-import ru.kuchanov.tproger.PagerAdapterOnPageChangeListener;
 import ru.kuchanov.tproger.R;
+import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
+import ru.kuchanov.tproger.navigation.ImageChanger;
+import ru.kuchanov.tproger.navigation.NavigationViewOnNavigationItemSelectedListener;
+import ru.kuchanov.tproger.navigation.PagerAdapterMain;
+import ru.kuchanov.tproger.navigation.PagerAdapterOnPageChangeListener;
+import ru.kuchanov.tproger.navigation.TabLayoutOnTabSelectedListener;
 import ru.kuchanov.tproger.robospice.ArrayListModel;
 import ru.kuchanov.tproger.robospice.HtmlSpiceService;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
-import ru.kuchanov.tproger.robospice.RequestList;
+import ru.kuchanov.tproger.robospice.RequestMainPageForArts;
 import ru.kuchanov.tproger.utils.ScreenProperties;
 
 public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger
@@ -158,7 +159,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 //    {
 //        setProgressBarIndeterminateVisibility(true);
 //
-//        Request request = new Request(ctx);
+//        RoboSpiceRequestModel request = new RoboSpiceRequestModel(ctx);
 //
 //        getSpiceManager().execute(request, "txt", DurationInMillis.ONE_MINUTE, new ListFollowersRequestListener());
 //    }
@@ -186,7 +187,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     {
         setProgressBarIndeterminateVisibility(true);
 
-        RequestList request = new RequestList(ctx);
+//        RequestList request = new RequestList(ctx);
+        RequestMainPageForArts request = new RequestMainPageForArts(ctx);
 
         getSpiceManager().execute(request, "txt", DurationInMillis.ONE_MINUTE, new ListFollowersRequestListener());
     }
@@ -257,7 +259,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         tabLayout.addTab(tabLayout.newTab().setText("Tab 333333333333"));
 
         pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.setOnTabSelectedListener(new ru.kuchanov.tproger.TabLayoutOnTabSelectedListener(this, pager));
+        tabLayout.setOnTabSelectedListener(new TabLayoutOnTabSelectedListener(this, pager));
     }
 
     protected void setUpNavigationDrawer()

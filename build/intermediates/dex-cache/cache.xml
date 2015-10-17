@@ -2,11 +2,11 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\com.octo.android.robospice\robospice-ormlite\1.4.14\cf81c48c00306144ffa48befe3f7a317ac2eb052\robospice-ormlite-1.4.14.jar"
+        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\org.jsoup\jsoup\1.8.3\65fd012581ded67bc20945d85c32b4598c3a9cf1\jsoup-1.8.3.jar"
         jumboMode="false"
         revision="23.0.1"
-        sha1="cf81c48c00306144ffa48befe3f7a317ac2eb052">
-        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\robospice-ormlite-1.4.14-7b9c3715af523c89a0ef8a7214d4ae35e7c1427f.jar" />
+        sha1="65fd012581ded67bc20945d85c32b4598c3a9cf1">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\jsoup-1.8.3-22693b982d3221be47ddf3a1daafafbc03e8a832.jar" />
     </item>
 
 </items>

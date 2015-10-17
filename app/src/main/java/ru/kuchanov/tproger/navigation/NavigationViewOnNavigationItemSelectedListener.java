@@ -1,4 +1,4 @@
-package ru.kuchanov.tproger;
+package ru.kuchanov.tproger.navigation;
 
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -9,6 +9,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 import android.view.View;
+
+import ru.kuchanov.tproger.R;
 
 public class NavigationViewOnNavigationItemSelectedListener implements NavigationView.OnNavigationItemSelectedListener
 {

@@ -13,7 +13,6 @@ import java.util.ArrayList;
  * For ExpListTest.
  */
 public class RequestList extends SpiceRequest<ArrayListModel>
-//public class RequestList extends SpiceRequest<ArrayList<Model>>
 {
     public static final String LOG = RequestList.class.getSimpleName();
 
@@ -34,11 +33,11 @@ public class RequestList extends SpiceRequest<ArrayListModel>
 
         ArrayList<Model> list = (ArrayList<Model>) databaseHelper.getDao(Model.class).queryForAll();
 
-        Log.i(LOG, "list.size() is: " + list.size());
-        for (int i = 0; i < list.size(); i++)
-        {
-            Log.i(LOG, list.get(i).toString());
-        }
+//        Log.i(LOG, "list.size() is: " + list.size());
+//        for (int i = 0; i < list.size(); i++)
+//        {
+//            Log.i(LOG, list.get(i).toString());
+//        }
 
 //        ArrayListModel list = (ArrayListModel) databaseHelper.getDao(Model.class).queryForAll();
         if (list != null)
@@ -49,7 +48,6 @@ public class RequestList extends SpiceRequest<ArrayListModel>
                 for (int i = 0; i < 3; i++)
                 {
                     Model model = new Model();
-//                    model.setId(i);
                     list.add(model);
                 }
             }
@@ -70,18 +68,9 @@ public class RequestList extends SpiceRequest<ArrayListModel>
             arrayListModel.setResult(list);
         }
 
-//        for (Model m : arrayListModel.getResult())
-//        {
-//            m.setResult(arrayListModel);
-//        }
-
         ArrayList<ArrayListModel> listModel = (ArrayList<ArrayListModel>) databaseHelper.getDao(ArrayListModel.class).queryForAll();
         Log.i(LOG, "listModel.size() is: " + listModel.size());
 
-//        Model model=new Model();
-
         return arrayListModel;
-
-//        return list;
     }
 }
