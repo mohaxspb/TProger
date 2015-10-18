@@ -3,7 +3,6 @@ package ru.kuchanov.tproger.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapter;
+import ru.kuchanov.tproger.custom.view.MySwipeRefreshLayout;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventCollapsed;
 import ru.kuchanov.tproger.otto.EventExpanded;
@@ -42,7 +42,7 @@ public class FragmentCategory extends Fragment
     public static final String KEY_LAST_REQUEST_CACHE_KEY = "keyLastRequestCacheKey";
 
     protected SpiceManager spiceManager = new MySpiceManager(HtmlSpiceService.class);
-    protected SwipeRefreshLayout swipeRefreshLayout;
+    protected MySwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
     String lastRequestCacheKey;
     String category;
@@ -85,8 +85,8 @@ public class FragmentCategory extends Fragment
     {
         View v = inflater.inflate(R.layout.fragment_category, container, false);
 
-        swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
+        swipeRefreshLayout = (MySwipeRefreshLayout) v.findViewById(R.id.swipe_refresh);
+        swipeRefreshLayout.setOnRefreshListener(new MySwipeRefreshLayout.OnRefreshListener()
         {
             @Override
             public void onRefresh()
@@ -94,8 +94,37 @@ public class FragmentCategory extends Fragment
                 performRequest(1);
             }
         });
+
+//            swipeRefreshLayout.setOnTouchListener(new View.OnTouchListener()
+//            {
+//                @Override
+//                public boolean onTouch(View v, MotionEvent event)
+//                {
+//                    Log.i(LOG, "swipeRefreshLayout: " + event.toString());
+//                    return false;
+//                }
+//            });
+
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+//
+//        recyclerView.setOnTouchListener(new View.OnTouchListener()
+//        {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event)
+//            {
+//                Log.i(LOG, "recyclerView: " + event.toString());
+//                if(((ActivityMain)ctx).isFullyExpanded())
+//                {
+//                    swipeRefreshLayout.setEnabled(true);
+//                }
+//                else
+//                {
+//                    swipeRefreshLayout.setEnabled(false);
+//                }
+//                return false;
+//            }
+//        });
 
 
 //        String[] mDataSet = new String[100];
@@ -151,15 +180,17 @@ public class FragmentCategory extends Fragment
     @Subscribe
     public void onExpanded(EventExpanded event)
     {
-        Log.i(LOG, "EventExpanded: " + String.valueOf(event.isExpanded()));
-        swipeRefreshLayout.setEnabled(true);
+//        Log.i(LOG, "EventExpanded: " + String.valueOf(event.isExpanded()));
+//        swipeRefreshLayout.setEnabled(true);
+        swipeRefreshLayout.setLayoutMovementEnabled(true);
     }
 
     @Subscribe
     public void onCollapsed(EventCollapsed event)
     {
-        Log.i(LOG, "EventCollapsed: " + String.valueOf(event.isCollapsed()));
-        swipeRefreshLayout.setEnabled(false);
+//        Log.i(LOG, "EventCollapsed: " + String.valueOf(event.isCollapsed()));
+//        swipeRefreshLayout.setEnabled(false);
+        swipeRefreshLayout.setLayoutMovementEnabled(false);
     }
 
     //inner class of your spiced Activity

@@ -68,7 +68,12 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     private Context ctx;
 
     protected int verticalOffsetPrevious=0;
+    protected boolean fullyExpanded=true;
 
+    public boolean isFullyExpanded()
+    {
+        return fullyExpanded;
+    }
     protected AppBarLayout.OnOffsetChangedListener onOffsetChangedListener = new AppBarLayout.OnOffsetChangedListener()
     {
         @Override
@@ -76,9 +81,11 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         {
             if(verticalOffset<0)
             {
+                BusProvider.getInstance().post(new EventCollapsed());
                 if(verticalOffsetPrevious==0)
                 {
                     BusProvider.getInstance().post(new EventCollapsed());
+                    fullyExpanded=false;
                 }
             }
             else
@@ -86,10 +93,11 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 if(verticalOffsetPrevious<0)
                 {
                     BusProvider.getInstance().post(new EventExpanded());
+                    fullyExpanded=true;
                 }
             }
             verticalOffsetPrevious=verticalOffset;
-            Log.i(LOG, "verticalOffset: "+verticalOffset);
+//            Log.i(LOG, "verticalOffset: "+verticalOffset);
 
                     //move backgroubng image and its bottom border
                     cover.setY(verticalOffset * 0.7f);
