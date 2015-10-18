@@ -10,7 +10,7 @@ import java.util.Date;
  * Created by Юрий on 16.10.2015 16:47.
  * For ExpListTest.
  */
-@DatabaseTable(tableName = "model")
+@DatabaseTable(tableName = "article")
 public class Article
 {
     @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
@@ -26,7 +26,10 @@ public class Article
     private Date pubDate;
 
     @DatabaseField
-    private String tagMain;
+    private String tagMainTitle;
+
+    @DatabaseField
+    private String tagMainUrl;
 
     @DatabaseField
     private String imageUrl;
@@ -74,6 +77,11 @@ public class Article
         this.id = id;
     }
 
+    public int getId()
+    {
+        return this.id;
+    }
+
     public String getTitle()
     {
         return title;
@@ -104,14 +112,14 @@ public class Article
         this.pubDate = pubDate;
     }
 
-    public String getTagMain()
+    public String getTagMainTitle()
     {
-        return tagMain;
+        return tagMainTitle;
     }
 
-    public void setTagMain(String tagMain)
+    public void setTagMainTitle(String tagMainTitle)
     {
-        this.tagMain = tagMain;
+        this.tagMainTitle = tagMainTitle;
     }
 
     public int getImageWidth()
@@ -142,5 +150,15 @@ public class Article
     public void setPreview(String preview)
     {
         this.preview = preview;
+    }
+
+    public String getTagMainUrl()
+    {
+        return tagMainUrl;
+    }
+
+    public void setTagMainUrl(String tagMainUrl)
+    {
+        this.tagMainUrl = tagMainUrl;
     }
 }

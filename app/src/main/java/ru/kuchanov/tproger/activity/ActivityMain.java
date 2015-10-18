@@ -31,6 +31,8 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import java.lang.reflect.Method;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
@@ -39,10 +41,12 @@ import ru.kuchanov.tproger.navigation.NavigationViewOnNavigationItemSelectedList
 import ru.kuchanov.tproger.navigation.PagerAdapterMain;
 import ru.kuchanov.tproger.navigation.PagerAdapterOnPageChangeListener;
 import ru.kuchanov.tproger.navigation.TabLayoutOnTabSelectedListener;
-import ru.kuchanov.tproger.robospice.ArrayListModel;
 import ru.kuchanov.tproger.robospice.HtmlSpiceService;
+import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.RequestMainPageForArts;
+import ru.kuchanov.tproger.robospice.db.Article;
+import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.utils.ScreenProperties;
 
 public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger
@@ -132,6 +136,19 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         appBar.addOnOffsetChangedListener(onOffsetChangedListener);
 
         setUpBackgroundAnimation();
+
+        //TODO test
+        MyRoboSpiceDatabaseHelper databaseHelper = new MyRoboSpiceDatabaseHelper(this, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+
+        try
+        {
+            ArrayList<Article> list = (ArrayList<Article>)databaseHelper.getDao(Article.class).queryForAll();
+            Log.i(LOG, "List.size: "+list.size());
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     //TODO roboSpice
@@ -155,34 +172,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         return spiceManager;
     }
 
-//    private void performRequest()
-//    {
-//        setProgressBarIndeterminateVisibility(true);
-//
-//        RoboSpiceRequestModel request = new RoboSpiceRequestModel(ctx);
-//
-//        getSpiceManager().execute(request, "txt", DurationInMillis.ONE_MINUTE, new ListFollowersRequestListener());
-//    }
-//
-//    //inner class of your spiced Activity
-//    private class ListFollowersRequestListener implements RequestListener<Model>
-//    {
-//
-//        @Override
-//        public void onRequestFailure(SpiceException e)
-//        {
-//            //update your UI
-//            Toast.makeText(ctx, "Fail", Toast.LENGTH_SHORT).show();
-//        }
-//
-//        @Override
-//        public void onRequestSuccess(Model listFollowers)
-//        {
-//            //update your UI
-//            Toast.makeText(ctx, listFollowers.toString(), Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
     private void performRequest()
     {
         setProgressBarIndeterminateVisibility(true);
@@ -194,7 +183,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     }
 
     //inner class of your spiced Activity
-    private class ListFollowersRequestListener implements RequestListener<ArrayListModel>
+    private class ListFollowersRequestListener implements RequestListener<Articles>
     {
 
         @Override
@@ -205,7 +194,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         }
 
         @Override
-        public void onRequestSuccess(ArrayListModel listFollowers)
+        public void onRequestSuccess(Articles listFollowers)
         {
             //update your UI
 //            Toast.makeText(ctx, listFollowers.getResult().toArray()[0].toString(), Toast.LENGTH_SHORT).show();
@@ -213,6 +202,23 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 //            Log.i(LOG, "listFollowers.getResult().toArray()[0].toString(): "+listFollowers.getResult().toArray()[0].toString());
             Log.i(LOG, "listFollowers.getResult().size(): " + listFollowers.getResult().size());
             Log.i(LOG, "listFollowers.getResult().toArray()[0].toString(): " + listFollowers.getResult().toArray()[0].toString());
+
+            ArrayList<Article> list=new ArrayList<Article>(listFollowers.getResult());
+            for(Article a:list)
+            {
+                Log.i(LOG,  "!!!!!!!!!!!!!!!!!!!!!!!!!");
+                Log.i(LOG,  String.valueOf(a.getId()));
+                Log.i(LOG,  String.valueOf(a.getTitle()));
+                Log.i(LOG,  String.valueOf(a.getUrl()));
+                Log.i(LOG,  String.valueOf(a.getPubDate()));
+                Log.i(LOG,  String.valueOf(a.getImageUrl()));
+                Log.i(LOG,  String.valueOf(a.getImageHeight()));
+                Log.i(LOG,  String.valueOf(a.getImageWidth()));
+                Log.i(LOG,  String.valueOf(a.getTagMainTitle()));
+                Log.i(LOG,  String.valueOf(a.getTagMainUrl()));
+                Log.i(LOG,  String.valueOf(a.getPreview()));
+                Log.i(LOG,  "!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
 
         }
     }

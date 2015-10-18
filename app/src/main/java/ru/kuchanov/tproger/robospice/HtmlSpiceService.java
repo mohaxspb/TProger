@@ -10,6 +10,9 @@ import com.octo.android.robospice.persistence.ormlite.InDatabaseObjectPersisterF
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.kuchanov.tproger.robospice.db.Article;
+import ru.kuchanov.tproger.robospice.db.Articles;
+
 /**
  * Created by Юрий on 16.10.2015 16:31.
  * For ExpListTest.
@@ -24,8 +27,11 @@ public class HtmlSpiceService extends SpiceService
         List<Class<?>> classCollection = new ArrayList<Class<?>>();
 
         // add persisted classes to class collection
-        classCollection.add(Model.class);
-        classCollection.add(ArrayListModel.class);
+//        classCollection.add(Model.class);
+//        classCollection.add(ArrayListModel.class);
+
+        classCollection.add(Article.class);
+        classCollection.add(Articles.class);
 
         // init
         MyRoboSpiceDatabaseHelper databaseHelper = new MyRoboSpiceDatabaseHelper(application, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
