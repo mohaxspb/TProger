@@ -8,5 +8,12 @@
         sha1="65fd012581ded67bc20945d85c32b4598c3a9cf1">
         <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\jsoup-1.8.3-22693b982d3221be47ddf3a1daafafbc03e8a832.jar" />
     </item>
+    <item
+        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\com.squareup\otto\1.3.8\cf615176cd1177edf71d3c9605f8dc148fede6be\otto-1.3.8.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="cf615176cd1177edf71d3c9605f8dc148fede6be">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\otto-1.3.8-1ac7bf6eff0cd804dea5ca4daa6981d2c4fdb9ad.jar" />
+    </item>
 
 </items>

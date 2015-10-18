@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -23,16 +24,10 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.octo.android.robospice.SpiceManager;
-import com.octo.android.robospice.persistence.DurationInMillis;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
 
 import java.lang.reflect.Method;
-import java.sql.SQLException;
-import java.util.ArrayList;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
@@ -41,12 +36,11 @@ import ru.kuchanov.tproger.navigation.NavigationViewOnNavigationItemSelectedList
 import ru.kuchanov.tproger.navigation.PagerAdapterMain;
 import ru.kuchanov.tproger.navigation.PagerAdapterOnPageChangeListener;
 import ru.kuchanov.tproger.navigation.TabLayoutOnTabSelectedListener;
+import ru.kuchanov.tproger.otto.BusProvider;
+import ru.kuchanov.tproger.otto.EventCollapsed;
+import ru.kuchanov.tproger.otto.EventExpanded;
 import ru.kuchanov.tproger.robospice.HtmlSpiceService;
-import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
-import ru.kuchanov.tproger.robospice.RequestMainPageForArts;
-import ru.kuchanov.tproger.robospice.db.Article;
-import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.utils.ScreenProperties;
 
 public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger
@@ -72,13 +66,33 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     //    protected CollapsingToolbarLayout collapsingToolbarLayout;
     protected TabLayout tabLayout;
     private Context ctx;
+
+    protected int verticalOffsetPrevious=0;
+
     protected AppBarLayout.OnOffsetChangedListener onOffsetChangedListener = new AppBarLayout.OnOffsetChangedListener()
     {
         @Override
         public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset)
         {
-            //move backgroubng image and its bottom border
-            cover.setY(verticalOffset * 0.7f);
+            if(verticalOffset<0)
+            {
+                if(verticalOffsetPrevious==0)
+                {
+                    BusProvider.getInstance().post(new EventCollapsed());
+                }
+            }
+            else
+            {
+                if(verticalOffsetPrevious<0)
+                {
+                    BusProvider.getInstance().post(new EventExpanded());
+                }
+            }
+            verticalOffsetPrevious=verticalOffset;
+            Log.i(LOG, "verticalOffset: "+verticalOffset);
+
+                    //move backgroubng image and its bottom border
+                    cover.setY(verticalOffset * 0.7f);
             View cover2outSide = findViewById(R.id.cover_2);
             cover2outSide.setY(verticalOffset * 0.7f);
 
@@ -136,94 +150,9 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         appBar.addOnOffsetChangedListener(onOffsetChangedListener);
 
         setUpBackgroundAnimation();
-
-        //TODO test
-        MyRoboSpiceDatabaseHelper databaseHelper = new MyRoboSpiceDatabaseHelper(this, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
-
-        try
-        {
-            ArrayList<Article> list = (ArrayList<Article>)databaseHelper.getDao(Article.class).queryForAll();
-            Log.i(LOG, "List.size: "+list.size());
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
     }
 
-    //TODO roboSpice
 
-    @Override
-    protected void onStart()
-    {
-        spiceManager.start(this);
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop()
-    {
-        spiceManager.shouldStop();
-        super.onStop();
-    }
-
-    protected SpiceManager getSpiceManager()
-    {
-        return spiceManager;
-    }
-
-    private void performRequest()
-    {
-        setProgressBarIndeterminateVisibility(true);
-
-//        RequestList request = new RequestList(ctx);
-        RequestMainPageForArts request = new RequestMainPageForArts(ctx);
-
-        getSpiceManager().execute(request, "txt", DurationInMillis.ONE_MINUTE, new ListFollowersRequestListener());
-    }
-
-    //inner class of your spiced Activity
-    private class ListFollowersRequestListener implements RequestListener<Articles>
-    {
-
-        @Override
-        public void onRequestFailure(SpiceException e)
-        {
-            //update your UI
-            Toast.makeText(ctx, "Fail", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onRequestSuccess(Articles listFollowers)
-        {
-            //update your UI
-//            Toast.makeText(ctx, listFollowers.getResult().toArray()[0].toString(), Toast.LENGTH_SHORT).show();
-//            Log.i(LOG, "listFollowers.getResult().size(): "+listFollowers.getResult().size());
-//            Log.i(LOG, "listFollowers.getResult().toArray()[0].toString(): "+listFollowers.getResult().toArray()[0].toString());
-            Log.i(LOG, "listFollowers.getResult().size(): " + listFollowers.getResult().size());
-            Log.i(LOG, "listFollowers.getResult().toArray()[0].toString(): " + listFollowers.getResult().toArray()[0].toString());
-
-            ArrayList<Article> list=new ArrayList<Article>(listFollowers.getResult());
-            for(Article a:list)
-            {
-                Log.i(LOG,  "!!!!!!!!!!!!!!!!!!!!!!!!!");
-                Log.i(LOG,  String.valueOf(a.getId()));
-                Log.i(LOG,  String.valueOf(a.getTitle()));
-//                Log.i(LOG,  String.valueOf(a.getUrl()));
-//                Log.i(LOG,  String.valueOf(a.getPubDate()));
-//                Log.i(LOG,  String.valueOf(a.getImageUrl()));
-//                Log.i(LOG,  String.valueOf(a.getImageHeight()));
-//                Log.i(LOG,  String.valueOf(a.getImageWidth()));
-//                Log.i(LOG,  String.valueOf(a.getTagMainTitle()));
-//                Log.i(LOG,  String.valueOf(a.getTagMainUrl()));
-//                Log.i(LOG,  String.valueOf(a.getPreview()));
-                Log.i(LOG,  "!!!!!!!!!!!!!!!!!!!!!!!!!");
-            }
-
-        }
-    }
-
-    //TODO roboSpice
 
     private void restoreState(Bundle state)
     {
@@ -361,9 +290,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 this.startActivity(intent);
                 return true;
             case android.R.id.home:
-                //TODO roboSpice
-                performRequest();
-//                this.drawerLayout.openDrawer(GravityCompat.START);
+                this.drawerLayout.openDrawer(GravityCompat.START);
                 return true;
             case R.id.night_mode_switcher:
                 if (nightModeIsOn)

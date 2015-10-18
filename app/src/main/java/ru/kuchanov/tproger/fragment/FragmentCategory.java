@@ -16,11 +16,15 @@ import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapter;
+import ru.kuchanov.tproger.otto.BusProvider;
+import ru.kuchanov.tproger.otto.EventCollapsed;
+import ru.kuchanov.tproger.otto.EventExpanded;
 import ru.kuchanov.tproger.robospice.HtmlSpiceService;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArts;
@@ -130,6 +134,34 @@ public class FragmentCategory extends Fragment
         spiceManager.execute(request, lastRequestCacheKey, DurationInMillis.ONE_MINUTE, new ListFollowersRequestListener());
     }
 
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void onExpanded(EventExpanded event)
+    {
+        Log.i(LOG, "EventExpanded: " + String.valueOf(event.isExpanded()));
+        swipeRefreshLayout.setEnabled(true);
+    }
+
+    @Subscribe
+    public void onCollapsed(EventCollapsed event)
+    {
+        Log.i(LOG, "EventCollapsed: " + String.valueOf(event.isCollapsed()));
+        swipeRefreshLayout.setEnabled(false);
+    }
+
     //inner class of your spiced Activity
     private class ListFollowersRequestListener implements RequestListener<Articles>
     {
@@ -156,7 +188,7 @@ public class FragmentCategory extends Fragment
             ArrayList<Article> list = new ArrayList<Article>(listFollowers.getResult());
 //            ArrayList<String> listStr = new ArrayList<>();
             String[] mDataSet = new String[list.size()];
-            for (int i=0; i<list.size(); i++)
+            for (int i = 0; i < list.size(); i++)
             {
                 Article a = list.get(i);
                 Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -172,7 +204,7 @@ public class FragmentCategory extends Fragment
 //                Log.i(LOG,  String.valueOf(a.getPreview()));
                 Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!!!");
 
-                mDataSet[i]=a.getTitle();
+                mDataSet[i] = a.getTitle();
             }
 
 
@@ -182,4 +214,5 @@ public class FragmentCategory extends Fragment
 //            swipeRefreshLayout.isNestedScrollingEnabled()
         }
     }
+
 }
