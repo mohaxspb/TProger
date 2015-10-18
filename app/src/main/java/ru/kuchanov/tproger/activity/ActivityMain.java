@@ -25,8 +25,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
-import com.octo.android.robospice.SpiceManager;
-
 import java.lang.reflect.Method;
 
 import ru.kuchanov.tproger.R;
@@ -39,8 +37,6 @@ import ru.kuchanov.tproger.navigation.TabLayoutOnTabSelectedListener;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventCollapsed;
 import ru.kuchanov.tproger.otto.EventExpanded;
-import ru.kuchanov.tproger.robospice.HtmlSpiceService;
-import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.utils.ScreenProperties;
 
 public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger
@@ -125,9 +121,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         }
     };
 
-    //TODO roboSpice
-    private SpiceManager spiceManager = new MySpiceManager(HtmlSpiceService.class);
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -157,10 +150,10 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         appBar.setExpanded(isCollapsed, true);
         appBar.addOnOffsetChangedListener(onOffsetChangedListener);
 
+
+
         setUpBackgroundAnimation();
     }
-
-
 
     private void restoreState(Bundle state)
     {

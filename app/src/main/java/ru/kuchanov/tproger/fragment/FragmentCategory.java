@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -91,49 +92,12 @@ public class FragmentCategory extends Fragment
             @Override
             public void onRefresh()
             {
-                performRequest(1);
+                performRequest(1, true);
             }
         });
 
-//            swipeRefreshLayout.setOnTouchListener(new View.OnTouchListener()
-//            {
-//                @Override
-//                public boolean onTouch(View v, MotionEvent event)
-//                {
-//                    Log.i(LOG, "swipeRefreshLayout: " + event.toString());
-//                    return false;
-//                }
-//            });
-
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-//
-//        recyclerView.setOnTouchListener(new View.OnTouchListener()
-//        {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event)
-//            {
-//                Log.i(LOG, "recyclerView: " + event.toString());
-//                if(((ActivityMain)ctx).isFullyExpanded())
-//                {
-//                    swipeRefreshLayout.setEnabled(true);
-//                }
-//                else
-//                {
-//                    swipeRefreshLayout.setEnabled(false);
-//                }
-//                return false;
-//            }
-//        });
-
-
-//        String[] mDataSet = new String[100];
-//        for (int i = 0; i < 100; i++)
-//        {
-//            mDataSet[i] = "Tab1, item" + i;
-//        }
-
-//        recyclerView.setAdapter(new RecyclerAdapter(mDataSet));
 
         return v;
     }
@@ -146,6 +110,8 @@ public class FragmentCategory extends Fragment
         this.ctx = this.getActivity();
 
         spiceManager.start(this.getActivity());
+
+        performRequest(1, false);
     }
 
     @Override
@@ -155,12 +121,17 @@ public class FragmentCategory extends Fragment
         super.onStop();
     }
 
-    private void performRequest(int page)
+    private void performRequest(int page, boolean forceRefresh)
     {
-        RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category, page);
-        lastRequestCacheKey = request.createCacheKey();
+        long cacheExpireTime = (forceRefresh) ? DurationInMillis.ALWAYS_EXPIRED : DurationInMillis.ONE_HOUR;
 
-        spiceManager.execute(request, lastRequestCacheKey, DurationInMillis.ONE_MINUTE, new ListFollowersRequestListener());
+        if (page == 1)
+        {
+            RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category, page);
+            lastRequestCacheKey = request.createCacheKey();
+
+            spiceManager.execute(request, lastRequestCacheKey, cacheExpireTime, new ListFollowersRequestListener());
+        }
     }
 
     @Override
@@ -181,7 +152,7 @@ public class FragmentCategory extends Fragment
     public void onExpanded(EventExpanded event)
     {
 //        Log.i(LOG, "EventExpanded: " + String.valueOf(event.isExpanded()));
-//        swipeRefreshLayout.setEnabled(true);
+        swipeRefreshLayout.setEnabled(true);
         swipeRefreshLayout.setLayoutMovementEnabled(true);
     }
 
@@ -189,7 +160,7 @@ public class FragmentCategory extends Fragment
     public void onCollapsed(EventCollapsed event)
     {
 //        Log.i(LOG, "EventCollapsed: " + String.valueOf(event.isCollapsed()));
-//        swipeRefreshLayout.setEnabled(false);
+        swipeRefreshLayout.setEnabled(false);
         swipeRefreshLayout.setLayoutMovementEnabled(false);
     }
 
@@ -200,9 +171,19 @@ public class FragmentCategory extends Fragment
         @Override
         public void onRequestFailure(SpiceException e)
         {
-            //update your UI
-            Toast.makeText(ctx, "Fail", Toast.LENGTH_SHORT).show();
-            Log.i(LOG, "Fail");
+            if (e instanceof NoNetworkException)
+            {
+                //Toast "you got no connection
+                Toast.makeText(ctx, "Не удалось подключиться к интернету", Toast.LENGTH_SHORT).show();
+                Log.i(LOG, "NoNetworkException: Не удалось подключиться к интернету");
+            }
+            else
+            {
+                e.printStackTrace();
+            }
+//            Toast.makeText(ctx, "Fail", Toast.LENGTH_SHORT).show();
+//            Log.i(LOG, "Fail");
+            swipeRefreshLayout.setRefreshing(false);
         }
 
         @Override
@@ -241,9 +222,6 @@ public class FragmentCategory extends Fragment
 
             recyclerView.setAdapter(new RecyclerAdapter(mDataSet));
             swipeRefreshLayout.setRefreshing(false);
-
-//            swipeRefreshLayout.isNestedScrollingEnabled()
         }
     }
-
 }
