@@ -4,7 +4,10 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.sql.SQLException;
 import java.util.Date;
+
+import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 
 /**
  * Created by Юрий on 16.10.2015 16:47.
@@ -13,10 +16,13 @@ import java.util.Date;
 @DatabaseTable(tableName = "article")
 public class Article
 {
+    public static final String LOG = Article.class.getSimpleName();
+    public static final String FIELD_URL = "url";
+
     @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     private int id;
 
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, columnName = FIELD_URL)
     private String url;
 
     @DatabaseField(canBeNull = false)
@@ -46,6 +52,21 @@ public class Article
     @DatabaseField(foreign = true)
     private Articles result;
 
+    public static Article getArticleByUrl(MyRoboSpiceDatabaseHelper h, String url)
+    {
+        Article a = null;
+        try
+        {
+//            a = h.getDao(Article.class).queryForEq(FIELD_URL, url).get(0);
+            a = h.getDao(Article.class).queryBuilder().where().eq(FIELD_URL, url).queryForFirst();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return a;
+    }
+
     public String getUrl()
     {
         return url;
@@ -72,14 +93,14 @@ public class Article
         this.result = result;
     }
 
-    public void setId(int id)
-    {
-        this.id = id;
-    }
-
     public int getId()
     {
         return this.id;
+    }
+
+    public void setId(int id)
+    {
+        this.id = id;
     }
 
     public String getTitle()

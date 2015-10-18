@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.Articles;
 
@@ -28,21 +29,29 @@ import ru.kuchanov.tproger.robospice.db.Articles;
  * Created by Юрий on 16.10.2015 16:43.
  * For ExpListTest.
  */
-public class RequestMainPageForArts extends SpiceRequest<Articles>
+public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
 {
-    public static final String LOG = RequestMainPageForArts.class.getSimpleName();
+    public static final String LOG = RoboSpiceRequestCategoriesArts.class.getSimpleName();
 
     Context ctx;
     MyRoboSpiceDatabaseHelper databaseHelper;
     String url;
+    String category;
+    int page;
 
-    public RequestMainPageForArts(Context ctx)
+    public RoboSpiceRequestCategoriesArts(Context ctx, String category, int page)
     {
         super(Articles.class);
 
         this.ctx = ctx;
+        this.category = category;
+        this.page = page;
+
+//        this.url = "http://tproger.ru/page/1/";
+        this.url = Const.DOMAIN_MAIN + category + Const.SLASH + "page" + Const.SLASH + page + Const.SLASH;
+
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
-        this.url = "http://tproger.ru/page/1/";
+
     }
 
     @Override
@@ -68,8 +77,8 @@ public class RequestMainPageForArts extends SpiceRequest<Articles>
 
             //check if this article is already in DB and set it to list and goto next iteration;
             //else continue this loop
-            Article artInDB=Article.getArticleByUrl(databaseHelper, url);
-            if(artInDB!=null)
+            Article artInDB = Article.getArticleByUrl(databaseHelper, url);
+            if (artInDB != null)
             {
                 list.add(artInDB);
                 Log.i(LOG, title + "is already in DB");
@@ -79,8 +88,6 @@ public class RequestMainPageForArts extends SpiceRequest<Articles>
             {
                 Log.i(LOG, title + "is NOT in DB");
             }
-
-
 
             Element postMeta = postTitleBox.getElementsByClass("post-meta").get(0);
             Element ul = postMeta.getElementsByTag("ul").get(0);
@@ -174,5 +181,16 @@ public class RequestMainPageForArts extends SpiceRequest<Articles>
         String responseBody = response.body().string();
 
         return responseBody;
+    }
+
+    /**
+     * This method generates a unique cache key for this request. In this case
+     * our cache key depends just on the keyword.
+     *
+     * @return
+     */
+    public String createCacheKey()
+    {
+        return "categoriesArtsList." + category + Const.SLASH + page;
     }
 }

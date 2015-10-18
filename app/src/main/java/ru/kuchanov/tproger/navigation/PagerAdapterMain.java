@@ -4,12 +4,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import ru.kuchanov.tproger.fragment.FragmentTab1;
+import ru.kuchanov.tproger.fragment.FragmentCategory;
 import ru.kuchanov.tproger.fragment.FragmentTab2;
 import ru.kuchanov.tproger.fragment.FragmentTab3;
 
 /**
- * Created by Юрий on 17.09.2015.
+ * Created by Юрий on 17.09.2015 18:06.
+ * For ExpListTest.
  */
 public class PagerAdapterMain extends FragmentStatePagerAdapter
 {
@@ -25,7 +26,8 @@ public class PagerAdapterMain extends FragmentStatePagerAdapter
 
         switch (position) {
             case 0:
-                FragmentTab1 tab1 = new FragmentTab1();
+//                FragmentCategory tab1 = new FragmentCategory();
+                FragmentCategory tab1 = FragmentCategory.newInstance("");
                 return tab1;
             case 1:
                 FragmentTab2 tab2 = new FragmentTab2();
