@@ -5,6 +5,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
@@ -181,5 +182,32 @@ public class Article
     public void setTagMainUrl(String tagMainUrl)
     {
         this.tagMainUrl = tagMainUrl;
+    }
+
+    public static ArrayList<Article> create(ArrayList<Article> dataToWrite, MyRoboSpiceDatabaseHelper h)
+    {
+        ArrayList<Article> createdData=new ArrayList<Article>();
+
+        for (Article a: dataToWrite)
+        {
+            if(a.getId()!=0)
+            {
+                //already in DB
+            }
+            else
+            {
+                try
+                {
+                    h.getDao(Article.class).create(a);
+                }
+                catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            createdData.add(a);
+        }
+
+        return createdData;
     }
 }

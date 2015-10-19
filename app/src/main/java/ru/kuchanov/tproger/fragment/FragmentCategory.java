@@ -245,7 +245,6 @@ public class FragmentCategory extends Fragment
                 recyclerView.setAdapter(new RecyclerAdapter(mDataSet));
             }
 
-
             recyclerView.clearOnScrollListeners();
             recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
             {
