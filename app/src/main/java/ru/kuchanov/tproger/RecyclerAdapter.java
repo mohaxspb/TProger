@@ -6,14 +6,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder>
 {
 
-    private String[] mDataset;
+//    private String[] mDataset;
 
-    public RecyclerAdapter(String[] dataset)
+    private ArrayList<String> mDataset;
+
+    public RecyclerAdapter(ArrayList<String> dataset)
     {
         mDataset = dataset;
+    }
+
+    public void addData(ArrayList<String> dataToAdd)
+    {
+        int prevSize=mDataset.size();
+        mDataset.addAll(dataToAdd);
+        this.notifyItemRangeInserted(prevSize, mDataset.size());
     }
 
     @Override
@@ -27,13 +38,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, int position)
     {
-        holder.mTextView.setText(mDataset[position]);
+        holder.mTextView.setText(mDataset.get(position));
     }
 
     @Override
     public int getItemCount()
     {
-        return mDataset.length;
+        return mDataset.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder

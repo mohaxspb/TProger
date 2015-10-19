@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapter;
+import ru.kuchanov.tproger.RecyclerViewOnScrollListener;
 import ru.kuchanov.tproger.custom.view.MySwipeRefreshLayout;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventCollapsed;
@@ -40,6 +41,7 @@ public class FragmentCategory extends Fragment
 {
     public static final String LOG = FragmentCategory.class.getSimpleName();
     public static final String KEY_CATEGORY = "keyCategory";
+    public static final String KEY_CURRENT_PAGE_TO_LOAD = "keyCurrentPageToLoad";
     public static final String KEY_LAST_REQUEST_CACHE_KEY = "keyLastRequestCacheKey";
 
     protected SpiceManager spiceManager = new MySpiceManager(HtmlSpiceService.class);
@@ -48,6 +50,7 @@ public class FragmentCategory extends Fragment
     String lastRequestCacheKey;
     String category;
     private Context ctx;
+    private int currentPageToLoad=1;
 
     public static FragmentCategory newInstance(String category)
     {
@@ -65,6 +68,7 @@ public class FragmentCategory extends Fragment
         super.onSaveInstanceState(outState);
 
         outState.putString(KEY_LAST_REQUEST_CACHE_KEY, this.lastRequestCacheKey);
+        outState.putInt(KEY_CURRENT_PAGE_TO_LOAD, currentPageToLoad);
     }
 
     @Override
@@ -78,6 +82,7 @@ public class FragmentCategory extends Fragment
         if (savedInstanceState != null)
         {
             this.lastRequestCacheKey = savedInstanceState.getString(KEY_LAST_REQUEST_CACHE_KEY);
+            this.currentPageToLoad=savedInstanceState.getInt(KEY_CURRENT_PAGE_TO_LOAD);
         }
     }
 
@@ -126,6 +131,13 @@ public class FragmentCategory extends Fragment
         long cacheExpireTime = (forceRefresh) ? DurationInMillis.ALWAYS_EXPIRED : DurationInMillis.ONE_HOUR;
 
         if (page == 1)
+        {
+            RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category, page);
+            lastRequestCacheKey = request.createCacheKey();
+
+            spiceManager.execute(request, lastRequestCacheKey, cacheExpireTime, new ListFollowersRequestListener());
+        }
+        else
         {
             RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category, page);
             lastRequestCacheKey = request.createCacheKey();
@@ -184,6 +196,11 @@ public class FragmentCategory extends Fragment
 //            Toast.makeText(ctx, "Fail", Toast.LENGTH_SHORT).show();
 //            Log.i(LOG, "Fail");
             swipeRefreshLayout.setRefreshing(false);
+            if(currentPageToLoad>1)
+            {
+                currentPageToLoad--;
+//                recyclerView
+            }
         }
 
         @Override
@@ -199,7 +216,7 @@ public class FragmentCategory extends Fragment
 
             ArrayList<Article> list = new ArrayList<Article>(listFollowers.getResult());
 //            ArrayList<String> listStr = new ArrayList<>();
-            String[] mDataSet = new String[list.size()];
+            ArrayList<String> mDataSet = new ArrayList<String>();
             for (int i = 0; i < list.size(); i++)
             {
                 Article a = list.get(i);
@@ -216,11 +233,30 @@ public class FragmentCategory extends Fragment
 //                Log.i(LOG,  String.valueOf(a.getPreview()));
                 Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!!!");
 
-                mDataSet[i] = a.getTitle();
+                mDataSet.add(a.getTitle());// = a.getTitle();
+            }
+
+            if(currentPageToLoad>1)
+            {
+                ((RecyclerAdapter)recyclerView.getAdapter()).addData(mDataSet);
+            }
+            else
+            {
+                recyclerView.setAdapter(new RecyclerAdapter(mDataSet));
             }
 
 
-            recyclerView.setAdapter(new RecyclerAdapter(mDataSet));
+            recyclerView.clearOnScrollListeners();
+            recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
+            {
+                @Override
+                public void onLoadMore()
+                {
+                    Log.i(LOG, "OnLoadMore called!");
+                    currentPageToLoad++;
+                    performRequest(currentPageToLoad, false);
+                }
+            });
             swipeRefreshLayout.setRefreshing(false);
         }
     }

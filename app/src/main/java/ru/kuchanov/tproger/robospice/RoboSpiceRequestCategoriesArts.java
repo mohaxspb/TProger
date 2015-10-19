@@ -156,16 +156,16 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
 //        }
 
 
-        Articles arrayListModel = databaseHelper.getDao(Articles.class).queryBuilder().queryForFirst();
-        if (arrayListModel != null)
-        {
+//        Articles arrayListModel = databaseHelper.getDao(Articles.class).queryBuilder().queryForFirst();
+//        if (arrayListModel != null)
+//        {
+//            arrayListModel.setResult(list);
+//        }
+//        else
+//        {
+        Articles arrayListModel = new Articles();
             arrayListModel.setResult(list);
-        }
-        else
-        {
-            arrayListModel = new Articles();
-            arrayListModel.setResult(list);
-        }
+//        }
 
         return arrayListModel;
     }

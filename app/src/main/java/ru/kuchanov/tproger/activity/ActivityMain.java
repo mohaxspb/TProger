@@ -26,6 +26,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import java.lang.reflect.Method;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
@@ -37,6 +39,9 @@ import ru.kuchanov.tproger.navigation.TabLayoutOnTabSelectedListener;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventCollapsed;
 import ru.kuchanov.tproger.otto.EventExpanded;
+import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.tproger.robospice.db.Article;
+import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.utils.ScreenProperties;
 
 public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger
@@ -150,9 +155,29 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         appBar.setExpanded(isCollapsed, true);
         appBar.addOnOffsetChangedListener(onOffsetChangedListener);
 
-
-
         setUpBackgroundAnimation();
+
+        MyRoboSpiceDatabaseHelper helper=new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+
+        try
+        {
+            ArrayList<Article> list= (ArrayList<Article>) helper.getDao(Article.class).queryForAll();
+            int listSize=list.size();
+            Log.i(LOG, "listSize= "+listSize);
+
+            for (Article a:list)
+            {
+                Log.i(LOG, "Article.getId()= "+a.getId());
+            }
+
+            ArrayList<Articles> listArts= (ArrayList<Articles>) helper.getDao(Articles.class).queryForAll();
+            int listSizeArts=listArts.size();
+            Log.i(LOG, "listSize= "+listSizeArts);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void restoreState(Bundle state)
@@ -303,6 +328,19 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                     this.pref.edit().putBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, true).commit();
                 }
                 this.recreate();
+                return true;
+            case R.id.debug:
+                MyRoboSpiceDatabaseHelper h=new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+
+                try
+                {
+                    h.clearTableFromDataBase(Article.class);
+                    h.clearTableFromDataBase(Articles.class);
+                }
+                catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
                 return true;
         }
 

@@ -13,7 +13,7 @@ import java.util.Collection;
 @DatabaseTable
 public class Articles
 {
-    @DatabaseField(id = true)
+    @DatabaseField(/*id = true, */generatedId = true, allowGeneratedIdInsert = true)
     private int id;
 
     @ForeignCollectionField(eager = false)
