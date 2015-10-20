@@ -1,5 +1,9 @@
 package ru.kuchanov.tproger.robospice.db;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
+
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -15,43 +19,82 @@ import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
  * For ExpListTest.
  */
 @DatabaseTable(tableName = "article")
-public class Article
+public class Article implements Parcelable
 {
     public static final String LOG = Article.class.getSimpleName();
-    public static final String FIELD_URL = "url";
 
+    public static final String KEY_ARTICLES_LIST = "keyArticlesList";
+
+    public static final String FIELD_URL = "url";
+    public static final Parcelable.Creator<Article> CREATOR = new Parcelable.Creator<Article>()
+    {
+
+        @Override
+        public Article createFromParcel(Parcel source)
+        {
+            return new Article(source);
+        }
+
+        @Override
+        public Article[] newArray(int size)
+        {
+            return new Article[size];
+        }
+    };
     @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     private int id;
-
     @DatabaseField(canBeNull = false, columnName = FIELD_URL)
     private String url;
-
     @DatabaseField(canBeNull = false)
     private String title;
-
     @DatabaseField(dataType = DataType.DATE)
     private Date pubDate;
-
     @DatabaseField
     private String tagMainTitle;
-
     @DatabaseField
     private String tagMainUrl;
-
     @DatabaseField
     private String imageUrl;
-
     @DatabaseField
     private int imageWidth;
-
     @DatabaseField
     private int imageHeight;
-
     @DatabaseField
     private String preview;
-
+    @DatabaseField
+    private String text;
+    @DatabaseField
+    private boolean isRead;
     @DatabaseField(foreign = true)
     private Articles result;
+
+    private Article(Parcel in)
+    {
+        this.id = in.readInt();
+        this.url = in.readString();
+        this.title = in.readString();
+
+        this.pubDate = new Date(in.readLong());
+
+        this.tagMainTitle = in.readString();
+        this.tagMainUrl = in.readString();
+
+        this.imageUrl = in.readString();
+        this.imageWidth = in.readInt();
+        this.imageHeight = in.readInt();
+
+        this.preview = in.readString();
+        this.text = in.readString();
+        this.isRead = in.readByte() != 0; //myBoolean == true if byte != 0
+    }
+
+    /**
+     * empty constructor
+     */
+    public Article()
+    {
+
+    }
 
     public static Article getArticleByUrl(MyRoboSpiceDatabaseHelper h, String url)
     {
@@ -66,6 +109,68 @@ public class Article
             e.printStackTrace();
         }
         return a;
+    }
+
+    public static ArrayList<Article> create(ArrayList<Article> dataToWrite, MyRoboSpiceDatabaseHelper h)
+    {
+        ArrayList<Article> createdData = new ArrayList<Article>();
+
+        for (Article a : dataToWrite)
+        {
+            if (a.getId() != 0)
+            {
+                //already in DB
+            }
+            else
+            {
+                try
+                {
+                    h.getDao(Article.class).create(a);
+                }
+                catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            createdData.add(a);
+        }
+
+        return createdData;
+    }
+
+    public static void printInLog(Article a)
+    {
+        Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!!!");
+        Log.i(LOG, String.valueOf(a.getId()));
+        Log.i(LOG, String.valueOf(a.getTitle()));
+//                Log.i(LOG,  String.valueOf(a.getUrl()));
+//                Log.i(LOG,  String.valueOf(a.getPubDate()));
+//                Log.i(LOG,  String.valueOf(a.getImageUrl()));
+//                Log.i(LOG,  String.valueOf(a.getImageHeight()));
+//                Log.i(LOG,  String.valueOf(a.getImageWidth()));
+//                Log.i(LOG,  String.valueOf(a.getTagMainTitle()));
+//                Log.i(LOG,  String.valueOf(a.getTagMainUrl()));
+//                Log.i(LOG,  String.valueOf(a.getPreview()));
+        Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!!!");
+    }
+
+    public static void printListInLog(ArrayList<Article> list)
+    {
+        for (Article a : list)
+        {
+            Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!!!");
+            Log.i(LOG, String.valueOf(a.getId()));
+            Log.i(LOG, String.valueOf(a.getTitle()));
+//                Log.i(LOG,  String.valueOf(a.getUrl()));
+//                Log.i(LOG,  String.valueOf(a.getPubDate()));
+//                Log.i(LOG,  String.valueOf(a.getImageUrl()));
+//                Log.i(LOG,  String.valueOf(a.getImageHeight()));
+//                Log.i(LOG,  String.valueOf(a.getImageWidth()));
+//                Log.i(LOG,  String.valueOf(a.getTagMainTitle()));
+//                Log.i(LOG,  String.valueOf(a.getTagMainUrl()));
+//                Log.i(LOG,  String.valueOf(a.getPreview()));
+            Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!!!");
+        }
     }
 
     public String getUrl()
@@ -174,6 +279,10 @@ public class Article
         this.preview = preview;
     }
 
+    //////PARCEL implementation
+
+//     id; url; title; pubDate; tagMainTitle; tagMainUrl;imageUrl; imageWidth;imageHeight;preview;text;isRead
+
     public String getTagMainUrl()
     {
         return tagMainUrl;
@@ -184,30 +293,51 @@ public class Article
         this.tagMainUrl = tagMainUrl;
     }
 
-    public static ArrayList<Article> create(ArrayList<Article> dataToWrite, MyRoboSpiceDatabaseHelper h)
+    public String getText()
     {
-        ArrayList<Article> createdData=new ArrayList<Article>();
+        return text;
+    }
 
-        for (Article a: dataToWrite)
-        {
-            if(a.getId()!=0)
-            {
-                //already in DB
-            }
-            else
-            {
-                try
-                {
-                    h.getDao(Article.class).create(a);
-                }
-                catch (SQLException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            createdData.add(a);
-        }
+    public void setText(String text)
+    {
+        this.text = text;
+    }
+//    Parcel implementation/////////////////////////////
 
-        return createdData;
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeInt(id);
+        dest.writeString(url);
+        dest.writeString(title);
+
+        dest.writeLong(pubDate.getTime());
+
+        dest.writeString(tagMainTitle);
+        dest.writeString(tagMainUrl);
+
+        dest.writeString(imageUrl);
+        dest.writeInt(imageWidth);
+        dest.writeInt(imageHeight);
+
+        dest.writeString(preview);
+        dest.writeString(text);
+        dest.writeByte((byte) (isRead ? 1 : 0)); //if myBoolean == true, byte == 1
+    }
+
+    public boolean isRead()
+    {
+        return isRead;
+    }
+
+    public void setIsRead(boolean isRead)
+    {
+        this.isRead = isRead;
     }
 }

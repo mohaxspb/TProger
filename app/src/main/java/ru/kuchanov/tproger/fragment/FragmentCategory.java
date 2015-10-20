@@ -50,7 +50,9 @@ public class FragmentCategory extends Fragment
     String lastRequestCacheKey;
     String category;
     private Context ctx;
-    private int currentPageToLoad=1;
+    private int currentPageToLoad = 1;
+
+    private ArrayList<Article> artsList = new ArrayList<Article>();
 
     public static FragmentCategory newInstance(String category)
     {
@@ -69,6 +71,7 @@ public class FragmentCategory extends Fragment
 
         outState.putString(KEY_LAST_REQUEST_CACHE_KEY, this.lastRequestCacheKey);
         outState.putInt(KEY_CURRENT_PAGE_TO_LOAD, currentPageToLoad);
+        outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
     }
 
     @Override
@@ -82,7 +85,8 @@ public class FragmentCategory extends Fragment
         if (savedInstanceState != null)
         {
             this.lastRequestCacheKey = savedInstanceState.getString(KEY_LAST_REQUEST_CACHE_KEY);
-            this.currentPageToLoad=savedInstanceState.getInt(KEY_CURRENT_PAGE_TO_LOAD);
+            this.currentPageToLoad = savedInstanceState.getInt(KEY_CURRENT_PAGE_TO_LOAD);
+            this.artsList = savedInstanceState.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
         }
     }
 
@@ -104,6 +108,30 @@ public class FragmentCategory extends Fragment
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 
+        //fill recycler with data of make request for it
+        if (artsList.size() != 0)
+        {
+            ArrayList<String> mDataSet = new ArrayList<>();
+            for (Article a : artsList)
+            {
+                mDataSet.add(a.getTitle());
+            }
+
+            recyclerView.setAdapter(new RecyclerAdapter(mDataSet));
+
+            recyclerView.clearOnScrollListeners();
+            recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
+            {
+                @Override
+                public void onLoadMore()
+                {
+                    Log.i(LOG, "OnLoadMore called!");
+                    currentPageToLoad++;
+                    performRequest(currentPageToLoad, false);
+                }
+            });
+        }
+
         return v;
     }
 
@@ -116,7 +144,11 @@ public class FragmentCategory extends Fragment
 
         spiceManager.start(this.getActivity());
 
-        performRequest(1, false);
+        //make request for it
+        if (artsList.size() == 0)
+        {
+            performRequest(1, false);
+        }
     }
 
     @Override
@@ -179,7 +211,6 @@ public class FragmentCategory extends Fragment
     //inner class of your spiced Activity
     private class ListFollowersRequestListener implements RequestListener<Articles>
     {
-
         @Override
         public void onRequestFailure(SpiceException e)
         {
@@ -196,7 +227,7 @@ public class FragmentCategory extends Fragment
 //            Toast.makeText(ctx, "Fail", Toast.LENGTH_SHORT).show();
 //            Log.i(LOG, "Fail");
             swipeRefreshLayout.setRefreshing(false);
-            if(currentPageToLoad>1)
+            if (currentPageToLoad > 1)
             {
                 currentPageToLoad--;
 //                recyclerView
@@ -207,41 +238,25 @@ public class FragmentCategory extends Fragment
         public void onRequestSuccess(Articles listFollowers)
         {
             //update your UI
-//            Toast.makeText(ctx, listFollowers.getResult().toArray()[0].toString(), Toast.LENGTH_SHORT).show();
-//            Log.i(LOG, "listFollowers.getResult().size(): "+listFollowers.getResult().size());
-//            Log.i(LOG, "listFollowers.getResult().toArray()[0].toString(): "+listFollowers.getResult().toArray()[0].toString());
             Log.i(LOG, "listFollowers.getResult().size(): " + listFollowers.getResult().size());
             Log.i(LOG, "listFollowers.getResult().toArray()[0].toString(): " + listFollowers.getResult().toArray()[0].toString());
 
-
             ArrayList<Article> list = new ArrayList<Article>(listFollowers.getResult());
-//            ArrayList<String> listStr = new ArrayList<>();
             ArrayList<String> mDataSet = new ArrayList<String>();
-            for (int i = 0; i < list.size(); i++)
+            for (Article a : list)
             {
-                Article a = list.get(i);
-                Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!!!");
-                Log.i(LOG, String.valueOf(a.getId()));
-                Log.i(LOG, String.valueOf(a.getTitle()));
-//                Log.i(LOG,  String.valueOf(a.getUrl()));
-//                Log.i(LOG,  String.valueOf(a.getPubDate()));
-//                Log.i(LOG,  String.valueOf(a.getImageUrl()));
-//                Log.i(LOG,  String.valueOf(a.getImageHeight()));
-//                Log.i(LOG,  String.valueOf(a.getImageWidth()));
-//                Log.i(LOG,  String.valueOf(a.getTagMainTitle()));
-//                Log.i(LOG,  String.valueOf(a.getTagMainUrl()));
-//                Log.i(LOG,  String.valueOf(a.getPreview()));
-                Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!!!");
-
-                mDataSet.add(a.getTitle());// = a.getTitle();
+                Article.printInLog(a);
+                mDataSet.add(a.getTitle());
             }
 
-            if(currentPageToLoad>1)
+            if (currentPageToLoad > 1)
             {
-                ((RecyclerAdapter)recyclerView.getAdapter()).addData(mDataSet);
+                artsList.addAll(list);
+                ((RecyclerAdapter) recyclerView.getAdapter()).addData(mDataSet);
             }
             else
             {
+                artsList.addAll(list);
                 recyclerView.setAdapter(new RecyclerAdapter(mDataSet));
             }
 

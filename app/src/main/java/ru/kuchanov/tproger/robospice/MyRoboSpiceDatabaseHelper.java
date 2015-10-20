@@ -43,17 +43,18 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
         {
             Log.i(LOG, "onCreate");
             //create category table
-            TableUtils.createTable(connectionSource, Category.class);
+            TableUtils.createTableIfNotExists(connectionSource, Category.class);
             //create article table
-            TableUtils.createTable(connectionSource, Article.class);
+            TableUtils.createTableIfNotExists(connectionSource, Article.class);
             //create artCatTable table
-            TableUtils.createTable(connectionSource, ArticleCategory.class);
+            TableUtils.createTableIfNotExists(connectionSource, ArticleCategory.class);
 
             Log.i(LOG, "all tables have been created");
 
             //fill with initial data
             fillTables();
-        } catch (SQLException e)
+        }
+        catch (SQLException e)
         {
             Log.e(LOG, "Can't create database", e);
             throw new RuntimeException(e);
@@ -62,7 +63,7 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
 
     private void fillTables()
     {
-        Category c=new Category();
+        Category c = new Category();
         c.setTitle("Главная");
         c.setUrl("");
         try

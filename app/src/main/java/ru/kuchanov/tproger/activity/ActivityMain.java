@@ -27,7 +27,6 @@ import android.widget.ImageView;
 
 import java.lang.reflect.Method;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
@@ -66,42 +65,36 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     protected AppBarLayout appBar;
     //    protected CollapsingToolbarLayout collapsingToolbarLayout;
     protected TabLayout tabLayout;
+    protected int verticalOffsetPrevious = 0;
+    protected boolean fullyExpanded = true;
     private Context ctx;
-
-    protected int verticalOffsetPrevious=0;
-    protected boolean fullyExpanded=true;
-
-    public boolean isFullyExpanded()
-    {
-        return fullyExpanded;
-    }
     protected AppBarLayout.OnOffsetChangedListener onOffsetChangedListener = new AppBarLayout.OnOffsetChangedListener()
     {
         @Override
         public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset)
         {
-            if(verticalOffset<0)
+            if (verticalOffset < 0)
             {
                 BusProvider.getInstance().post(new EventCollapsed());
-                if(verticalOffsetPrevious==0)
+                if (verticalOffsetPrevious == 0)
                 {
                     BusProvider.getInstance().post(new EventCollapsed());
-                    fullyExpanded=false;
+                    fullyExpanded = false;
                 }
             }
             else
             {
-                if(verticalOffsetPrevious<0)
+                if (verticalOffsetPrevious < 0)
                 {
                     BusProvider.getInstance().post(new EventExpanded());
-                    fullyExpanded=true;
+                    fullyExpanded = true;
                 }
             }
-            verticalOffsetPrevious=verticalOffset;
+            verticalOffsetPrevious = verticalOffset;
 //            Log.i(LOG, "verticalOffset: "+verticalOffset);
 
-                    //move backgroubng image and its bottom border
-                    cover.setY(verticalOffset * 0.7f);
+            //move backgroubng image and its bottom border
+            cover.setY(verticalOffset * 0.7f);
             View cover2outSide = findViewById(R.id.cover_2);
             cover2outSide.setY(verticalOffset * 0.7f);
 
@@ -126,10 +119,15 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         }
     };
 
+    public boolean isFullyExpanded()
+    {
+        return fullyExpanded;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        Log.d(LOG, "onCreate");
+        Log.i(LOG, "onCreate");
 
         this.ctx = this;
 
@@ -148,36 +146,29 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
         restoreState(savedInstanceState);
 
+        initializeViews();
+
         setUpNavigationDrawer();
         setUpPagerAndTabs();
 
-        appBar = (AppBarLayout) this.findViewById(R.id.app_bar_layout);
         appBar.setExpanded(isCollapsed, true);
         appBar.addOnOffsetChangedListener(onOffsetChangedListener);
 
         setUpBackgroundAnimation();
+    }
 
-        MyRoboSpiceDatabaseHelper helper=new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+    private void initializeViews()
+    {
+        cover = (ImageView) findViewById(R.id.cover);
+        cover2 = findViewById(R.id.cover_2_inside);
 
-        try
-        {
-            ArrayList<Article> list= (ArrayList<Article>) helper.getDao(Article.class).queryForAll();
-            int listSize=list.size();
-            Log.i(LOG, "listSize= "+listSize);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        appBar = (AppBarLayout) this.findViewById(R.id.app_bar_layout);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
-            for (Article a:list)
-            {
-                Log.i(LOG, "Article.getId()= "+a.getId());
-            }
-
-            ArrayList<Articles> listArts= (ArrayList<Articles>) helper.getDao(Articles.class).queryForAll();
-            int listSizeArts=listArts.size();
-            Log.i(LOG, "listSize= "+listSizeArts);
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
+        pager = (ViewPager) this.findViewById(R.id.pager);
     }
 
     private void restoreState(Bundle state)
@@ -196,13 +187,11 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
     private void setUpBackgroundAnimation()
     {
-        cover = (ImageView) findViewById(R.id.cover);
         cover.setAlpha(0f);
         cover.setScaleX(1.3f);
         cover.setScaleY(1.3f);
         cover.animate().alpha(1).setDuration(600);
 
-        cover2 = findViewById(R.id.cover_2_inside);
         cover2.setAlpha(0);
 
         this.startAnimation();
@@ -210,11 +199,9 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
     private void setUpPagerAndTabs()
     {
-        pager = (ViewPager) this.findViewById(R.id.pager);
         pager.setAdapter(new PagerAdapterMain(this.getSupportFragmentManager(), 3));
         pager.addOnPageChangeListener(new PagerAdapterOnPageChangeListener(this, this));
 
-        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Tab 111111111111"));
         tabLayout.addTab(tabLayout.newTab().setText("Tab 222222222222"));
         tabLayout.addTab(tabLayout.newTab().setText("Tab 333333333333"));
@@ -225,7 +212,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
     protected void setUpNavigationDrawer()
     {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         final ActionBar actionBar = getSupportActionBar();
@@ -235,7 +221,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
             actionBar.setDisplayHomeAsUpEnabled(true);
 
-            drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
             mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.hello_world, R.string.hello_world)
             {
                 public void onDrawerClosed(View view)
@@ -256,7 +241,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         }
         NavigationViewOnNavigationItemSelectedListener navList;
         navList = new NavigationViewOnNavigationItemSelectedListener(this, drawerLayout, pager);
-        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+
         navigationView.setNavigationItemSelectedListener(navList);
 
         updateNavigationViewState(this.checkedDrawerItemId);
@@ -330,7 +315,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 this.recreate();
                 return true;
             case R.id.debug:
-                MyRoboSpiceDatabaseHelper h=new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+                MyRoboSpiceDatabaseHelper h = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
 
                 try
                 {
@@ -406,7 +391,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         Log.e(LOG, "isCollapsed: " + String.valueOf(isCollapsed));
         if (!isCollapsed)
         {
-            final AppBarLayout appBar = (AppBarLayout) this.findViewById(R.id.app_bar_layout);
             appBar.setExpanded(true, true);
         }
 

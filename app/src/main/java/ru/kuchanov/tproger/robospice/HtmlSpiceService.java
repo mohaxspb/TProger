@@ -27,9 +27,6 @@ public class HtmlSpiceService extends SpiceService
         List<Class<?>> classCollection = new ArrayList<Class<?>>();
 
         // add persisted classes to class collection
-//        classCollection.add(Model.class);
-//        classCollection.add(ArrayListModel.class);
-
         classCollection.add(Article.class);
         classCollection.add(Articles.class);
 
