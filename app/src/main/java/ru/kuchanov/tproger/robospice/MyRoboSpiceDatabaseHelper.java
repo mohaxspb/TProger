@@ -42,11 +42,11 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
         try
         {
             Log.i(LOG, "onCreate");
-            //create category table
+            //writeArtsList category table
             TableUtils.createTableIfNotExists(connectionSource, Category.class);
-            //create article table
+            //writeArtsList article table
             TableUtils.createTableIfNotExists(connectionSource, Article.class);
-            //create artCatTable table
+            //writeArtsList artCatTable table
             TableUtils.createTableIfNotExists(connectionSource, ArticleCategory.class);
 
             Log.i(LOG, "all tables have been created");

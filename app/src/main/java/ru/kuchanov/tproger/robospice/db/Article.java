@@ -26,6 +26,8 @@ public class Article implements Parcelable
     public static final String KEY_ARTICLES_LIST = "keyArticlesList";
 
     public static final String FIELD_URL = "url";
+    public static final String FIELD_ID = "id";
+
     public static final Parcelable.Creator<Article> CREATOR = new Parcelable.Creator<Article>()
     {
 
@@ -41,7 +43,7 @@ public class Article implements Parcelable
             return new Article[size];
         }
     };
-    @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
+    @DatabaseField(generatedId = true, allowGeneratedIdInsert = true, columnName = FIELD_ID)
     private int id;
     @DatabaseField(canBeNull = false, columnName = FIELD_URL)
     private String url;
@@ -111,12 +113,39 @@ public class Article implements Parcelable
         return a;
     }
 
-    public static ArrayList<Article> create(ArrayList<Article> dataToWrite, MyRoboSpiceDatabaseHelper h)
+    /**
+     *
+     * @param h
+     * @param url
+     * @return article id for url or -1 on error of if can't find
+     */
+    public static int getArticleIdByUrl(MyRoboSpiceDatabaseHelper h, String url)
+    {
+        int id = -1;
+        try
+        {
+           Article a = h.getDao(Article.class).queryBuilder().where().eq(FIELD_URL, url).queryForFirst();
+            if(a==null)
+            {
+                throw new NullPointerException("Article is null while searhing for it by url in GetIdByUrl. WTF&?!");
+            }
+            id = h.getDao(Article.class).queryBuilder().where().eq(FIELD_URL, url).queryForFirst().getId();
+        }
+        catch (NullPointerException | SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return id;
+    }
+
+    public static ArrayList<Article> writeArtsList(ArrayList<Article> dataToWrite, MyRoboSpiceDatabaseHelper h)
     {
         ArrayList<Article> createdData = new ArrayList<Article>();
 
         for (Article a : dataToWrite)
         {
+            Log.i(LOG, "a.getId(): "+a.getId());
+
             if (a.getId() != 0)
             {
                 //already in DB

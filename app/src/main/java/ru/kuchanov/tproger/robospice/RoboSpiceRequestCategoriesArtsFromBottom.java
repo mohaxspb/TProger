@@ -12,16 +12,18 @@ import java.util.ArrayList;
 
 import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.robospice.db.Article;
+import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Articles;
+import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.utils.HtmlParsing;
 
 /**
  * Created by Юрий on 16.10.2015 16:43.
  * For ExpListTest.
  */
-public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
+public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Articles>
 {
-    public static final String LOG = RoboSpiceRequestCategoriesArts.class.getSimpleName();
+    public static final String LOG = RoboSpiceRequestCategoriesArtsFromBottom.class.getSimpleName();
 
     Context ctx;
     MyRoboSpiceDatabaseHelper databaseHelper;
@@ -29,7 +31,7 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
     String category;
     int page;
 
-    public RoboSpiceRequestCategoriesArts(Context ctx, String category, int page)
+    public RoboSpiceRequestCategoriesArtsFromBottom(Context ctx, String category, int page)
     {
         super(Articles.class);
 
@@ -37,7 +39,6 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         this.category = category;
         this.page = page;
 
-//        this.url = "http://tproger.ru/page/1/";
         this.url = Const.DOMAIN_MAIN + category + Const.SLASH + "page" + Const.SLASH + page + Const.SLASH;
 
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
@@ -55,10 +56,14 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         //write to DB
         list = Article.writeArtsList(list, databaseHelper);
 
-        Articles arrayListModel = new Articles();
-        arrayListModel.setResult(list);
+        int categoryId=Category.getCategoryIdByUrl(this.category, databaseHelper);
 
-        return arrayListModel;
+        ArticleCategory.writeArtsList(list, categoryId, databaseHelper);
+
+        Articles articles = new Articles();
+        articles.setResult(list);
+
+        return articles;
     }
 
     private String makeRequest() throws Exception
@@ -69,7 +74,6 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         request.url(this.url);
 
         Response response = client.newCall(request.build()).execute();
-//        String responseBody = response.body().string();
 
         return response.body().string();
     }
@@ -79,8 +83,8 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
      * our cache key depends just on the keyword.
      *
      */
-    public String createCacheKey()
-    {
-        return "categoriesArtsList." + category + Const.SLASH + page;
-    }
+//    public String createCacheKey()
+//    {
+//        return "categoriesArtsList." + category + Const.SLASH + page;
+//    }
 }

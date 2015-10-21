@@ -42,17 +42,18 @@ public class HtmlParsing
             String title = link.text();
 //            Log.i(LOG, "articleTitle: " + title);
 
-            //check if this article is already in DB and set it to list and goto next iteration;
-            //else continue this loop
+
             Article artInDB = Article.getArticleByUrl(h, url);
             if (artInDB != null)
             {
+                //check if this article is already in DB and set it to list and goto next iteration;
                 list.add(artInDB);
                 Log.i(LOG, title + "is already in DB");
                 continue;
             }
             else
             {
+                //else continue this loop
                 Log.i(LOG, title + "is NOT in DB");
             }
 
@@ -112,6 +113,7 @@ public class HtmlParsing
             a.setImageHeight(imageHeight);
             a.setImageWidth(imageWidth);
             a.setPreview(preview);
+
             list.add(a);
         }
 

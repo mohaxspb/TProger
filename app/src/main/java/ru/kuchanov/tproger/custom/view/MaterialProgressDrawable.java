@@ -368,7 +368,7 @@ class MaterialProgressDrawable extends Drawable implements Animatable {
                 if (mFinishing) {
                     applyFinishTranslation(interpolatedTime, ring);
                 } else {
-                    // The minProgressArc is calculated from 0 to create an
+                    // The minProgressArc is calculated from 0 to writeArtsList an
                     // angle that matches the stroke width.
                     final float minProgressArc = getMinProgressArc(ring);
                     final float startingEndTrim = ring.getStartingEndTrim();
