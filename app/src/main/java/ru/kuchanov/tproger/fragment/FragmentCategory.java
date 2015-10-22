@@ -137,9 +137,9 @@ public class FragmentCategory extends Fragment
     }
 
     @Override
-    public void onStart()
+    public void onAttach(Context context)
     {
-        super.onStart();
+        super.onAttach(context);
 
         this.ctx = this.getActivity();
 
@@ -153,9 +153,22 @@ public class FragmentCategory extends Fragment
     }
 
     @Override
+    public void onDetach()
+    {
+        super.onDetach();
+
+        spiceManager.shouldStop();
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+    }
+
+    @Override
     public void onStop()
     {
-        spiceManager.shouldStop();
         super.onStop();
     }
 
@@ -168,18 +181,11 @@ public class FragmentCategory extends Fragment
             RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category, page);
             lastRequestCacheKey = request.createCacheKey();
 
-//            spiceManager.execute(request, lastRequestCacheKey, cacheExpireTime, new ListFollowersRequestListener());
             spiceManager.getFromCacheAndLoadFromNetworkIfExpired(request, lastRequestCacheKey, cacheExpireTime, new ListFollowersRequestListener());
         }
         else
         {
-//            RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category, page);
-//            lastRequestCacheKey = request.createCacheKey();
-//
-//            spiceManager.execute(request, lastRequestCacheKey, cacheExpireTime, new ListFollowersRequestListener());
-
             RoboSpiceRequestCategoriesArtsFromBottom request = new RoboSpiceRequestCategoriesArtsFromBottom(ctx, category, page);
-//            lastRequestCacheKey = request.createCacheKey();
 
             spiceManager.execute(request, "fromBottom", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
         }
@@ -232,20 +238,16 @@ public class FragmentCategory extends Fragment
             {
                 e.printStackTrace();
             }
-//            Toast.makeText(ctx, "Fail", Toast.LENGTH_SHORT).show();
-//            Log.i(LOG, "Fail");
             swipeRefreshLayout.setRefreshing(false);
             if (currentPageToLoad > 1)
             {
                 currentPageToLoad--;
-//                recyclerView
             }
         }
 
         @Override
         public void onRequestSuccess(Articles listFollowers)
         {
-            //update your UI
             Log.i(LOG, "listFollowers.getResult().size(): " + listFollowers.getResult().size());
             Log.i(LOG, "listFollowers.getResult().toArray()[0].toString(): " + listFollowers.getResult().toArray()[0].toString());
 
