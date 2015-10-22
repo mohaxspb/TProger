@@ -92,6 +92,10 @@ public class ArticleCategory
             for (int i = 1; i < page - 1; i++)
             {
                 artCatListOfPreviousArts = ArticleCategory.getArtCatListFromGivenArticleId(lastArticleIdInPreviousIteration, categoryId, h, false);
+//                if(artCatListOfPreviousArts.size()==0)
+//                {
+//                    break;
+//                }
                 lastArtCatByPage = artCatListOfPreviousArts.get(artCatListOfPreviousArts.size() - 1);
                 lastArticleIdInPreviousIteration = lastArtCatByPage.getArticleId();
             }
@@ -176,11 +180,8 @@ public class ArticleCategory
             }
             else
             {
-                //TODO
-
                 lastArtCatByPage.setNextArticleId(arts.get(0).getId());
                 daoArtCat.createOrUpdate(lastArtCatByPage);
-
 
                 match_from_bottom_loop:
                 for (int i = 0; i < arts.size(); i++)
@@ -218,7 +219,8 @@ public class ArticleCategory
                     Article nextArtInLoop = (arts.size() > i + 1) ? arts.get(i + 1) : null;
                     int nextArtIdInLoop = (nextArtInLoop == null) ? -1 : nextArtInLoop.getId();
                     artCatToWrite.setNextArticleId(nextArtIdInLoop);
-                    artCatToWrite.setPreviousArticleId(arts.get(i - 1).getId());
+                    int prevArtId=(i==0)?lastArtCatByPage.getArticleId():arts.get(i - 1).getId();
+                    artCatToWrite.setPreviousArticleId(prevArtId);
 
                     artCatListToWrite.add(artCatToWrite);
                 }
@@ -291,10 +293,10 @@ public class ArticleCategory
                     artCatToWrite.setCategory_id(categoryId);
                     Article nextArtInLoop = (arts.size() > i + 1) ? arts.get(i + 1) : null;
                     int nextArtIdInLoop = (nextArtInLoop == null) ? -1 : nextArtInLoop.getId();
-                    artCat.setNextArticleId(nextArtIdInLoop);
-                    artCat.setPreviousArticleId(arts.get(i - 1).getId());
+                    artCatToWrite.setNextArticleId(nextArtIdInLoop);
+                    artCatToWrite.setPreviousArticleId(arts.get(i - 1).getId());
 
-                    artCatListToWrite.add(artCat);
+                    artCatListToWrite.add(artCatToWrite);
                 }
 
                 //set bottom art if size of arts<DefaultNumOnPage;
@@ -334,6 +336,8 @@ public class ArticleCategory
 
                         //4)
                         artCatListToWrite.get(i - 1).setNextArticleId(topArtCat.getArticleId());
+                        quontOfNewArtsInCategory=i;
+                        break;
                     }
                 }
                 else
@@ -364,7 +368,7 @@ public class ArticleCategory
 
             for (ArticleCategory artCat : artCatListToWrite)
             {
-                daoArtCat.create(artCat);
+                daoArtCat.createOrUpdate(artCat);
             }
         }
         catch (SQLException e)
@@ -398,6 +402,11 @@ public class ArticleCategory
 
             ArticleCategory curArtCat = artCatInitial;
 
+            if(curArtCat.getNextArticleId()==-1)
+            {
+                return list;
+            }
+
             for (int i = 0; i < Const.NUM_OF_ARTS_ON_PAGE; i++)
             {
                 if (i == 0)
@@ -407,9 +416,13 @@ public class ArticleCategory
                         list.add(curArtCat);
                         continue;
                     }
+//                    else
+//                    {
+//
+//                    }
                 }
-                else
-                {
+//                else
+//                {
                     Log.i(LOG, "curArtCat.getNextArticleId: "+curArtCat.getNextArticleId());
 
                     Article nextArt = daoArticle.queryBuilder().where().eq(Article.FIELD_ID, curArtCat.getNextArticleId()).queryForFirst();
@@ -425,7 +438,7 @@ public class ArticleCategory
                         list.add(nextArtCat);
                         curArtCat = nextArtCat;
                     }
-                }
+//                }
             }
         }
         catch (NullPointerException | SQLException e)

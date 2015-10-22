@@ -19,9 +19,6 @@ public class DataBaseFileSaver
     // Copy to sdcard for debug use
 
     /**
-     *
-     * @param c
-     * @param DATABASE_NAME
      * @return path to saved DB or error msg
      */
     public static String copyDatabase(Context c, String DATABASE_NAME)
@@ -41,16 +38,16 @@ public class DataBaseFileSaver
             {
 
 //                File directory = new File("/mnt/sdcard/DB_DEBUG");
-                File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/DB_DEBUG");
-                result=directory.getAbsolutePath();
+                File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/DB_DEBUG");
+                result = directory.getAbsolutePath();
                 Log.i("testing", " new db path " + directory.getAbsolutePath());
                 if (!directory.exists())
                 {
-                    directory.mkdir();
+                    directory.mkdirs();
                 }
 
                 myOutput = new FileOutputStream(directory.getAbsolutePath()
-                        + "/" + DATABASE_NAME);
+                        + "/" + DATABASE_NAME + ".db");
                 myInput = new FileInputStream(databasePath);
 
                 byte[] buffer = new byte[1024];
@@ -64,7 +61,7 @@ public class DataBaseFileSaver
             }
             catch (Exception e)
             {
-                result=e.getLocalizedMessage();
+                result = e.getLocalizedMessage();
             }
             finally
             {
@@ -88,7 +85,7 @@ public class DataBaseFileSaver
         }
         else
         {
-            result="DB is not exists";
+            result = "DB is not exists";
         }
 
         return result;

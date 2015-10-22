@@ -51,7 +51,7 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
     {
         Log.i(LOG, "ArrayListModel loadDataFromNetwork() called");
 
-        ArrayList<Article> list=new ArrayList<>();
+        ArrayList<Article> list = new ArrayList<>();
 
         int categoryId = Category.getCategoryIdByUrl(this.category, databaseHelper);
 
@@ -65,22 +65,26 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
                 where().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).
                 and().eq(ArticleCategory.FIELD_IS_TOP_IN_CATEGORY, true).queryForFirst();
 
-        ArrayList<ArticleCategory> artCatListFromDBFromGivenPage=ArticleCategory.getArtCatListFromGivenArticleId(topArtCat.getArticleId(), categoryId, databaseHelper, true);
+        ArrayList<ArticleCategory> artCatListFromDBFromGivenPage = ArticleCategory.getArtCatListFromGivenArticleId(topArtCat.getArticleId(), categoryId, databaseHelper, true);
 
         ArticleCategory lastArtCatByPage = artCatListFromDBFromGivenPage.get(artCatListFromDBFromGivenPage.size() - 1);
         int lastArticleIdInPreviousIteration = lastArtCatByPage.getArticleId();
         for (int i = 1; i < page; i++)
         {
             artCatListFromDBFromGivenPage = ArticleCategory.getArtCatListFromGivenArticleId(lastArticleIdInPreviousIteration, categoryId, databaseHelper, false);
+            if (artCatListFromDBFromGivenPage.size() == 0)
+            {
+                break;
+            }
             lastArtCatByPage = artCatListFromDBFromGivenPage.get(artCatListFromDBFromGivenPage.size() - 1);
             lastArticleIdInPreviousIteration = lastArtCatByPage.getArticleId();
         }
 
-        if(artCatListFromDBFromGivenPage.size()==Const.NUM_OF_ARTS_ON_PAGE)
+        if (artCatListFromDBFromGivenPage.size() == Const.NUM_OF_ARTS_ON_PAGE)
         {
-            for (ArticleCategory artCat:artCatListFromDBFromGivenPage)
+            for (ArticleCategory artCat : artCatListFromDBFromGivenPage)
             {
-                Article a=daoArt.queryBuilder().where().eq(Article.FIELD_ID, artCat.getArticleId()).queryForFirst();
+                Article a = daoArt.queryBuilder().where().eq(Article.FIELD_ID, artCat.getArticleId()).queryForFirst();
                 list.add(a);
             }
 
@@ -93,14 +97,10 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
         }
         else
         {
-            //TODO
+            //TODO so less than default num of art by page in DB, so start loading from network;
         }
 
         String responseBody = makeRequest();
-
-
-
-
 
         try
         {
@@ -108,13 +108,13 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
         }
         catch (Exception e)
         {
-            if(e.getMessage()!=null)
+            if (e.getMessage() != null)
             {
-                if(e.getMessage().equals(Const.ERROR_404_WHILE_PARSING_PAGE))
+                if (e.getMessage().equals(Const.ERROR_404_WHILE_PARSING_PAGE))
                 {
                     //here can be only one artCat with nextArtId = -1
                     //so get it and set it's isBottom to true;
-                    ArticleCategory bottomArtCat=databaseHelper.getDao(ArticleCategory.class).queryBuilder().
+                    ArticleCategory bottomArtCat = databaseHelper.getDao(ArticleCategory.class).queryBuilder().
                             where().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).
                             and().eq(ArticleCategory.FIELD_NEXT_ARTICLE_ID, -1).queryForFirst();
                     bottomArtCat.setInitialInCategory(true);
@@ -126,8 +126,6 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
 
         //write to DB
         list = Article.writeArtsList(list, databaseHelper);
-
-
 
         ArticleCategory.writeArtsListToArtCatFromBottom(list, categoryId, page, databaseHelper);
 
