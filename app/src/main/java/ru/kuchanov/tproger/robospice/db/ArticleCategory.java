@@ -1,5 +1,7 @@
 package ru.kuchanov.tproger.robospice.db;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -15,12 +17,12 @@ import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
  * Created by Юрий on 20.10.2015 0:48.
  * For ExpListTest.
  */
-@DatabaseTable(tableName = "article_category")
+@DatabaseTable(tableName = "table_article_category")
 public class ArticleCategory
 {
     public static final String LOG = ArticleCategory.class.getSimpleName();
     public static final String FIELD_ARTICLE_ID = "articleId";
-    public static final String FIELD_CATEGORY_ID = "categoryId";
+    public static final String FIELD_CATEGORY_ID = "category_id";
     public static final String FIELD_NEXT_ARTICLE_ID = "nextArticleId";
     public static final String FIELD_PREVIOUS_ARTICLE_ID = "previousArticleId";
     public static final String FIELD_IS_INITIAL_IN_CATEGORY = "isInitialInCategory";
@@ -33,7 +35,7 @@ public class ArticleCategory
     private int articleId;
 
     @DatabaseField(/*canBeNull = false, */columnName = FIELD_CATEGORY_ID)
-    private int categoryId;
+    private int category_id;
 
     @DatabaseField(columnName = FIELD_NEXT_ARTICLE_ID)
     private int nextArticleId = -1;
@@ -155,7 +157,7 @@ public class ArticleCategory
                             }
 
                             ArticleCategory artCatToWrite = new ArticleCategory();
-                            artCatToWrite.setCategoryId(categoryId);
+                            artCatToWrite.setCategory_id(categoryId);
                             artCatToWrite.setArticleId(a.getId());
                             Article nextArtInLoop = (arts.size() > i + 1) ? arts.get(i + 1) : null;
                             int nextArtIdInLoop = (nextArtInLoop == null) ? -1 : nextArtInLoop.getId();
@@ -211,7 +213,7 @@ public class ArticleCategory
                     }
 
                     ArticleCategory artCatToWrite = new ArticleCategory();
-                    artCatToWrite.setCategoryId(categoryId);
+                    artCatToWrite.setCategory_id(categoryId);
                     artCatToWrite.setArticleId(a.getId());
                     Article nextArtInLoop = (arts.size() > i + 1) ? arts.get(i + 1) : null;
                     int nextArtIdInLoop = (nextArtInLoop == null) ? -1 : nextArtInLoop.getId();
@@ -272,7 +274,7 @@ public class ArticleCategory
                 //so write artCat and set isTop to true for first row
                 ArticleCategory artCat = new ArticleCategory();
                 artCat.setArticleId(arts.get(0).getId());
-                artCat.setCategoryId(categoryId);
+                artCat.setCategory_id(categoryId);
                 artCat.setTopInCategory(true);
                 Article nextArt = (arts.size() > 1) ? arts.get(1) : null;
                 int nextArtId = (nextArt == null) ? -1 : nextArt.getId();
@@ -286,7 +288,7 @@ public class ArticleCategory
 
                     ArticleCategory artCatToWrite = new ArticleCategory();
                     artCatToWrite.setArticleId(a.getId());
-                    artCatToWrite.setCategoryId(categoryId);
+                    artCatToWrite.setCategory_id(categoryId);
                     Article nextArtInLoop = (arts.size() > i + 1) ? arts.get(i + 1) : null;
                     int nextArtIdInLoop = (nextArtInLoop == null) ? -1 : nextArtInLoop.getId();
                     artCat.setNextArticleId(nextArtIdInLoop);
@@ -319,8 +321,8 @@ public class ArticleCategory
                     if (i == 0)
                     {
                         //nothing to write
-                        //return quontOfNewArtsInCategory;
-                        break;
+                        return quontOfNewArtsInCategory;
+//                        break;
                     }
                     else
                     {
@@ -338,7 +340,7 @@ public class ArticleCategory
                 {
                     ArticleCategory artCatToWrite = new ArticleCategory();
                     artCatToWrite.setArticleId(a.getId());
-                    artCatToWrite.setCategoryId(categoryId);
+                    artCatToWrite.setCategory_id(categoryId);
                     Article nextArtInLoop = (arts.size() > i + 1) ? arts.get(i + 1) : null;
                     int nextArtIdInLoop = (nextArtInLoop == null) ? -1 : nextArtInLoop.getId();
                     artCatToWrite.setNextArticleId(nextArtIdInLoop);
@@ -406,18 +408,23 @@ public class ArticleCategory
                         continue;
                     }
                 }
-                Article nextArt = daoArticle.queryBuilder().where().eq(Article.FIELD_ID, curArtCat.getArticleId()).queryForFirst();
-                ArticleCategory nextArtCat = daoArticleCategory.queryBuilder().
-                        where().eq(ArticleCategory.FIELD_ARTICLE_ID, nextArt.getId()).
-                        and().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).queryForFirst();
-                if (nextArtCat == null)
-                {
-                    break;
-                }
                 else
                 {
-                    list.add(nextArtCat);
-                    curArtCat = nextArtCat;
+                    Log.i(LOG, "curArtCat.getNextArticleId: "+curArtCat.getNextArticleId());
+
+                    Article nextArt = daoArticle.queryBuilder().where().eq(Article.FIELD_ID, curArtCat.getNextArticleId()).queryForFirst();
+                    ArticleCategory nextArtCat = daoArticleCategory.queryBuilder().
+                            where().eq(ArticleCategory.FIELD_ARTICLE_ID, nextArt.getId()).
+                            and().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).queryForFirst();
+                    if (nextArtCat == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        list.add(nextArtCat);
+                        curArtCat = nextArtCat;
+                    }
                 }
             }
         }
@@ -425,6 +432,8 @@ public class ArticleCategory
         {
             e.printStackTrace();
         }
+
+        Log.i(LOG, "returning artCatListFromGivenId with size: "+list.size());
 
         return list;
     }
@@ -456,14 +465,14 @@ public class ArticleCategory
         this.articleId = articleId;
     }
 
-    public int getCategoryId()
+    public int getCategory_id()
     {
-        return categoryId;
+        return category_id;
     }
 
-    public void setCategoryId(int categoryId)
+    public void setCategory_id(int category_id)
     {
-        this.categoryId = categoryId;
+        this.category_id = category_id;
     }
 
     public int getNextArticleId()
