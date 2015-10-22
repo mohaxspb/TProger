@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.kuchanov.tproger.robospice.db.Article;
+import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Articles;
+import ru.kuchanov.tproger.robospice.db.Category;
 
 /**
  * Created by Юрий on 16.10.2015 16:31.
@@ -29,6 +31,8 @@ public class HtmlSpiceService extends SpiceService
         // add persisted classes to class collection
         classCollection.add(Article.class);
         classCollection.add(Articles.class);
+        classCollection.add(ArticleCategory.class);
+        classCollection.add(Category.class);
 
         // init
         MyRoboSpiceDatabaseHelper databaseHelper = new MyRoboSpiceDatabaseHelper(application, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);

@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
 
@@ -26,9 +27,18 @@ public class HtmlParsing
 {
     static final String LOG = HtmlParsing.class.getSimpleName();
 
-    public static ArrayList<Article> parseForArticlesList(String html, MyRoboSpiceDatabaseHelper h)
+    public static ArrayList<Article> parseForArticlesList(String html, MyRoboSpiceDatabaseHelper h) throws Exception
     {
         Document doc = Jsoup.parse(html);
+
+        //check title if it contains "Страница не найдена" and throw exception
+        //that means, that we try to load page, that not exists
+        Element pageTitle=doc.getElementsByTag("title").first();
+        if(pageTitle.html().contains("Страница не найдена"))
+        {
+            throw new Exception(Const.ERROR_404_WHILE_PARSING_PAGE);
+        }
+
         Element mainColumns = doc.getElementById("main_columns");
         Elements articles = mainColumns.getElementsByTag("article");
         ArrayList<Article> list = new ArrayList<>();

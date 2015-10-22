@@ -6,7 +6,8 @@ package ru.kuchanov.tproger;
  */
 public class Const
 {
-    public final static String DOMAIN_MAIN="http://tproger.ru/";
-    public final static String SLASH="/";
-    public final static int NUM_OF_ARTS_ON_PAGE=10;
+    public final static String DOMAIN_MAIN = "http://tproger.ru/";
+    public final static String SLASH = "/";
+    public final static int NUM_OF_ARTS_ON_PAGE = 10;
+    public static final String ERROR_404_WHILE_PARSING_PAGE = "ERROR_404_WHILE_PARSING_PAGE";
 }

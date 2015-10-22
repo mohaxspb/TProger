@@ -2,6 +2,48 @@
 <items version="2" >
 
     <item
+        jar="E:\CODE\Android\development\TProger\app\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\23.1.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="3f151e49c316a5ab2c065969a3b3b55ef9b393fc">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\classes-29002cda377162ec0730391a93b3d3152cb53f4f.jar" />
+    </item>
+    <item
+        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\com.octo.android.robospice\robospice-cache\1.4.14\1a13bea0b3ae105c44cb6be7fc76b6d36098faf5\robospice-cache-1.4.14.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="1a13bea0b3ae105c44cb6be7fc76b6d36098faf5">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\robospice-cache-1.4.14-b5aeffcbf7990a99b30e7b05de3e22124636a753.jar" />
+    </item>
+    <item
+        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp\okhttp\2.5.0\4de2b4ed3445c37ec1720a7d214712e845a24636\okhttp-2.5.0.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="4de2b4ed3445c37ec1720a7d214712e845a24636">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\okhttp-2.5.0-b25cd7693a8b0f59a6b2663c1bdd837d1278afd1.jar" />
+    </item>
+    <item
+        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\org.apache.commons\commons-io\1.3.2\b6dde38349ba9bb5e6ea6320531eae969985dae5\commons-io-1.3.2.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="b6dde38349ba9bb5e6ea6320531eae969985dae5">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\commons-io-1.3.2-f0f79dfaa25de72968d1591c8ea6b78787230fe3.jar" />
+    </item>
+    <item
+        jar="E:\CODE\Android\development\TProger\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.1.0\jars\libs\internal_impl-23.1.0.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="8716243bf04bae8d6c9ca94d27b9a9be7236f0a3">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\internal_impl-23.1.0-60fad93a8296a074647b72f1c243ce79f450ca95.jar" />
+    </item>
+    <item
+        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\com.octo.android.robospice\robospice\1.4.14\fffe1563473feb2f956608554d3e97ad805914a7\robospice-1.4.14.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="fffe1563473feb2f956608554d3e97ad805914a7">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\robospice-1.4.14-cdfdb7538e6ef665467d5fb234230e9fee5cf3bc.jar" />
+    </item>
+    <item
         jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\org.jsoup\jsoup\1.8.3\65fd012581ded67bc20945d85c32b4598c3a9cf1\jsoup-1.8.3.jar"
         jumboMode="false"
         revision="23.0.1"
@@ -9,11 +51,95 @@
         <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\jsoup-1.8.3-22693b982d3221be47ddf3a1daafafbc03e8a832.jar" />
     </item>
     <item
+        jar="E:\CODE\Android\development\TProger\app\build\intermediates\exploded-aar\com.android.support\palette-v7\23.1.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="167a5721524b1d2810d1b41ed76eff1d53a0e82b">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\classes-9f52f3cc46ad6760cb2338bcbcc90145453c18a1.jar" />
+    </item>
+    <item
+        jar="E:\CODE\Android\development\TProger\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.1.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="57ae0d750ff83f0c738d21720224ac7ea866a094">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\classes-96d8fd16b0250f7de5701242456dc1e87242355d.jar" />
+    </item>
+    <item
+        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\com.octo.android.robospice\robospice-ormlite\1.4.14\cf81c48c00306144ffa48befe3f7a317ac2eb052\robospice-ormlite-1.4.14.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="cf81c48c00306144ffa48befe3f7a317ac2eb052">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\robospice-ormlite-1.4.14-7b9c3715af523c89a0ef8a7214d4ae35e7c1427f.jar" />
+    </item>
+    <item
+        jar="E:\CODE\Android\development\TProger\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.1.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="ddde541c289c8b816a8f8fd6c325d80788c522a6">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\classes-649f8fbeca3ddffcb544df2588bdda7258c0df1d.jar" />
+    </item>
+    <item
+        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\org.apache.commons\commons-lang3\3.3.2\90a3822c38ec8c996e84c16a3477ef632cbc87a3\commons-lang3-3.3.2.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="90a3822c38ec8c996e84c16a3477ef632cbc87a3">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\commons-lang3-3.3.2-a6a3ea1e74714b40e06f56f74bf0003766f245cf.jar" />
+    </item>
+    <item
+        jar="E:\CODE\Android\development\TProger\app\build\intermediates\exploded-aar\com.android.support\cardview-v7\23.1.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="d96886efea7cc74fbb3abd0e3b51d5638fc57be0">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\classes-3f212069157b2c85d7619eba4e44bc98dd536cf1.jar" />
+    </item>
+    <item
         jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\com.squareup\otto\1.3.8\cf615176cd1177edf71d3c9605f8dc148fede6be\otto-1.3.8.jar"
         jumboMode="false"
         revision="23.0.1"
         sha1="cf615176cd1177edf71d3c9605f8dc148fede6be">
         <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\otto-1.3.8-1ac7bf6eff0cd804dea5ca4daa6981d2c4fdb9ad.jar" />
+    </item>
+    <item
+        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\com.j256.ormlite\ormlite-android\4.48\afa06f539a4026c10b247386312aa67404b80a16\ormlite-android-4.48.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="afa06f539a4026c10b247386312aa67404b80a16">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\ormlite-android-4.48-7dc63719b0deda2e615b58a9a5b75ca3670d4e46.jar" />
+    </item>
+    <item
+        jar="E:\CODE\Android\development\TProger\app\build\intermediates\exploded-aar\com.balysv\material-ripple\1.0.2\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="c733e9d1b065d940a08f2fca0ff920dfc08d94cc">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\classes-b28d068e27df1a07c607a267355f0036af0422b1.jar" />
+    </item>
+    <item
+        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\com.squareup.okio\okio\1.6.0\98476622f10715998eacf9240d6b479f12c66143\okio-1.6.0.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="98476622f10715998eacf9240d6b479f12c66143">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\okio-1.6.0-5be095807212fde357e241855e9d45bfc483ad5f.jar" />
+    </item>
+    <item
+        jar="E:\CODE\Android\development\TProger\app\build\intermediates\exploded-aar\com.android.support\design\23.1.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="19026d31f5d3ae868db81319671a642be5fbba08">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\classes-80c9e894bed049394339c1967021e39ded6d80fa.jar" />
+    </item>
+    <item
+        jar="C:\Users\Юрий\.gradle\caches\modules-2\files-2.1\com.j256.ormlite\ormlite-core\4.48\e579bd2905d0399af5029aaaf9817d5fa0ca88a5\ormlite-core-4.48.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="e579bd2905d0399af5029aaaf9817d5fa0ca88a5">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\ormlite-core-4.48-295cc13012372e265ec8d7a670638add33ab840f.jar" />
+    </item>
+    <item
+        jar="E:\CODE\Android\development\SDK\extras\android\m2repository\com\android\support\support-annotations\23.1.0\support-annotations-23.1.0.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="92e3fc113ec3ee36b64603a38857b95700025633">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\support-annotations-23.1.0-2ce2ff30a56f9db7068fde84f5ba1548da1f80ca.jar" />
     </item>
 
 </items>

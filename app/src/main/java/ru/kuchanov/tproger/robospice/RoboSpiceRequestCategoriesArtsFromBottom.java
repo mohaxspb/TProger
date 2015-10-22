@@ -52,13 +52,38 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
 
         String responseBody = makeRequest();
 
-        ArrayList<Article> list = HtmlParsing.parseForArticlesList(responseBody, databaseHelper);
+        ArrayList<Article> list=new ArrayList<>();
+
+        int categoryId = Category.getCategoryIdByUrl(this.category, databaseHelper);
+
+        try
+        {
+            list = HtmlParsing.parseForArticlesList(responseBody, databaseHelper);
+        }
+        catch (Exception e)
+        {
+            if(e.getMessage()!=null)
+            {
+                if(e.getMessage().equals(Const.ERROR_404_WHILE_PARSING_PAGE))
+                {
+                    //here can be only one artCat with nextArtId = -1
+                    //so get it and set it's isBottom to true;
+                    ArticleCategory bottomArtCat=databaseHelper.getDao(ArticleCategory.class).queryBuilder().
+                            where().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).
+                            and().eq(ArticleCategory.FIELD_NEXT_ARTICLE_ID, -1).queryForFirst();
+                    bottomArtCat.setInitialInCategory(true);
+                    databaseHelper.getDao(ArticleCategory.class).createOrUpdate(bottomArtCat);
+                }
+            }
+            e.printStackTrace();
+        }
+
         //write to DB
         list = Article.writeArtsList(list, databaseHelper);
 
-        int categoryId=Category.getCategoryIdByUrl(this.category, databaseHelper);
 
-        ArticleCategory.writeArtsList(list, categoryId, databaseHelper);
+
+        ArticleCategory.writeArtsListToArtCatFromBottom(list, categoryId, page, databaseHelper);
 
         Articles articles = new Articles();
         articles.setResult(list);

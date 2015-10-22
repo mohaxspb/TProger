@@ -30,6 +30,7 @@ import ru.kuchanov.tproger.otto.EventExpanded;
 import ru.kuchanov.tproger.robospice.HtmlSpiceService;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArts;
+import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArtsFromBottom;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.Articles;
 
@@ -167,14 +168,20 @@ public class FragmentCategory extends Fragment
             RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category, page);
             lastRequestCacheKey = request.createCacheKey();
 
-            spiceManager.execute(request, lastRequestCacheKey, cacheExpireTime, new ListFollowersRequestListener());
+//            spiceManager.execute(request, lastRequestCacheKey, cacheExpireTime, new ListFollowersRequestListener());
+            spiceManager.getFromCacheAndLoadFromNetworkIfExpired(request, lastRequestCacheKey, cacheExpireTime, new ListFollowersRequestListener());
         }
         else
         {
-            RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category, page);
-            lastRequestCacheKey = request.createCacheKey();
+//            RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category, page);
+//            lastRequestCacheKey = request.createCacheKey();
+//
+//            spiceManager.execute(request, lastRequestCacheKey, cacheExpireTime, new ListFollowersRequestListener());
 
-            spiceManager.execute(request, lastRequestCacheKey, cacheExpireTime, new ListFollowersRequestListener());
+            RoboSpiceRequestCategoriesArtsFromBottom request = new RoboSpiceRequestCategoriesArtsFromBottom(ctx, category, page);
+//            lastRequestCacheKey = request.createCacheKey();
+
+            spiceManager.execute(request, "fromBottom", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
         }
     }
 
@@ -219,6 +226,7 @@ public class FragmentCategory extends Fragment
                 //Toast "you got no connection
                 Toast.makeText(ctx, "Не удалось подключиться к интернету", Toast.LENGTH_SHORT).show();
                 Log.i(LOG, "NoNetworkException: Не удалось подключиться к интернету");
+                //TODO so we must load from cache (try to get data from roboSpice cache
             }
             else
             {

@@ -29,10 +29,10 @@ public class ArticleCategory
     @DatabaseField(generatedId = true)
     private int id;
 
-    @DatabaseField(canBeNull = false, columnName = FIELD_ARTICLE_ID)
+    @DatabaseField(/*canBeNull = false, */columnName = FIELD_ARTICLE_ID)
     private int articleId;
 
-    @DatabaseField(canBeNull = false, columnName = FIELD_CATEGORY_ID)
+    @DatabaseField(/*canBeNull = false, */columnName = FIELD_CATEGORY_ID)
     private int categoryId;
 
     @DatabaseField(columnName = FIELD_NEXT_ARTICLE_ID)
@@ -47,15 +47,20 @@ public class ArticleCategory
     @DatabaseField(dataType = DataType.BOOLEAN, columnName = FIELD_IS_TOP_IN_CATEGORY)
     private boolean isTopInCategory;
 
-    public static void writeArtsList(ArrayList<Article> arts, int categoryId, int page, MyRoboSpiceDatabaseHelper h)
+    public static void writeArtsListToArtCatFromBottom(ArrayList<Article> arts, int categoryId, int page, MyRoboSpiceDatabaseHelper h)
     {
         //0. Get topArtCat
-        //if it's null, so it's first time we write artCat
-        //so simply write it
+        //if it's null, throw exception
         //1. Get last artCat for page.
         //2. Set its nextArtId to first of given
         //3. Set prevArtId of first of given to id of artCat from 1)
-        //4. loop through given list and set next/prev artId
+        //4. loop through given list and set next/prev artId checking for matching to artCat of same category
+        //with prevArtId=-1
+        //if matching
+        //5. stop loop set nextArtId of previous of given list to matched
+        //set prevArtId of matched to previous of given list
+        //6. if given list.size<DefaultNumOfArtsInPage set last of list isInitial to true
+        //7. write artCat
 
         ArrayList<ArticleCategory> artCatListToWrite = new ArrayList<>();
 
@@ -71,10 +76,198 @@ public class ArticleCategory
                     and().eq(ArticleCategory.FIELD_IS_TOP_IN_CATEGORY, true).queryForFirst();
             if (topArtCat == null)
             {
-                if (page != 1)
+                throw new IllegalArgumentException("topArtCat is null and page isn't 1. That can't be");
+            }
+            //1.
+            artCatListOfPreviousArts = ArticleCategory.getArtCatListFromGivenArticleId(topArtCat.getArticleId(), categoryId, h, true);
+            //check size
+            //if 0 - throw Exception
+            //if <Default_Quont_Arts_on_Page - cant be - throw Exception
+            //so... only ten can be...
+
+            ArticleCategory lastArtCatByPage = artCatListOfPreviousArts.get(artCatListOfPreviousArts.size() - 1);
+            int lastArticleIdInPreviousIteration = lastArtCatByPage.getArticleId();
+            for (int i = 1; i < page - 1; i++)
+            {
+                artCatListOfPreviousArts = ArticleCategory.getArtCatListFromGivenArticleId(lastArticleIdInPreviousIteration, categoryId, h, false);
+                lastArtCatByPage = artCatListOfPreviousArts.get(artCatListOfPreviousArts.size() - 1);
+                lastArticleIdInPreviousIteration = lastArtCatByPage.getArticleId();
+            }
+            //1)now we can check if we have some art in page, that we have load
+            //2)and if so we can write only new arts and update old;
+            //else we'll update lastArtCatByPage and write all new
+            //3)ALSO we must check for every art with prevId=-1 for matching with given list
+            //if match we can update it and write only new
+
+            //get list of artCat for current page
+            //1)
+            artCatListOfPreviousArts = ArticleCategory.getArtCatListFromGivenArticleId(lastArticleIdInPreviousIteration, categoryId, h, false);
+            if (artCatListOfPreviousArts.size() != 0)
+            {
+                lastArtCatByPage = artCatListOfPreviousArts.get(artCatListOfPreviousArts.size() - 1);
+                lastArticleIdInPreviousIteration = lastArtCatByPage.getArticleId();
+
+                boolean matched = false;
+
+                match_from_top_loop:
+                for (int i = 0; i < arts.size(); i++)
                 {
-                    throw new IllegalArgumentException("topArtCat is null and page isn't 1. Thats cant be");
+                    Article a = arts.get(i);
+                    if (a.getId() == lastArticleIdInPreviousIteration)
+                    {
+                        if (!matched)
+                        {
+                            //first matched!
+                            //2)
+                            lastArtCatByPage.setNextArticleId(arts.get(i - 1).getId());
+                            daoArtCat.createOrUpdate(lastArtCatByPage);
+                            matched = true;
+                        }
+                    }
+                    else
+                    {
+                        if (matched)
+                        {
+                            //3)
+
+                            ArrayList<ArticleCategory> artCatsWithoutPrevArtId = ArticleCategory.getArtCatsWithoutPrevArtId(h, categoryId);
+                            for (int u = 0; u < artCatsWithoutPrevArtId.size(); u++)
+                            {
+                                ArticleCategory artCat = artCatsWithoutPrevArtId.get(u);
+                                if (artCat.getArticleId() == a.getId())
+                                {
+                                    //maybe if i=0 we are in case of connecting 10 to 10 arts?..
+                                    int prevArtId;
+                                    if (i == 0)
+                                    {
+                                        prevArtId = lastArticleIdInPreviousIteration;
+                                    }
+                                    else
+                                    {
+                                        prevArtId = arts.get(i - 1).getId();
+                                    }
+
+                                    artCat.setPreviousArticleId(prevArtId);
+                                    daoArtCat.createOrUpdate(artCat);
+                                    //break;
+                                    break match_from_top_loop;
+                                }
+                            }
+
+                            ArticleCategory artCatToWrite = new ArticleCategory();
+                            artCatToWrite.setCategoryId(categoryId);
+                            artCatToWrite.setArticleId(a.getId());
+                            Article nextArtInLoop = (arts.size() > i + 1) ? arts.get(i + 1) : null;
+                            int nextArtIdInLoop = (nextArtInLoop == null) ? -1 : nextArtInLoop.getId();
+                            artCatToWrite.setNextArticleId(nextArtIdInLoop);
+                            artCatToWrite.setPreviousArticleId(arts.get(i - 1).getId());
+
+                            artCatListToWrite.add(artCatToWrite);
+                        }
+                    }
                 }
+
+                for (ArticleCategory artCat : artCatListToWrite)
+                {
+                    daoArtCat.create(artCat);
+                }
+            }
+            else
+            {
+                //TODO
+
+                lastArtCatByPage.setNextArticleId(arts.get(0).getId());
+                daoArtCat.createOrUpdate(lastArtCatByPage);
+
+
+                match_from_bottom_loop:
+                for (int i = 0; i < arts.size(); i++)
+                {
+                    Article a = arts.get(i);
+
+                    //3)
+                    ArrayList<ArticleCategory> artCatsWithoutPrevArtId = ArticleCategory.getArtCatsWithoutPrevArtId(h, categoryId);
+                    for (int u = 0; u < artCatsWithoutPrevArtId.size(); u++)
+                    {
+                        ArticleCategory artCat = artCatsWithoutPrevArtId.get(u);
+                        if (artCat.getArticleId() == a.getId())
+                        {
+                            //maybe if i=0 we are in case of connecting 10 to 10 arts?..
+                            int prevArtId;
+                            if (i == 0)
+                            {
+                                prevArtId = lastArticleIdInPreviousIteration;
+                            }
+                            else
+                            {
+                                prevArtId = arts.get(i - 1).getId();
+                            }
+
+                            artCat.setPreviousArticleId(prevArtId);
+                            daoArtCat.createOrUpdate(artCat);
+                            //break;
+                            break match_from_bottom_loop;
+                        }
+                    }
+
+                    ArticleCategory artCatToWrite = new ArticleCategory();
+                    artCatToWrite.setCategoryId(categoryId);
+                    artCatToWrite.setArticleId(a.getId());
+                    Article nextArtInLoop = (arts.size() > i + 1) ? arts.get(i + 1) : null;
+                    int nextArtIdInLoop = (nextArtInLoop == null) ? -1 : nextArtInLoop.getId();
+                    artCatToWrite.setNextArticleId(nextArtIdInLoop);
+                    artCatToWrite.setPreviousArticleId(arts.get(i - 1).getId());
+
+                    artCatListToWrite.add(artCatToWrite);
+                }
+
+                for (ArticleCategory artCat : artCatListToWrite)
+                {
+                    daoArtCat.create(artCat);
+                }
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * creates list of ArticleCategory obj and writes them to DB
+     *
+     * @return quontity of new articles in category  (-1 on first loading, and 10 if cant match for old topArtCat, which
+     * means that we do not now we have 10 or more new articles)
+     */
+    public static int writeArtsListToArtCatFromTop(ArrayList<Article> arts, int categoryId, MyRoboSpiceDatabaseHelper h)
+    {
+        //0. Get topArtCat
+        //if it's null, so it's first time we write artCat
+        //so simply write it
+        //and return -1
+        //1. else
+        //now we must check if we have equals artId in given list and topArtCat
+        //if true we must
+        //1) set isTop for old artCat to false
+        //2) update prevArtId for oldTopArtCat
+        //3) set isTop for given list.get(0) to true
+        //4) set nextArtId for last art in given list (last, that dont have equal id with oldTopArtCat
+        //5) return how many new arts we get
+
+        int quontOfNewArtsInCategory = -1;
+
+        ArrayList<ArticleCategory> artCatListToWrite = new ArrayList<>();
+
+        try
+        {
+            Dao<ArticleCategory, Integer> daoArtCat = h.getDao(ArticleCategory.class);
+
+            ArticleCategory topArtCat = daoArtCat.queryBuilder().
+                    where().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).
+                    and().eq(ArticleCategory.FIELD_IS_TOP_IN_CATEGORY, true).queryForFirst();
+            //0.
+            if (topArtCat == null)
+            {
                 //so it's first loading of art (from top)
                 //so write artCat and set isTop to true for first row
                 ArticleCategory artCat = new ArticleCategory();
@@ -112,30 +305,74 @@ public class ArticleCategory
                 {
                     daoArtCat.create(artCatToWrite);
                 }
-                return;
+                return quontOfNewArtsInCategory;
             }
 
             //1.
-            artCatListOfPreviousArts = ArticleCategory.getArtCatListFromGivenArticleId(topArtCat.getArticleId(), categoryId, h, true);
-            //check if we have page==1
-            //if so we must check if we have equals artId in given list and topArtCat
-            //if true we must
-            //1) set isTop for old artCat to false
-            //2) set isTop for given list.get(0) to true
-            //3) update prevArtId for oldTopArtCat
-            //4) set nextArtId for last art in given list (last, that dont have equal id with oldTopArtCat
+            for (int i = 0; i < arts.size(); i++)
+            {
+                Article a = arts.get(i);
+                if (a.getId() == topArtCat.getArticleId())
+                {
+                    //1)
+                    quontOfNewArtsInCategory = i;
+                    if (i == 0)
+                    {
+                        //nothing to write
+                        //return quontOfNewArtsInCategory;
+                        break;
+                    }
+                    else
+                    {
+                        //1)
+                        topArtCat.setTopInCategory(false);
+                        //2)
+                        topArtCat.setPreviousArticleId(arts.get(i - 1).getId());
+                        daoArtCat.update(topArtCat);
 
+                        //4)
+                        artCatListToWrite.get(i - 1).setNextArticleId(topArtCat.getArticleId());
+                    }
+                }
+                else
+                {
+                    ArticleCategory artCatToWrite = new ArticleCategory();
+                    artCatToWrite.setArticleId(a.getId());
+                    artCatToWrite.setCategoryId(categoryId);
+                    Article nextArtInLoop = (arts.size() > i + 1) ? arts.get(i + 1) : null;
+                    int nextArtIdInLoop = (nextArtInLoop == null) ? -1 : nextArtInLoop.getId();
+                    artCatToWrite.setNextArticleId(nextArtIdInLoop);
+                    int prevArtId = (i != 0) ? arts.get(i - 1).getId() : -1;
+                    artCatToWrite.setPreviousArticleId(prevArtId);
+
+                    artCatListToWrite.add(artCatToWrite);
+
+                    //also check if we at last iteration
+                    //which means that no given article matched oldTopArtCat
+                    //and so we have >=10 new arts
+                    if (i == arts.size() - 1)
+                    {
+                        //return 10, which means >=10... Yeah it sucks(((
+                        quontOfNewArtsInCategory++;
+                    }
+                }
+            }
+            //3)
+            artCatListToWrite.get(0).setTopInCategory(true);
+
+            for (ArticleCategory artCat : artCatListToWrite)
+            {
+                daoArtCat.create(artCat);
+            }
         }
         catch (SQLException e)
         {
             e.printStackTrace();
         }
 
-
-        //set next/prev arts url to artcile obj for middle arts
-
-
+        return quontOfNewArtsInCategory;
     }
+
 
     /**
      * @return first 10 artCat from given article id including given or not
@@ -190,6 +427,23 @@ public class ArticleCategory
         }
 
         return list;
+    }
+
+    public static ArrayList<ArticleCategory> getArtCatsWithoutPrevArtId(MyRoboSpiceDatabaseHelper h, int categoryId)
+    {
+        ArrayList<ArticleCategory> artCatsWithoutPrevArtId = new ArrayList<>();
+        try
+        {
+            artCatsWithoutPrevArtId = (ArrayList<ArticleCategory>) h.getDao(ArticleCategory.class).queryBuilder().
+                    where().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).
+                    and().eq(ArticleCategory.FIELD_PREVIOUS_ARTICLE_ID, -1).query();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return artCatsWithoutPrevArtId;
     }
 
     public int getArticleId()

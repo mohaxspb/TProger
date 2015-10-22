@@ -12,6 +12,7 @@ import java.sql.SQLException;
 
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
+import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
 
 /**
@@ -34,6 +35,20 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion)
     {
         // override if needed
+        try
+        {
+            TableUtils.dropTable(connectionSource, Category.class, true);
+            TableUtils.dropTable(connectionSource, Article.class, true);
+            TableUtils.dropTable(connectionSource, ArticleCategory.class, true);
+            TableUtils.dropTable(connectionSource, Articles.class, true);
+
+            this.onCreate(database, connectionSource);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -48,6 +63,8 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
             TableUtils.createTableIfNotExists(connectionSource, Article.class);
             //writeArtsList artCatTable table
             TableUtils.createTableIfNotExists(connectionSource, ArticleCategory.class);
+
+            TableUtils.createTableIfNotExists(connectionSource, Articles.class);
 
             Log.i(LOG, "all tables have been created");
 
