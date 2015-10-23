@@ -13,7 +13,9 @@ import java.util.Collection;
 @DatabaseTable
 public class Articles
 {
-    @DatabaseField(/*id = true, */generatedId = true, allowGeneratedIdInsert = true)
+    public static final String LOG = Articles.class.getSimpleName();
+
+    @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     private int id;
 
     @ForeignCollectionField(eager = false)
@@ -31,6 +33,13 @@ public class Articles
 
     public Collection<Article> getResult()
     {
+//        Log.i(LOG, "start logging articles result");
+//      for(Article a: result)
+//      {
+//          Article.printInLog(a);
+//      }
+//        Log.i(LOG, "stop logging articles result");
+
         return result;
     }
 

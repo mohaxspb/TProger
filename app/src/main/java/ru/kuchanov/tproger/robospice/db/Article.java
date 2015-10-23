@@ -4,12 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
@@ -114,7 +116,6 @@ public class Article implements Parcelable
     }
 
     /**
-     *
      * @param h
      * @param url
      * @return article id for url or -1 on error of if can't find
@@ -124,8 +125,8 @@ public class Article implements Parcelable
         int id = -1;
         try
         {
-           Article a = h.getDao(Article.class).queryBuilder().where().eq(FIELD_URL, url).queryForFirst();
-            if(a==null)
+            Article a = h.getDao(Article.class).queryBuilder().where().eq(FIELD_URL, url).queryForFirst();
+            if (a == null)
             {
                 throw new NullPointerException("Article is null while searhing for it by url in GetIdByUrl. WTF&?!");
             }
@@ -144,7 +145,7 @@ public class Article implements Parcelable
 
         for (Article a : dataToWrite)
         {
-            Log.i(LOG, "a.getId(): "+a.getId());
+//            Log.i(LOG, "a.getId(): " + a.getId());
 
             if (a.getId() != 0)
             {
@@ -165,6 +166,30 @@ public class Article implements Parcelable
         }
 
         return createdData;
+    }
+
+    public static ArrayList<Article> getArticleListFromArtCatList(ArrayList<ArticleCategory> artCatList, MyRoboSpiceDatabaseHelper h)
+    {
+        ArrayList<Article> artsList = new ArrayList<>();
+
+        try
+        {
+            Dao<Article, Integer> daoArt = h.getDao(Article.class);
+
+//            Log.i(LOG, "artCatList.size(): " + artCatList.size());
+
+            for (ArticleCategory artCat : artCatList)
+            {
+                Article a = daoArt.queryBuilder().where().eq(Article.FIELD_ID, artCat.getArticleId()).queryForFirst();
+                artsList.add(a);
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return artsList;
     }
 
     public static void printInLog(Article a)
@@ -368,5 +393,13 @@ public class Article implements Parcelable
     public void setIsRead(boolean isRead)
     {
         this.isRead = isRead;
+    }
+
+    public static class CustomComparator implements Comparator<Article>
+    {
+        @Override
+        public int compare(Article o1, Article o2) {
+            return o2.getPubDate().compareTo(o1.getPubDate());
+        }
     }
 }

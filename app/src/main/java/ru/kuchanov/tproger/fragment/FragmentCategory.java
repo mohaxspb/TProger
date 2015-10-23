@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -19,7 +18,9 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
+import ru.kuchanov.tproger.AppSinglton;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapter;
 import ru.kuchanov.tproger.RecyclerViewOnScrollListener;
@@ -27,10 +28,11 @@ import ru.kuchanov.tproger.custom.view.MySwipeRefreshLayout;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventCollapsed;
 import ru.kuchanov.tproger.otto.EventExpanded;
-import ru.kuchanov.tproger.robospice.HtmlSpiceService;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArts;
 import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArtsFromBottom;
+import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArtsFromBottomOffline;
+import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArtsOffline;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.Articles;
 
@@ -45,7 +47,9 @@ public class FragmentCategory extends Fragment
     public static final String KEY_CURRENT_PAGE_TO_LOAD = "keyCurrentPageToLoad";
     public static final String KEY_LAST_REQUEST_CACHE_KEY = "keyLastRequestCacheKey";
 
-    protected SpiceManager spiceManager = new MySpiceManager(HtmlSpiceService.class);
+    //    protected SpiceManager spiceManager = new MySpiceManager(HtmlSpiceService.class);
+    protected MySpiceManager spiceManager = AppSinglton.getInstance().getSpiceManager();
+    protected MySpiceManager spiceManagerOffline = AppSinglton.getInstance().getSpiceManagerOffline();
     protected MySwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
     String lastRequestCacheKey;
@@ -68,6 +72,7 @@ public class FragmentCategory extends Fragment
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
+        Log.i(LOG, "onSaveInstanceState called");
         super.onSaveInstanceState(outState);
 
         outState.putString(KEY_LAST_REQUEST_CACHE_KEY, this.lastRequestCacheKey);
@@ -78,10 +83,13 @@ public class FragmentCategory extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        Log.i(LOG, "onCreate called");
         super.onCreate(savedInstanceState);
 
         Bundle args = this.getArguments();
         this.category = args.getString(KEY_CATEGORY);
+
+        Log.i(LOG, "category: " + category);
 
         if (savedInstanceState != null)
         {
@@ -94,6 +102,7 @@ public class FragmentCategory extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
+        Log.i(LOG, "onCreateView called");
         View v = inflater.inflate(R.layout.fragment_category, container, false);
 
         swipeRefreshLayout = (MySwipeRefreshLayout) v.findViewById(R.id.swipe_refresh);
@@ -139,11 +148,27 @@ public class FragmentCategory extends Fragment
     @Override
     public void onAttach(Context context)
     {
+        Log.i(LOG, "onAttach called");
         super.onAttach(context);
 
         this.ctx = this.getActivity();
+    }
 
-        spiceManager.start(this.getActivity());
+    @Override
+    public void onDetach()
+    {
+        Log.i(LOG, "onDetach called");
+        super.onDetach();
+    }
+
+    @Override
+    public void onStart()
+    {
+        Log.i(LOG, "onStart called");
+        super.onStart();
+
+        spiceManager.start(ctx);
+        spiceManagerOffline.start(ctx);
 
         //make request for it
         if (artsList.size() == 0)
@@ -153,41 +178,51 @@ public class FragmentCategory extends Fragment
     }
 
     @Override
-    public void onDetach()
-    {
-        super.onDetach();
-
-        spiceManager.shouldStop();
-    }
-
-    @Override
-    public void onStart()
-    {
-        super.onStart();
-    }
-
-    @Override
     public void onStop()
     {
+        Log.i(LOG, "onStop called");
         super.onStop();
+
+        spiceManager.shouldStop();
+        spiceManagerOffline.shouldStop();
     }
 
     private void performRequest(int page, boolean forceRefresh)
     {
+        Log.i(LOG, "performRequest with page: " + page + " and forceRefresh: " + String.valueOf(forceRefresh));
         long cacheExpireTime = (forceRefresh) ? DurationInMillis.ALWAYS_EXPIRED : DurationInMillis.ONE_HOUR;
 
         if (page == 1)
         {
-            RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category, page);
-            lastRequestCacheKey = request.createCacheKey();
+            //if !forceRefresh we must load arts from DB
+            if (!forceRefresh)
+            {
+                RoboSpiceRequestCategoriesArtsOffline requestFromDB = new RoboSpiceRequestCategoriesArtsOffline(ctx, category);
+                lastRequestCacheKey = requestFromDB.createCacheKey();
+                spiceManagerOffline.execute(requestFromDB, lastRequestCacheKey, DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+            }
+            else
+            {
+                RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category, page);
+                lastRequestCacheKey = request.createCacheKey();
 
-            spiceManager.getFromCacheAndLoadFromNetworkIfExpired(request, lastRequestCacheKey, cacheExpireTime, new ListFollowersRequestListener());
+                spiceManager.execute(request, lastRequestCacheKey, cacheExpireTime, new ListFollowersRequestListener());
+            }
         }
         else
         {
-            RoboSpiceRequestCategoriesArtsFromBottom request = new RoboSpiceRequestCategoriesArtsFromBottom(ctx, category, page);
+            if (!forceRefresh)
+            {
+                RoboSpiceRequestCategoriesArtsFromBottomOffline request = new RoboSpiceRequestCategoriesArtsFromBottomOffline(ctx, category, page);
 
-            spiceManager.execute(request, "fromBottom", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+                spiceManagerOffline.execute(request, "fromBottom", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+            }
+            else
+            {
+                RoboSpiceRequestCategoriesArtsFromBottom request = new RoboSpiceRequestCategoriesArtsFromBottom(ctx, category, page);
+
+                spiceManager.execute(request, "fromBottom", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+            }
         }
     }
 
@@ -227,6 +262,10 @@ public class FragmentCategory extends Fragment
         @Override
         public void onRequestFailure(SpiceException e)
         {
+            if (!isAdded())
+            {
+                return;
+            }
             if (e instanceof NoNetworkException)
             {
                 //Toast "you got no connection
@@ -248,10 +287,26 @@ public class FragmentCategory extends Fragment
         @Override
         public void onRequestSuccess(Articles listFollowers)
         {
+            if (!isAdded())
+            {
+                return;
+            }
+            if (listFollowers == null || listFollowers.getResult() == null)
+            {
+                //no data in cache?..
+                Log.i(LOG, "no data in cache for page: " + currentPageToLoad);
+                performRequest(currentPageToLoad, true);
+                return;
+            }
             Log.i(LOG, "listFollowers.getResult().size(): " + listFollowers.getResult().size());
-            Log.i(LOG, "listFollowers.getResult().toArray()[0].toString(): " + listFollowers.getResult().toArray()[0].toString());
+//            Log.i(LOG, "listFollowers.getResult().toArray()[0].toString(): " + listFollowers.getResult().toArray()[0].toString());
+
+
 
             ArrayList<Article> list = new ArrayList<Article>(listFollowers.getResult());
+
+            Collections.sort(list, new Article.CustomComparator());
+
             ArrayList<String> mDataSet = new ArrayList<String>();
             for (Article a : list)
             {
@@ -266,7 +321,7 @@ public class FragmentCategory extends Fragment
             }
             else
             {
-                artsList.addAll(list);
+                artsList = new ArrayList<>(list);
                 recyclerView.setAdapter(new RecyclerAdapter(mDataSet));
             }
 

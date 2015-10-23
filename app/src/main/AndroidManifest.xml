@@ -33,7 +33,12 @@
         </activity>
 
         <service
-            android:name=".robospice.HtmlSpiceService"
+        android:name=".robospice.HtmlSpiceService"
+        android:enabled="true"
+        android:exported="true" >
+    </service>
+        <service
+            android:name=".robospice.HtmlSpiceServiceOffline"
             android:enabled="true"
             android:exported="true" >
         </service>

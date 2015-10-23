@@ -219,7 +219,7 @@ public class ArticleCategory
                     Article nextArtInLoop = (arts.size() > i + 1) ? arts.get(i + 1) : null;
                     int nextArtIdInLoop = (nextArtInLoop == null) ? -1 : nextArtInLoop.getId();
                     artCatToWrite.setNextArticleId(nextArtIdInLoop);
-                    int prevArtId=(i==0)?lastArtCatByPage.getArticleId():arts.get(i - 1).getId();
+                    int prevArtId = (i == 0) ? lastArtCatByPage.getArticleId() : arts.get(i - 1).getId();
                     artCatToWrite.setPreviousArticleId(prevArtId);
 
                     artCatListToWrite.add(artCatToWrite);
@@ -336,7 +336,7 @@ public class ArticleCategory
 
                         //4)
                         artCatListToWrite.get(i - 1).setNextArticleId(topArtCat.getArticleId());
-                        quontOfNewArtsInCategory=i;
+                        quontOfNewArtsInCategory = i;
                         break;
                     }
                 }
@@ -402,7 +402,7 @@ public class ArticleCategory
 
             ArticleCategory curArtCat = artCatInitial;
 
-            if(curArtCat.getNextArticleId()==-1)
+            if (curArtCat.getNextArticleId() == -1)
             {
                 return list;
             }
@@ -414,31 +414,25 @@ public class ArticleCategory
                     if (includeGiven)
                     {
                         list.add(curArtCat);
+//                        Log.i(LOG, "curArtCat.getNextArticleId: " + curArtCat.getNextArticleId());
                         continue;
                     }
-//                    else
-//                    {
-//
-//                    }
                 }
-//                else
-//                {
-                    Log.i(LOG, "curArtCat.getNextArticleId: "+curArtCat.getNextArticleId());
+//                Log.i(LOG, "curArtCat.getNextArticleId: " + curArtCat.getNextArticleId());
 
-                    Article nextArt = daoArticle.queryBuilder().where().eq(Article.FIELD_ID, curArtCat.getNextArticleId()).queryForFirst();
-                    ArticleCategory nextArtCat = daoArticleCategory.queryBuilder().
-                            where().eq(ArticleCategory.FIELD_ARTICLE_ID, nextArt.getId()).
-                            and().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).queryForFirst();
-                    if (nextArtCat == null)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        list.add(nextArtCat);
-                        curArtCat = nextArtCat;
-                    }
-//                }
+                Article nextArt = daoArticle.queryBuilder().where().eq(Article.FIELD_ID, curArtCat.getNextArticleId()).queryForFirst();
+                ArticleCategory nextArtCat = daoArticleCategory.queryBuilder().
+                        where().eq(ArticleCategory.FIELD_ARTICLE_ID, nextArt.getId()).
+                        and().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).queryForFirst();
+                if (nextArtCat == null)
+                {
+                    break;
+                }
+                else
+                {
+                    list.add(nextArtCat);
+                    curArtCat = nextArtCat;
+                }
             }
         }
         catch (NullPointerException | SQLException e)
@@ -446,9 +440,32 @@ public class ArticleCategory
             e.printStackTrace();
         }
 
-        Log.i(LOG, "returning artCatListFromGivenId with size: "+list.size());
+        Log.i(LOG, "returning artCatListFromGivenId with size: " + list.size());
 
         return list;
+    }
+
+    public static ArrayList<ArticleCategory> getArtCatListFromTop(int categoryId, MyRoboSpiceDatabaseHelper h)
+    {
+        ArticleCategory topArtCat = ArticleCategory.getTopArtCat(categoryId, h);
+        return ArticleCategory.getArtCatListFromGivenArticleId(topArtCat.getArticleId(), categoryId, h, true);
+    }
+
+    public static ArticleCategory getTopArtCat(int category_id, MyRoboSpiceDatabaseHelper h)
+    {
+        ArticleCategory topArtCat = null;
+        try
+        {
+            Dao<ArticleCategory, Integer> daoArtCat = h.getDao(ArticleCategory.class);
+            topArtCat = daoArtCat.queryBuilder().
+                    where().eq(ArticleCategory.FIELD_CATEGORY_ID, category_id).
+                    and().eq(ArticleCategory.FIELD_IS_TOP_IN_CATEGORY, true).queryForFirst();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return topArtCat;
     }
 
     public static ArrayList<ArticleCategory> getArtCatsWithoutPrevArtId(MyRoboSpiceDatabaseHelper h, int categoryId)
