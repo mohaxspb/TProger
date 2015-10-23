@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import java.lang.reflect.Method;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
@@ -42,6 +43,7 @@ import ru.kuchanov.tproger.otto.EventExpanded;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
+import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.utils.DataBaseFileSaver;
 import ru.kuchanov.tproger.utils.ScreenProperties;
@@ -350,6 +352,19 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 {
                     e.printStackTrace();
                 }
+                return true;
+            case R.id.db_delete_table_articles:
+
+                try
+                {
+                    ArrayList<Articles> articles= (ArrayList<Articles>) h.getDao(Articles.class).queryForAll();
+                    h.getDao(Articles.class).delete(articles);
+                }
+                catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
+
                 return true;
         }
 
