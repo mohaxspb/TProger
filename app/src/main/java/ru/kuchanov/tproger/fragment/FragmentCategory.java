@@ -109,6 +109,7 @@ public class FragmentCategory extends Fragment
             @Override
             public void onRefresh()
             {
+                currentPageToLoad = 1;
                 performRequest(1, true);
             }
         });
@@ -298,7 +299,7 @@ public class FragmentCategory extends Fragment
             }
             ArrayList<Article> list = new ArrayList<Article>(articles.getResult());
 
-            Log.i(LOG, "RECEIVE "+ list.size()+" arts for page: " + currentPageToLoad);
+            Log.i(LOG, "RECEIVE " + list.size() + " arts for page: " + currentPageToLoad);
 
             Collections.sort(list, new Article.CustomComparator());
 
