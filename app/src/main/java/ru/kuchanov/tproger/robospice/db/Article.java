@@ -116,8 +116,6 @@ public class Article implements Parcelable
     }
 
     /**
-     * @param h
-     * @param url
      * @return article id for url or -1 on error of if can't find
      */
     public static int getArticleIdByUrl(MyRoboSpiceDatabaseHelper h, String url)

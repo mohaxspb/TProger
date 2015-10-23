@@ -58,7 +58,7 @@ public class HtmlParsing
             {
                 //check if this article is already in DB and set it to list and goto next iteration;
                 list.add(artInDB);
-                Log.i(LOG, title + "is already in DB");
+                Log.i(LOG, title + " is already in DB");
                 continue;
             }
             else

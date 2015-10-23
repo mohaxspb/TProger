@@ -31,10 +31,10 @@ public class ArticleCategory
     @DatabaseField(generatedId = true)
     private int id;
 
-    @DatabaseField(/*canBeNull = false, */columnName = FIELD_ARTICLE_ID)
+    @DatabaseField(columnName = FIELD_ARTICLE_ID)
     private int articleId;
 
-    @DatabaseField(/*canBeNull = false, */columnName = FIELD_CATEGORY_ID)
+    @DatabaseField(columnName = FIELD_CATEGORY_ID)
     private int category_id;
 
     @DatabaseField(columnName = FIELD_NEXT_ARTICLE_ID)
@@ -421,6 +421,12 @@ public class ArticleCategory
                 }
 //                Log.i(LOG, "curArtCat.getNextArticleId: " + curArtCat.getNextArticleId());
 
+                if (curArtCat.getNextArticleId() == -1)
+                {
+                    Log.i(LOG, "returning artCatListFromGivenId with size: " + list.size());
+                    return list;
+                }
+
                 Article nextArt = daoArticle.queryBuilder().where().eq(Article.FIELD_ID, curArtCat.getNextArticleId()).queryForFirst();
                 ArticleCategory nextArtCat = daoArticleCategory.queryBuilder().
                         where().eq(ArticleCategory.FIELD_ARTICLE_ID, nextArt.getId()).
@@ -578,7 +584,7 @@ public class ArticleCategory
         this.isInitialInCategory = initialInCategory;
     }
 
-    public boolean getTopInCategory()
+    public boolean isTopInCategory()
     {
         return isTopInCategory;
     }
