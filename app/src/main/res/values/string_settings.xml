@@ -6,6 +6,7 @@
     <string name="pref_header_design_title">Внешний вид</string>
     <string name="pref_header_design_summary">Ночной режим, шрифты etc</string>
     <string name="pref_design_key_night_mode">pref_design_key_night_mode</string>
+    <string name="pref_design_key_list_style">pref_design_key_list_style</string>
     pref_design_key_night_mode
     <!-- settings for Notifications -->
     <string name="pref_header_notifications_title">Уведомления</string>

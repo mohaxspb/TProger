@@ -18,6 +18,16 @@
             android:title="@string/night_mode"
             app:showAsAction="never"/>
     </group>
+    <group
+        android:id="@+id/list_style"
+        android:checkableBehavior="single" >
+        <item
+            android:id="@+id/list_style_switcher"
+            android:icon="?dashboardIcon"
+            android:orderInCategory="230"
+            android:title="@string/list_style"
+            app:showAsAction="never"/>
+    </group>
 
     <item
     android:id="@+id/db_export"

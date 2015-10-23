@@ -9,4 +9,13 @@
         android:switchTextOff="Выкл"
         android:switchTextOn="Вкл" />
 
+    <SwitchPreference
+        android:defaultValue="false"
+        android:icon="?dashboardIcon"
+        android:key="@string/pref_design_key_list_style"
+        android:summaryOff="В виде списка"
+        android:summaryOn="В виде сетки"
+        android:switchTextOff="В виде списка"
+        android:switchTextOn="В виде сетки" />
+
 </PreferenceScreen>

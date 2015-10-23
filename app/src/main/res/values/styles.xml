@@ -19,6 +19,7 @@
         <item name="themeIcon">@drawable/ic_color_lens_grey600_48dp</item>
         <item name="vibrationIcon">@drawable/ic_vibration_grey600_48dp</item>
         <item name="aboutIcon">@drawable/ic_info_grey600_48dp</item>
+        <item name="dashboardIcon">@drawable/ic_dashboard_grey600_48dp</item>
 
         <item name="themeIconSmall">@drawable/ic_color_lens_grey600_36dp</item>
         <item name="vibrationIconSmall">@drawable/ic_vibration_grey600_36dp</item>
@@ -78,6 +79,7 @@
         <item name="themeIconSmall">@drawable/ic_color_lens_white_36dp</item>
         <item name="vibrationIconSmall">@drawable/ic_vibration_white_36dp</item>
         <item name="aboutIconSmall">@drawable/ic_info_white_36dp</item>
+        <item name="dashboardIcon">@drawable/ic_dashboard_white_48dp</item>
 
         <item name="themeIcon">@drawable/ic_color_lens_white_48dp</item>
         <item name="nightModeIcon">@drawable/ic_brightness_4_white_48dp</item>

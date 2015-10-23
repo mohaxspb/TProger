@@ -1,10 +1,13 @@
 package ru.kuchanov.tproger.fragment;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +50,6 @@ public class FragmentCategory extends Fragment
     public static final String KEY_CURRENT_PAGE_TO_LOAD = "keyCurrentPageToLoad";
     public static final String KEY_LAST_REQUEST_CACHE_KEY = "keyLastRequestCacheKey";
 
-    //    protected SpiceManager spiceManager = new MySpiceManager(HtmlSpiceService.class);
     protected MySpiceManager spiceManager = AppSinglton.getInstance().getSpiceManager();
     protected MySpiceManager spiceManagerOffline = AppSinglton.getInstance().getSpiceManagerOffline();
     protected MySwipeRefreshLayout swipeRefreshLayout;
@@ -56,6 +58,8 @@ public class FragmentCategory extends Fragment
     String category;
     private Context ctx;
     private int currentPageToLoad = 1;
+
+    private SharedPreferences pref;
 
     private ArrayList<Article> artsList = new ArrayList<Article>();
 
@@ -95,6 +99,8 @@ public class FragmentCategory extends Fragment
             this.currentPageToLoad = savedInstanceState.getInt(KEY_CURRENT_PAGE_TO_LOAD);
             this.artsList = savedInstanceState.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
         }
+
+        this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
     @Override
@@ -115,7 +121,17 @@ public class FragmentCategory extends Fragment
         });
 
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+
+        boolean isLinearManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
+        if (isLinearManager)
+        {
+            recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+        }
+        else
+        {
+            recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+        }
+
 
         //fill recycler with data of make request for it
         if (artsList.size() != 0)

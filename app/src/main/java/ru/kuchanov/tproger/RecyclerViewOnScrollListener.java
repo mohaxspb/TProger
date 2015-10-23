@@ -1,8 +1,12 @@
 package ru.kuchanov.tproger;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 
 /**
  * Created by Юрий on 19.10.2015 17:26.
@@ -12,7 +16,8 @@ public abstract class RecyclerViewOnScrollListener extends OnScrollListener
 {
     static final String LOG = RecyclerViewOnScrollListener.class.getSimpleName();
 
-    private LinearLayoutManager manager;
+    private LinearLayoutManager managerLinear;
+    private StaggeredGridLayoutManager managerGrid;
 
     private boolean loading = true; // True if we are still waiting for the last set of data to load.
     private int previousTotal = 0; // The total number of items in the dataset after the last load
@@ -28,11 +33,26 @@ public abstract class RecyclerViewOnScrollListener extends OnScrollListener
     @Override
     public void onScrolled(RecyclerView recyclerView, int x, int y)
     {
-        manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        Context ctx=recyclerView.getContext();
+        SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(ctx);
 
-        visibleItemCount = manager.getChildCount();
-        totalItemCount = manager.getItemCount();
-        firstVisibleItem = manager.findFirstVisibleItemPosition();
+        boolean isLinearManager=pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
+
+        if(isLinearManager)
+        {
+            managerLinear = (LinearLayoutManager) recyclerView.getLayoutManager();
+            visibleItemCount = managerLinear.getChildCount();
+            totalItemCount = managerLinear.getItemCount();
+            firstVisibleItem = managerLinear.findFirstVisibleItemPosition();
+        }
+        else
+        {
+            managerGrid = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
+            visibleItemCount = managerGrid.getChildCount();
+            totalItemCount = managerGrid.getItemCount();
+            firstVisibleItem = managerGrid.findFirstVisibleItemPositions(new int[2])[0];
+        }
+
 //        int lastVisibleItem = manager.findLastVisibleItemPosition();
 
 //        Log.i(LOG, "totalItemCount: " + totalItemCount);

@@ -300,6 +300,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         int id = item.getItemId();
 
         boolean nightModeIsOn = this.pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false);
+        boolean isLinearManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
 
         switch (id)
         {
@@ -318,6 +319,17 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 else
                 {
                     this.pref.edit().putBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, true).commit();
+                }
+                this.recreate();
+                return true;
+            case R.id.list_style_switcher:
+                if (isLinearManager)
+                {
+                    this.pref.edit().putBoolean(ctx.getString(R.string.pref_design_key_list_style), false).commit();
+                }
+                else
+                {
+                    this.pref.edit().putBoolean(ctx.getString(R.string.pref_design_key_list_style), true).commit();
                 }
                 this.recreate();
                 return true;
@@ -412,6 +424,13 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             if (nightModeIsOn)
             {
                 themeMenuItem.setChecked(true);
+            }
+
+            boolean isLinearManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
+            MenuItem listStyleMenuItem = menu.findItem(R.id.list_style_switcher);
+            if (!isLinearManager)
+            {
+                listStyleMenuItem.setChecked(true);
             }
         }
         return super.onPrepareOptionsPanel(view, menu);
