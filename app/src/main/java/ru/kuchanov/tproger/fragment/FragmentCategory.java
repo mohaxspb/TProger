@@ -89,8 +89,6 @@ public class FragmentCategory extends Fragment
         Bundle args = this.getArguments();
         this.category = args.getString(KEY_CATEGORY);
 
-        Log.i(LOG, "category: " + category);
-
         if (savedInstanceState != null)
         {
             this.lastRequestCacheKey = savedInstanceState.getString(KEY_LAST_REQUEST_CACHE_KEY);
@@ -285,25 +283,22 @@ public class FragmentCategory extends Fragment
         }
 
         @Override
-        public void onRequestSuccess(Articles listFollowers)
+        public void onRequestSuccess(Articles articles)
         {
             if (!isAdded())
             {
                 return;
             }
-            if (listFollowers == null || listFollowers.getResult() == null)
+            if (articles == null || articles.getResult() == null)
             {
                 //no data in cache?..
                 Log.i(LOG, "no data in cache for page: " + currentPageToLoad);
                 performRequest(currentPageToLoad, true);
                 return;
             }
-            Log.i(LOG, "listFollowers.getResult().size(): " + listFollowers.getResult().size());
-//            Log.i(LOG, "listFollowers.getResult().toArray()[0].toString(): " + listFollowers.getResult().toArray()[0].toString());
+            ArrayList<Article> list = new ArrayList<Article>(articles.getResult());
 
-
-
-            ArrayList<Article> list = new ArrayList<Article>(listFollowers.getResult());
+            Log.i(LOG, "RECEIVE "+ list.size()+" arts for page: " + currentPageToLoad);
 
             Collections.sort(list, new Article.CustomComparator());
 

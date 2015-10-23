@@ -125,7 +125,8 @@ public class ArticleCategory
                         {
                             //first matched!
                             //2)
-                            lastArtCatByPage.setNextArticleId(arts.get(i - 1).getId());
+                            int nextArtId=(i==arts.size()-1)?-1:arts.get(i+1).getId();
+                            lastArtCatByPage.setNextArticleId(nextArtId);
                             daoArtCat.createOrUpdate(lastArtCatByPage);
                             matched = true;
                         }
@@ -135,7 +136,6 @@ public class ArticleCategory
                         if (matched)
                         {
                             //3)
-
                             ArrayList<ArticleCategory> artCatsWithoutPrevArtId = ArticleCategory.getArtCatsWithoutPrevArtId(h, categoryId);
                             for (int u = 0; u < artCatsWithoutPrevArtId.size(); u++)
                             {
@@ -404,6 +404,7 @@ public class ArticleCategory
 
             if (curArtCat.getNextArticleId() == -1)
             {
+                Log.i(LOG, "returning artCatListFromGivenId with size: " + list.size());
                 return list;
             }
 
@@ -441,7 +442,6 @@ public class ArticleCategory
         }
 
         Log.i(LOG, "returning artCatListFromGivenId with size: " + list.size());
-
         return list;
     }
 
@@ -483,6 +483,39 @@ public class ArticleCategory
         }
 
         return artCatsWithoutPrevArtId;
+    }
+
+    public static ArrayList<ArticleCategory> getArtCatsWithoutNextArtId(MyRoboSpiceDatabaseHelper h, int categoryId)
+    {
+        ArrayList<ArticleCategory> artCatsWithoutNextArtId = new ArrayList<>();
+        try
+        {
+            artCatsWithoutNextArtId = (ArrayList<ArticleCategory>) h.getDao(ArticleCategory.class).queryBuilder().
+                    where().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).
+                    and().eq(ArticleCategory.FIELD_NEXT_ARTICLE_ID, -1).query();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return artCatsWithoutNextArtId;
+    }
+
+    public static ArticleCategory getPrevArtCat(MyRoboSpiceDatabaseHelper h, ArticleCategory artCat)
+    {
+        ArticleCategory prevArtCat=null;
+        try
+        {
+            prevArtCat = h.getDaoArtCat().queryBuilder().where().eq(ArticleCategory.FIELD_ARTICLE_ID, artCat.getPreviousArticleId()).
+                    and().eq(ArticleCategory.FIELD_CATEGORY_ID, artCat.getCategory_id()).queryForFirst();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return prevArtCat;
     }
 
     public int getArticleId()
@@ -535,7 +568,7 @@ public class ArticleCategory
         this.id = id;
     }
 
-    public boolean getInitialInCategory()
+    public boolean isInitialInCategory()
     {
         return isInitialInCategory;
     }

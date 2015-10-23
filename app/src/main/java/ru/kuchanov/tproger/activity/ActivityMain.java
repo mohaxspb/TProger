@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
@@ -39,6 +40,8 @@ import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventCollapsed;
 import ru.kuchanov.tproger.otto.EventExpanded;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.tproger.robospice.db.ArticleCategory;
+import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.utils.DataBaseFileSaver;
 import ru.kuchanov.tproger.utils.ScreenProperties;
 
@@ -289,6 +292,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     {
         Log.d(LOG, "onOptionsItemSelected");
 
+        MyRoboSpiceDatabaseHelper h = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+
         int id = item.getItemId();
 
         boolean nightModeIsOn = this.pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false);
@@ -313,20 +318,29 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 }
                 this.recreate();
                 return true;
-            case R.id.debug:
-//                MyRoboSpiceDatabaseHelper h = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
-//
-//                try
-//                {
-//                    h.clearTableFromDataBase(Article.class);
-//                    h.clearTableFromDataBase(Articles.class);
-//                }
-//                catch (SQLException e)
-//                {
-//                    e.printStackTrace();
-//                }
-                String DBWritingResult=DataBaseFileSaver.copyDatabase(ctx, MyRoboSpiceDatabaseHelper.DB_NAME);
+            case R.id.db_export:
+                String DBWritingResult = DataBaseFileSaver.copyDatabase(ctx, MyRoboSpiceDatabaseHelper.DB_NAME);
                 Toast.makeText(ctx, DBWritingResult, Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.db_recreate:
+                h.recreateDB();
+
+                this.recreate();
+
+                return true;
+            case R.id.db_delete_last_art_cat:
+                ArticleCategory artCatToDelete=ArticleCategory.getArtCatsWithoutNextArtId(h, Category.getCategoryIdByUrl("", h)).get(0);
+                try
+                {
+                    ArticleCategory prevArtCat=ArticleCategory.getPrevArtCat(h, artCatToDelete);
+                    prevArtCat.setNextArticleId(-1);
+                    h.getDaoArtCat().createOrUpdate(prevArtCat);
+                    h.getDaoArtCat().delete(artCatToDelete);
+                }
+                catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
                 return true;
         }
 

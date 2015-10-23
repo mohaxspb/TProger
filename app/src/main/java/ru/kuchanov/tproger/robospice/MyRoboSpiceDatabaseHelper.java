@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.octo.android.robospice.persistence.ormlite.RoboSpiceDatabaseHelper;
@@ -48,7 +49,6 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
         {
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -91,5 +91,37 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
         {
             e.printStackTrace();
         }
+    }
+
+    public void recreateDB()
+    {
+        Log.i(LOG, "recreateDB called");
+        try
+        {
+            TableUtils.dropTable(connectionSource, Category.class, true);
+            TableUtils.dropTable(connectionSource, Article.class, true);
+            TableUtils.dropTable(connectionSource, ArticleCategory.class, true);
+            TableUtils.dropTable(connectionSource, Articles.class, true);
+
+            this.onCreate(this.getWritableDatabase(), connectionSource);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public Dao<ArticleCategory, Integer> getDaoArtCat()
+    {
+        Dao<ArticleCategory, Integer> daoArtCat=null;
+        try
+        {
+            daoArtCat=this.getDao(ArticleCategory.class);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return daoArtCat;
     }
 }

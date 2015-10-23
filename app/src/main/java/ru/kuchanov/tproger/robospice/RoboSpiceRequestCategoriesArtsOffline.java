@@ -30,18 +30,13 @@ public class RoboSpiceRequestCategoriesArtsOffline extends SpiceRequest<Articles
     {
         super(Articles.class);
 
-        Log.i(LOG, "category: "+category);
-
         this.ctx = ctx;
         this.category = category;
-
-        Log.i(LOG, "this.category: "+this.category);
 
 //        this.url = "http://tproger.ru/page/1/";
         this.url = Const.DOMAIN_MAIN + category + Const.SLASH + "page" + Const.SLASH + 1 + Const.SLASH;
 
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
-
     }
 
     @Override
@@ -60,12 +55,16 @@ public class RoboSpiceRequestCategoriesArtsOffline extends SpiceRequest<Articles
             ArrayList<ArticleCategory> artCatList = ArticleCategory.getArtCatListFromTop(categoryId, databaseHelper);
 
             list = Article.getArticleListFromArtCatList(artCatList, databaseHelper);
+            Articles articles = new Articles();
+            articles.setResult(list);
+            return articles;
         }
-
-        Articles articles = new Articles();
-        articles.setResult(list);
-
-        return articles;
+        else
+        {
+            //So it's first time we assking for cahche and there is no cahce
+            //so load from web via returning null
+            return null;
+        }
     }
 
     /**

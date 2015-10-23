@@ -20,8 +20,20 @@
     </group>
 
     <item
-        android:id="@+id/debug"
-        android:orderInCategory="1000"
-        android:title="@string/hello_world"
+    android:id="@+id/db_export"
+    android:orderInCategory="1000"
+    android:title="@string/export_db"
+    app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/db_recreate"
+        android:orderInCategory="1100"
+        android:title="@string/recreate_db"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/db_delete_last_art_cat"
+        android:orderInCategory="1200"
+        android:title="@string/db_delete_last_art_cat"
         app:showAsAction="never"/>
 </menu>
