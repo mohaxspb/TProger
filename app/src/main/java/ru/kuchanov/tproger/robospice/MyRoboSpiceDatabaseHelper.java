@@ -113,15 +113,29 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
 
     public Dao<ArticleCategory, Integer> getDaoArtCat()
     {
-        Dao<ArticleCategory, Integer> daoArtCat=null;
+        Dao<ArticleCategory, Integer> daoArtCat = null;
         try
         {
-            daoArtCat=this.getDao(ArticleCategory.class);
+            daoArtCat = this.getDao(ArticleCategory.class);
         }
         catch (SQLException e)
         {
             e.printStackTrace();
         }
         return daoArtCat;
+    }
+
+    public Dao<Article, Integer> getDaoArticle()
+    {
+        Dao<Article, Integer> daoArticle = null;
+        try
+        {
+            daoArticle = this.getDao(Article.class);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return daoArticle;
     }
 }

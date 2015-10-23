@@ -214,6 +214,22 @@ public class Article implements Parcelable
         }
     }
 
+    public static Article getArticleById(MyRoboSpiceDatabaseHelper h, int articleId)
+    {
+        Article a = null;
+
+        try
+        {
+            a = h.getDaoArticle().queryBuilder().where().eq(Article.FIELD_ID, articleId).queryForFirst();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return a;
+    }
+
     public String getUrl()
     {
         return url;
@@ -315,14 +331,14 @@ public class Article implements Parcelable
         return preview;
     }
 
+    //////PARCEL implementation
+
+//     id; url; title; pubDate; tagMainTitle; tagMainUrl;imageUrl; imageWidth;imageHeight;preview;text;isRead
+
     public void setPreview(String preview)
     {
         this.preview = preview;
     }
-
-    //////PARCEL implementation
-
-//     id; url; title; pubDate; tagMainTitle; tagMainUrl;imageUrl; imageWidth;imageHeight;preview;text;isRead
 
     public String getTagMainUrl()
     {
@@ -338,12 +354,12 @@ public class Article implements Parcelable
     {
         return text;
     }
+//    Parcel implementation/////////////////////////////
 
     public void setText(String text)
     {
         this.text = text;
     }
-//    Parcel implementation/////////////////////////////
 
     @Override
     public int describeContents()
@@ -385,7 +401,8 @@ public class Article implements Parcelable
     public static class CustomComparator implements Comparator<Article>
     {
         @Override
-        public int compare(Article o1, Article o2) {
+        public int compare(Article o1, Article o2)
+        {
             return o2.getPubDate().compareTo(o1.getPubDate());
         }
     }

@@ -40,6 +40,7 @@ import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventCollapsed;
 import ru.kuchanov.tproger.otto.EventExpanded;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.utils.DataBaseFileSaver;
@@ -329,12 +330,20 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
                 return true;
             case R.id.db_delete_last_art_cat:
-                ArticleCategory artCatToDelete=ArticleCategory.getArtCatsWithoutNextArtId(h, Category.getCategoryIdByUrl("", h)).get(0);
+                Log.i(LOG, "deleting last art from DB");
+                ArticleCategory artCatToDelete = ArticleCategory.getArtCatsWithoutNextArtId(h, Category.getCategoryIdByUrl("", h)).get(0);
                 try
                 {
-                    ArticleCategory prevArtCat=ArticleCategory.getPrevArtCat(h, artCatToDelete);
+                    ArticleCategory prevArtCat = ArticleCategory.getPrevArtCat(h, artCatToDelete);
                     prevArtCat.setNextArticleId(-1);
                     h.getDaoArtCat().createOrUpdate(prevArtCat);
+
+                    //also delete article obj
+                    Article a = Article.getArticleById(h, artCatToDelete.getArticleId());
+                    Article.printInLog(a);
+                    int updatedRows=h.getDaoArticle().delete(a);
+                    Log.i(LOG, "updatedRows: "+updatedRows);
+
                     h.getDaoArtCat().delete(artCatToDelete);
                 }
                 catch (SQLException e)
