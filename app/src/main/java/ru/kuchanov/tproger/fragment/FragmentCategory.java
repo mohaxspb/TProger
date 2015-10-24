@@ -43,7 +43,7 @@ import ru.kuchanov.tproger.robospice.db.Articles;
  * Created by Юрий on 17.09.2015 17:20.
  * For ExpListTest.
  */
-public class FragmentCategory extends Fragment
+public class FragmentCategory extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String LOG = FragmentCategory.class.getSimpleName();
     public static final String KEY_CATEGORY = "keyCategory";
@@ -122,14 +122,14 @@ public class FragmentCategory extends Fragment
 
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler);
 
-        boolean isLinearManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
-        if (isLinearManager)
+        boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
+        if (isGridManager)
         {
-            recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+            recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         }
         else
         {
-            recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+            recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
         }
 
 
@@ -269,6 +269,15 @@ public class FragmentCategory extends Fragment
 //        Log.i(LOG, "EventCollapsed: " + String.valueOf(event.isCollapsed()));
         swipeRefreshLayout.setEnabled(false);
         swipeRefreshLayout.setLayoutMovementEnabled(false);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+    {
+        if(key.equals(this.getString(R.string.pref_design_key_list_style)))
+        {
+            this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+        }
     }
 
     //inner class of your spiced Activity

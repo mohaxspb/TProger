@@ -36,21 +36,21 @@ public abstract class RecyclerViewOnScrollListener extends OnScrollListener
         Context ctx=recyclerView.getContext();
         SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(ctx);
 
-        boolean isLinearManager=pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
+        boolean isGridManager=pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
 
-        if(isLinearManager)
-        {
-            managerLinear = (LinearLayoutManager) recyclerView.getLayoutManager();
-            visibleItemCount = managerLinear.getChildCount();
-            totalItemCount = managerLinear.getItemCount();
-            firstVisibleItem = managerLinear.findFirstVisibleItemPosition();
-        }
-        else
+        if(isGridManager)
         {
             managerGrid = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
             visibleItemCount = managerGrid.getChildCount();
             totalItemCount = managerGrid.getItemCount();
             firstVisibleItem = managerGrid.findFirstVisibleItemPositions(new int[2])[0];
+        }
+        else
+        {
+            managerLinear = (LinearLayoutManager) recyclerView.getLayoutManager();
+            visibleItemCount = managerLinear.getChildCount();
+            totalItemCount = managerLinear.getItemCount();
+            firstVisibleItem = managerLinear.findFirstVisibleItemPosition();
         }
 
 //        int lastVisibleItem = manager.findLastVisibleItemPosition();

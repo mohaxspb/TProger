@@ -300,7 +300,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         int id = item.getItemId();
 
         boolean nightModeIsOn = this.pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false);
-        boolean isLinearManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
+        boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
 
         switch (id)
         {
@@ -323,7 +323,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 this.recreate();
                 return true;
             case R.id.list_style_switcher:
-                if (isLinearManager)
+                if (isGridManager)
                 {
                     this.pref.edit().putBoolean(ctx.getString(R.string.pref_design_key_list_style), false).commit();
                 }
@@ -331,7 +331,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 {
                     this.pref.edit().putBoolean(ctx.getString(R.string.pref_design_key_list_style), true).commit();
                 }
-                this.recreate();
+//                this.recreate();
                 return true;
             case R.id.db_export:
                 String DBWritingResult = DataBaseFileSaver.copyDatabase(ctx, MyRoboSpiceDatabaseHelper.DB_NAME);
@@ -425,13 +425,21 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             {
                 themeMenuItem.setChecked(true);
             }
+//            else
+//            {
+//                themeMenuItem.setChecked(false);
+//            }
 
-            boolean isLinearManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
+            boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
             MenuItem listStyleMenuItem = menu.findItem(R.id.list_style_switcher);
-            if (!isLinearManager)
+            if (isGridManager)
             {
                 listStyleMenuItem.setChecked(true);
             }
+//            else
+//            {
+//                listStyleMenuItem.setChecked(false);
+//            }
         }
         return super.onPrepareOptionsPanel(view, menu);
     }
