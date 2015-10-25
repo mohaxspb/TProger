@@ -1,7 +1,5 @@
 package ru.kuchanov.tproger.robospice.db;
 
-import android.util.Log;
-
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -404,7 +402,7 @@ public class ArticleCategory
 
             if (curArtCat.getNextArticleId() == -1)
             {
-                Log.i(LOG, "returning artCatListFromGivenId with size: " + list.size());
+//                Log.i(LOG, "returning artCatListFromGivenId with size: " + list.size());
                 return list;
             }
 
@@ -423,7 +421,7 @@ public class ArticleCategory
 
                 if (curArtCat.getNextArticleId() == -1)
                 {
-                    Log.i(LOG, "returning artCatListFromGivenId with size: " + list.size());
+//                    Log.i(LOG, "returning artCatListFromGivenId with size: " + list.size());
                     return list;
                 }
 
@@ -447,7 +445,7 @@ public class ArticleCategory
             e.printStackTrace();
         }
 
-        Log.i(LOG, "returning artCatListFromGivenId with size: " + list.size());
+//        Log.i(LOG, "returning artCatListFromGivenId with size: " + list.size());
         return list;
     }
 

@@ -2,13 +2,16 @@ package ru.kuchanov.tproger.fragment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +30,7 @@ import java.util.Collections;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.AppSinglton;
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.RecyclerAdapter;
+import ru.kuchanov.tproger.RecyclerAdapterArtsList;
 import ru.kuchanov.tproger.RecyclerViewOnScrollListener;
 import ru.kuchanov.tproger.custom.view.MySwipeRefreshLayout;
 import ru.kuchanov.tproger.otto.BusProvider;
@@ -51,20 +54,21 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     public static final String KEY_CATEGORY = "keyCategory";
     public static final String KEY_CURRENT_PAGE_TO_LOAD = "keyCurrentPageToLoad";
     public static final String KEY_IS_LOADING = "isLoading";
+    public static final String KEY_IS_LOADING_FROM_TOP = "isLoadingFromTop";
 
     protected MySpiceManager spiceManager = AppSinglton.getInstance().getSpiceManager();
     protected MySpiceManager spiceManagerOffline = AppSinglton.getInstance().getSpiceManagerOffline();
     protected MySwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
-    //    private String lastRequestCacheKey;
     private String category;
     private Context ctx;
     private int currentPageToLoad = 1;
     private boolean isLoading = false;
+    private boolean isLoadingFromTop = true;
 
     private SharedPreferences pref;
 
-    private ArrayList<Article> artsList = new ArrayList<Article>();
+    private ArrayList<Article> artsList = new ArrayList<>();
 
     public static FragmentCategory newInstance(String category)
     {
@@ -83,6 +87,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         super.onSaveInstanceState(outState);
 
         outState.putBoolean(KEY_IS_LOADING, isLoading);
+        outState.putBoolean(KEY_IS_LOADING_FROM_TOP, isLoadingFromTop);
         outState.putInt(KEY_CURRENT_PAGE_TO_LOAD, currentPageToLoad);
         outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
     }
@@ -99,6 +104,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         if (savedInstanceState != null)
         {
             this.isLoading = savedInstanceState.getBoolean(KEY_IS_LOADING);
+            this.isLoadingFromTop = savedInstanceState.getBoolean(KEY_IS_LOADING_FROM_TOP);
             this.currentPageToLoad = savedInstanceState.getInt(KEY_CURRENT_PAGE_TO_LOAD);
             this.artsList = savedInstanceState.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
         }
@@ -145,13 +151,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         //fill recycler with data of make request for it
         if (artsList.size() != 0)
         {
-            ArrayList<String> mDataSet = new ArrayList<>();
-            for (Article a : artsList)
-            {
-                mDataSet.add(a.getTitle());
-            }
-
-            recyclerView.setAdapter(new RecyclerAdapter(mDataSet));
+            recyclerView.setAdapter(new RecyclerAdapterArtsList(artsList));
 
             recyclerView.clearOnScrollListeners();
             recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
@@ -166,7 +166,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             });
         }
 
-        swipeRefreshLayout.setRefreshing(isLoading);
+//        swipeRefreshLayout.setRefreshing(isLoading);
+        this.setLoading(isLoading);
 
         return v;
     }
@@ -220,6 +221,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
         if (page == 1)
         {
+            isLoadingFromTop = true;
+            this.setLoading(true);
             //if !forceRefresh we must load arts from DB
             if (!forceRefresh)
             {
@@ -234,6 +237,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         }
         else
         {
+            isLoadingFromTop = false;
+            this.setLoading(true);
             if (!forceRefresh)
             {
                 RoboSpiceRequestCategoriesArtsFromBottomOffline request = new RoboSpiceRequestCategoriesArtsFromBottomOffline(ctx, category, page);
@@ -245,9 +250,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
             }
         }
-
-        isLoading = true;
-        swipeRefreshLayout.setRefreshing(true);
     }
 
     @Override
@@ -284,7 +286,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
         Log.i(LOG, "onSharedPreferenceChanged with key: " + key);
-        if(!isAdded())
+        if (!isAdded())
         {
             return;
         }
@@ -294,16 +296,62 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
             if (isGridManager)
             {
-                ((RecyclerAdapter) this.recyclerView.getAdapter()).notifyRemoveEach();
+                ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyRemoveEach();
                 this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-                ((RecyclerAdapter) this.recyclerView.getAdapter()).notifyAddEach();
+                ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyAddEach();
             }
             else
             {
-                ((RecyclerAdapter) this.recyclerView.getAdapter()).notifyRemoveEach();
+                ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyRemoveEach();
                 this.recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
-                ((RecyclerAdapter) this.recyclerView.getAdapter()).notifyAddEach();
+                ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyAddEach();
             }
+        }
+    }
+
+    private void setLoading(boolean isLoading)
+    {
+        Log.i(LOG, "isLoading: " + isLoading + " isLoadingFromTop: " + isLoadingFromTop + " swipeRefreshLayout.isRefreshing(): " + swipeRefreshLayout.isRefreshing());
+        this.isLoading = isLoading;
+
+        if (isLoading && swipeRefreshLayout.isRefreshing())
+        {
+            return;
+        }
+
+        if (isLoading)
+        {
+            swipeRefreshLayout.setEnabled(true);
+            swipeRefreshLayout.setLayoutMovementEnabled(true);
+            if (this.isLoadingFromTop)
+            {
+                swipeRefreshLayout.setProgressViewEndTarget(false, 0);
+            }
+            else
+            {
+                int[] textSizeAttr = new int[]{android.R.attr.actionBarSize};
+                TypedValue typedValue = new TypedValue();
+                TypedArray a = ctx.obtainStyledAttributes(typedValue.data, textSizeAttr);
+                int actionBarSize = a.getDimensionPixelSize(0, 100);
+                a.recycle();
+                DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+                int height = displayMetrics.heightPixels;
+                swipeRefreshLayout.setProgressViewEndTarget(false, height - actionBarSize * 2);
+            }
+            swipeRefreshLayout.setRefreshing(true);
+        }
+        else
+        {
+            int[] textSizeAttr = new int[]{android.R.attr.actionBarSize};
+            int indexOfAttrTextSize = 0;
+            TypedValue typedValue = new TypedValue();
+            TypedArray a = ctx.obtainStyledAttributes(typedValue.data, textSizeAttr);
+            int actionBarSize = a.getDimensionPixelSize(indexOfAttrTextSize, 100);
+            a.recycle();
+            //this.swipeRef.setProgressViewOffset(false, 0, actionBarSize);
+            swipeRefreshLayout.setProgressViewEndTarget(false, actionBarSize);
+//            swipeRefreshLayout.setProgressViewEndTarget(false, 0);
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -329,8 +377,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             {
                 e.printStackTrace();
             }
-            isLoading = false;
-            swipeRefreshLayout.setRefreshing(false);
+            setLoading(false);
             if (currentPageToLoad > 1)
             {
                 currentPageToLoad--;
@@ -352,28 +399,32 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 performRequest(currentPageToLoad, true);
                 return;
             }
-            ArrayList<Article> list = new ArrayList<Article>(articles.getResult());
+            ArrayList<Article> list = new ArrayList<>(articles.getResult());
 
             Log.i(LOG, "RECEIVE " + list.size() + " arts for page: " + currentPageToLoad);
 
             Collections.sort(list, new Article.PubDateComparator());
 
-            ArrayList<String> mDataSet = new ArrayList<String>();
-            for (Article a : list)
-            {
-                Article.printInLog(a);
-                mDataSet.add(a.getTitle());
-            }
-
             if (currentPageToLoad > 1)
             {
                 artsList.addAll(list);
-                ((RecyclerAdapter) recyclerView.getAdapter()).addData(mDataSet);
+                ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(list);
             }
             else
             {
                 artsList = new ArrayList<>(list);
-                recyclerView.setAdapter(new RecyclerAdapter(mDataSet));
+                if (recyclerView.getAdapter() == null)
+                {
+                    recyclerView.setAdapter(new RecyclerAdapterArtsList(artsList));
+                }
+                else
+                {
+//                    ArrayList<Article> emptyLisy=new ArrayList<>();
+//                    recyclerView.setAdapter(new RecyclerAdapterArtsList(emptyLisy));
+                    ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyRemoveEach();
+                    ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(artsList);
+                }
+//                recyclerView.setAdapter(new RecyclerAdapterArtsList(artsList));
             }
 
             recyclerView.clearOnScrollListeners();
@@ -387,8 +438,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                     performRequest(currentPageToLoad, false);
                 }
             });
-            isLoading = false;
-            swipeRefreshLayout.setRefreshing(false);
+//            swipeRefreshLayout.setRefreshing(false);
+            setLoading(false);
         }
 
         @Override

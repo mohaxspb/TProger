@@ -8,26 +8,28 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder>
+import ru.kuchanov.tproger.robospice.db.Article;
+
+public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerAdapterArtsList.ViewHolder>
 {
-    public static final String LOG = RecyclerAdapter.class.getSimpleName();
+    public static final String LOG = RecyclerAdapterArtsList.class.getSimpleName();
 
-    private ArrayList<String> mDataset;
+    private ArrayList<Article> artsList;
 
-    public RecyclerAdapter(ArrayList<String> dataset)
+    public RecyclerAdapterArtsList(ArrayList<Article> dataset)
     {
-        mDataset = dataset;
+        artsList = dataset;
     }
 
-    public void addData(ArrayList<String> dataToAdd)
+    public void addData(ArrayList<Article> dataToAdd)
     {
-        int prevSize = mDataset.size();
-        mDataset.addAll(dataToAdd);
-        this.notifyItemRangeInserted(prevSize, mDataset.size());
+        int prevSize = artsList.size();
+        artsList.addAll(dataToAdd);
+        this.notifyItemRangeInserted(prevSize, artsList.size());
     }
 
     @Override
-    public RecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    public RecyclerAdapterArtsList.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item, parent, false);
         ViewHolder vh = new ViewHolder(v);
@@ -37,18 +39,18 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, int position)
     {
-        holder.mTextView.setText(mDataset.get(position));
+        holder.mTextView.setText(artsList.get(position).getTitle());
     }
 
     @Override
     public int getItemCount()
     {
-        return mDataset.size();
+        return artsList.size();
     }
 
     public void notifyRemoveEach()
     {
-        for (int i = 0; i < mDataset.size(); i++)
+        for (int i = 0; i < artsList.size(); i++)
         {
             notifyItemRemoved(i);
         }
@@ -56,7 +58,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     public void notifyAddEach()
     {
-        for (int i = 0; i < mDataset.size(); i++)
+        for (int i = 0; i < artsList.size(); i++)
         {
             notifyItemInserted(i);
         }
