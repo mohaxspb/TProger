@@ -57,4 +57,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             mTextView = (TextView) v.findViewById(R.id.title);
         }
     }
+
+    public void notifyRemoveEach() {
+        for (int i = 0; i < mDataset.size(); i++) {
+            notifyItemRemoved(i);
+        }
+    }
+
+    public void notifyAddEach() {
+        for (int i = 0; i < mDataset.size(); i++) {
+            notifyItemInserted(i);
+        }
+    }
 }

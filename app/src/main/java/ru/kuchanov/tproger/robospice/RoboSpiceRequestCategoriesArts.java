@@ -63,10 +63,10 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         //TODO we can pass quont through Articles class via field...
         Log.i(LOG, "newArtsQuont: " + newArtsQuont);
 
-        Articles arrayListModel = new Articles();
-        arrayListModel.setResult(list);
+        Articles articles = new Articles();
+        articles.setResult(list);
 
-        return arrayListModel;
+        return articles;
     }
 
     private String makeRequest() throws Exception
@@ -86,8 +86,8 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
      * This method generates a unique cache key for this request. In this case
      * our cache key depends just on the keyword.
      */
-    public String createCacheKey()
-    {
-        return "categoriesArtsList." + category + Const.SLASH + page;
-    }
+//    public String createCacheKey()
+//    {
+//        return "categoriesArtsList." + category + Const.SLASH + page;
+//    }
 }

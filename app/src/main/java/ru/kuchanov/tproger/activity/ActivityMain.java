@@ -331,6 +331,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 {
                     this.pref.edit().putBoolean(ctx.getString(R.string.pref_design_key_list_style), true).commit();
                 }
+                this.supportInvalidateOptionsMenu();
 //                this.recreate();
                 return true;
             case R.id.db_export:

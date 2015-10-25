@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -48,16 +49,18 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     public static final String LOG = FragmentCategory.class.getSimpleName();
     public static final String KEY_CATEGORY = "keyCategory";
     public static final String KEY_CURRENT_PAGE_TO_LOAD = "keyCurrentPageToLoad";
-    public static final String KEY_LAST_REQUEST_CACHE_KEY = "keyLastRequestCacheKey";
+    public static final String KEY_IS_LOADING = "isLoading";
+//    public static final String KEY_LAST_REQUEST_CACHE_KEY = "keyLastRequestCacheKey";
 
     protected MySpiceManager spiceManager = AppSinglton.getInstance().getSpiceManager();
     protected MySpiceManager spiceManagerOffline = AppSinglton.getInstance().getSpiceManagerOffline();
     protected MySwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
-    String lastRequestCacheKey;
-    String category;
+    //    private String lastRequestCacheKey;
+    private String category;
     private Context ctx;
     private int currentPageToLoad = 1;
+    private boolean isLoading = false;
 
     private SharedPreferences pref;
 
@@ -79,7 +82,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         Log.i(LOG, "onSaveInstanceState called");
         super.onSaveInstanceState(outState);
 
-        outState.putString(KEY_LAST_REQUEST_CACHE_KEY, this.lastRequestCacheKey);
+//        outState.putString(KEY_LAST_REQUEST_CACHE_KEY, this.lastRequestCacheKey);
+        outState.putBoolean(KEY_IS_LOADING, isLoading);
         outState.putInt(KEY_CURRENT_PAGE_TO_LOAD, currentPageToLoad);
         outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
     }
@@ -95,12 +99,14 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
         if (savedInstanceState != null)
         {
-            this.lastRequestCacheKey = savedInstanceState.getString(KEY_LAST_REQUEST_CACHE_KEY);
+//            this.lastRequestCacheKey = savedInstanceState.getString(KEY_LAST_REQUEST_CACHE_KEY);
+            this.isLoading = savedInstanceState.getBoolean(KEY_IS_LOADING);
             this.currentPageToLoad = savedInstanceState.getInt(KEY_CURRENT_PAGE_TO_LOAD);
             this.artsList = savedInstanceState.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
         }
 
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        this.pref.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -144,6 +150,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
             recyclerView.setAdapter(new RecyclerAdapter(mDataSet));
 
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+
             recyclerView.clearOnScrollListeners();
             recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
             {
@@ -156,6 +164,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 }
             });
         }
+
+        swipeRefreshLayout.setRefreshing(isLoading);
 
         return v;
     }
@@ -205,7 +215,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     private void performRequest(int page, boolean forceRefresh)
     {
         Log.i(LOG, "performRequest with page: " + page + " and forceRefresh: " + String.valueOf(forceRefresh));
-        long cacheExpireTime = (forceRefresh) ? DurationInMillis.ALWAYS_EXPIRED : DurationInMillis.ONE_HOUR;
 
         if (page == 1)
         {
@@ -213,15 +222,14 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             if (!forceRefresh)
             {
                 RoboSpiceRequestCategoriesArtsOffline requestFromDB = new RoboSpiceRequestCategoriesArtsOffline(ctx, category);
-                lastRequestCacheKey = requestFromDB.createCacheKey();
-                spiceManagerOffline.execute(requestFromDB, lastRequestCacheKey, DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+//                lastRequestCacheKey = requestFromDB.createCacheKey();
+                spiceManagerOffline.execute(requestFromDB, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
             }
             else
             {
                 RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category, page);
-                lastRequestCacheKey = request.createCacheKey();
-
-                spiceManager.execute(request, lastRequestCacheKey, cacheExpireTime, new ListFollowersRequestListener());
+//                lastRequestCacheKey = request.createCacheKey();
+                spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
             }
         }
         else
@@ -230,15 +238,19 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             {
                 RoboSpiceRequestCategoriesArtsFromBottomOffline request = new RoboSpiceRequestCategoriesArtsFromBottomOffline(ctx, category, page);
 
-                spiceManagerOffline.execute(request, "fromBottom", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+                spiceManagerOffline.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
             }
             else
             {
                 RoboSpiceRequestCategoriesArtsFromBottom request = new RoboSpiceRequestCategoriesArtsFromBottom(ctx, category, page);
 
-                spiceManager.execute(request, "fromBottom", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+                spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
             }
         }
+
+        isLoading = true;
+        swipeRefreshLayout.setRefreshing(true);
+
     }
 
     @Override
@@ -274,9 +286,23 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
-        if(key.equals(this.getString(R.string.pref_design_key_list_style)))
+        Log.i(LOG, "onSharedPreferenceChanged with kkey: " + key);
+        if (key.equals(this.getString(R.string.pref_design_key_list_style)))
         {
-            this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+            boolean isGridManager = sharedPreferences.getBoolean(key, false);
+
+            if (isGridManager)
+            {
+                ((RecyclerAdapter) this.recyclerView.getAdapter()).notifyRemoveEach();
+                this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+                ((RecyclerAdapter) this.recyclerView.getAdapter()).notifyAddEach();
+            }
+            else
+            {
+                ((RecyclerAdapter) this.recyclerView.getAdapter()).notifyRemoveEach();
+                this.recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+                ((RecyclerAdapter) this.recyclerView.getAdapter()).notifyAddEach();
+            }
         }
     }
 
@@ -288,6 +314,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         {
             if (!isAdded())
             {
+                Log.e(LOG, "frag not added");
                 return;
             }
             if (e instanceof NoNetworkException)
@@ -301,6 +328,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             {
                 e.printStackTrace();
             }
+            isLoading = false;
             swipeRefreshLayout.setRefreshing(false);
             if (currentPageToLoad > 1)
             {
@@ -313,6 +341,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         {
             if (!isAdded())
             {
+                Log.e(LOG, "frag not added");
                 return;
             }
             if (articles == null || articles.getResult() == null)
@@ -357,6 +386,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                     performRequest(currentPageToLoad, false);
                 }
             });
+            isLoading = false;
             swipeRefreshLayout.setRefreshing(false);
         }
     }
