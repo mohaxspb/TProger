@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
 import com.octo.android.robospice.exception.NoNetworkException;
@@ -23,7 +24,7 @@ import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.AppSinglton;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapter;
@@ -135,11 +136,11 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
         }
 
-        recyclerView.setItemAnimator(new SlideInLeftAnimator());
-//        recyclerView.getItemAnimator().setAddDuration(1000);
-//        recyclerView.getItemAnimator().setRemoveDuration(1000);
-//        recyclerView.getItemAnimator().setMoveDuration(1000);
-//        recyclerView.getItemAnimator().setChangeDuration(1000);
+        recyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f)));
+        recyclerView.getItemAnimator().setAddDuration(500);
+        recyclerView.getItemAnimator().setRemoveDuration(500);
+        recyclerView.getItemAnimator().setMoveDuration(500);
+        recyclerView.getItemAnimator().setChangeDuration(500);
 
         //fill recycler with data of make request for it
         if (artsList.size() != 0)
