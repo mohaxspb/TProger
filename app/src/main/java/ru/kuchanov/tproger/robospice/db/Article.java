@@ -398,7 +398,7 @@ public class Article implements Parcelable
         this.isRead = isRead;
     }
 
-    public static class CustomComparator implements Comparator<Article>
+    public static class PubDateComparator implements Comparator<Article>
     {
         @Override
         public int compare(Article o1, Article o2)

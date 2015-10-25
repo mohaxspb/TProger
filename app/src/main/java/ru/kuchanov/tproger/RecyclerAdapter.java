@@ -22,7 +22,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     public void addData(ArrayList<String> dataToAdd)
     {
-        int prevSize=mDataset.size();
+        int prevSize = mDataset.size();
         mDataset.addAll(dataToAdd);
         this.notifyItemRangeInserted(prevSize, mDataset.size());
     }
@@ -47,6 +47,22 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         return mDataset.size();
     }
 
+    public void notifyRemoveEach()
+    {
+        for (int i = 0; i < mDataset.size(); i++)
+        {
+            notifyItemRemoved(i);
+        }
+    }
+
+    public void notifyAddEach()
+    {
+        for (int i = 0; i < mDataset.size(); i++)
+        {
+            notifyItemInserted(i);
+        }
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder
     {
         public TextView mTextView;
@@ -55,18 +71,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         {
             super(v);
             mTextView = (TextView) v.findViewById(R.id.title);
-        }
-    }
-
-    public void notifyRemoveEach() {
-        for (int i = 0; i < mDataset.size(); i++) {
-            notifyItemRemoved(i);
-        }
-    }
-
-    public void notifyAddEach() {
-        for (int i = 0; i < mDataset.size(); i++) {
-            notifyItemInserted(i);
         }
     }
 }

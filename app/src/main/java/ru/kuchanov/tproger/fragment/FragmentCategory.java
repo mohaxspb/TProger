@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -18,12 +17,13 @@ import android.widget.Toast;
 import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
+import com.octo.android.robospice.request.listener.PendingRequestListener;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import ru.kuchanov.tproger.AppSinglton;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapter;
@@ -50,7 +50,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     public static final String KEY_CATEGORY = "keyCategory";
     public static final String KEY_CURRENT_PAGE_TO_LOAD = "keyCurrentPageToLoad";
     public static final String KEY_IS_LOADING = "isLoading";
-//    public static final String KEY_LAST_REQUEST_CACHE_KEY = "keyLastRequestCacheKey";
 
     protected MySpiceManager spiceManager = AppSinglton.getInstance().getSpiceManager();
     protected MySpiceManager spiceManagerOffline = AppSinglton.getInstance().getSpiceManagerOffline();
@@ -82,7 +81,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         Log.i(LOG, "onSaveInstanceState called");
         super.onSaveInstanceState(outState);
 
-//        outState.putString(KEY_LAST_REQUEST_CACHE_KEY, this.lastRequestCacheKey);
         outState.putBoolean(KEY_IS_LOADING, isLoading);
         outState.putInt(KEY_CURRENT_PAGE_TO_LOAD, currentPageToLoad);
         outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
@@ -99,7 +97,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
         if (savedInstanceState != null)
         {
-//            this.lastRequestCacheKey = savedInstanceState.getString(KEY_LAST_REQUEST_CACHE_KEY);
             this.isLoading = savedInstanceState.getBoolean(KEY_IS_LOADING);
             this.currentPageToLoad = savedInstanceState.getInt(KEY_CURRENT_PAGE_TO_LOAD);
             this.artsList = savedInstanceState.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
@@ -138,6 +135,11 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
         }
 
+        recyclerView.setItemAnimator(new SlideInLeftAnimator());
+//        recyclerView.getItemAnimator().setAddDuration(1000);
+//        recyclerView.getItemAnimator().setRemoveDuration(1000);
+//        recyclerView.getItemAnimator().setMoveDuration(1000);
+//        recyclerView.getItemAnimator().setChangeDuration(1000);
 
         //fill recycler with data of make request for it
         if (artsList.size() != 0)
@@ -149,8 +151,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             }
 
             recyclerView.setAdapter(new RecyclerAdapter(mDataSet));
-
-            recyclerView.setItemAnimator(new DefaultItemAnimator());
 
             recyclerView.clearOnScrollListeners();
             recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
@@ -193,8 +193,9 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         super.onStart();
 
         spiceManager.start(ctx);
+        spiceManager.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
         spiceManagerOffline.start(ctx);
-
+        spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
         //make request for it
         if (artsList.size() == 0)
         {
@@ -222,13 +223,11 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             if (!forceRefresh)
             {
                 RoboSpiceRequestCategoriesArtsOffline requestFromDB = new RoboSpiceRequestCategoriesArtsOffline(ctx, category);
-//                lastRequestCacheKey = requestFromDB.createCacheKey();
                 spiceManagerOffline.execute(requestFromDB, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
             }
             else
             {
                 RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category, page);
-//                lastRequestCacheKey = request.createCacheKey();
                 spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
             }
         }
@@ -237,20 +236,17 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             if (!forceRefresh)
             {
                 RoboSpiceRequestCategoriesArtsFromBottomOffline request = new RoboSpiceRequestCategoriesArtsFromBottomOffline(ctx, category, page);
-
                 spiceManagerOffline.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
             }
             else
             {
                 RoboSpiceRequestCategoriesArtsFromBottom request = new RoboSpiceRequestCategoriesArtsFromBottom(ctx, category, page);
-
                 spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
             }
         }
 
         isLoading = true;
         swipeRefreshLayout.setRefreshing(true);
-
     }
 
     @Override
@@ -286,7 +282,11 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
-        Log.i(LOG, "onSharedPreferenceChanged with kkey: " + key);
+        Log.i(LOG, "onSharedPreferenceChanged with key: " + key);
+        if(!isAdded())
+        {
+            return;
+        }
         if (key.equals(this.getString(R.string.pref_design_key_list_style)))
         {
             boolean isGridManager = sharedPreferences.getBoolean(key, false);
@@ -307,7 +307,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     }
 
     //inner class of your spiced Activity
-    private class ListFollowersRequestListener implements RequestListener<Articles>
+    private class ListFollowersRequestListener implements PendingRequestListener<Articles>
     {
         @Override
         public void onRequestFailure(SpiceException e)
@@ -355,7 +355,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
             Log.i(LOG, "RECEIVE " + list.size() + " arts for page: " + currentPageToLoad);
 
-            Collections.sort(list, new Article.CustomComparator());
+            Collections.sort(list, new Article.PubDateComparator());
 
             ArrayList<String> mDataSet = new ArrayList<String>();
             for (Article a : list)
@@ -388,6 +388,12 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             });
             isLoading = false;
             swipeRefreshLayout.setRefreshing(false);
+        }
+
+        @Override
+        public void onRequestNotFound()
+        {
+            Log.i(LOG, "onRequestNotFound called");
         }
     }
 }

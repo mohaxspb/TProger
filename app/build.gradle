@@ -55,4 +55,6 @@ dependencies {
     compile 'org.jsoup:jsoup:1.8.3'
     //Otto
     compile 'com.squareup:otto:1.3.8'
+    //recyclerView item animation
+    compile 'jp.wasabeef:recyclerview-animators:2.0.0'
 }

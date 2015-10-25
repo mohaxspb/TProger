@@ -1,7 +1,11 @@
 package ru.kuchanov.tproger.robospice;
 
+import android.util.Log;
+
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.SpiceService;
+
+import roboguice.util.temp.Ln;
 
 /**
  * Created by Юрий on 16.10.2015 18:34.
@@ -19,6 +23,6 @@ public class MySpiceManager extends SpiceManager
     public MySpiceManager(Class<? extends SpiceService> spiceServiceClass)
     {
         super(spiceServiceClass);
-//        Ln.getConfig().setLoggingLevel(Log.ERROR);
+        Ln.getConfig().setLoggingLevel(Log.ERROR);
     }
 }
