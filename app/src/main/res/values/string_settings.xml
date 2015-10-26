@@ -7,7 +7,20 @@
     <string name="pref_header_design_summary">Ночной режим, шрифты etc</string>
     <string name="pref_design_key_night_mode">pref_design_key_night_mode</string>
     <string name="pref_design_key_list_style">pref_design_key_list_style</string>
-    pref_design_key_night_mode
+    <string name="pref_design_key_art_card_style">pref_design_key_art_card_style</string>
+    <string name="pref_design_art_card_category_title">Настройка карточки статьи</string>
+    <string name="pref_design_art_card_shown_info">Отображаемая информация</string>
+    <string name="pref_design_key_art_card_image">pref_design_key_art_card_image</string>
+
+    <string name="pref_design_key_text_size">pref_design_key_text_size</string>
+    <string name="text_size_warning">Изменения вступят в силу после поворота экрана!</string>
+    <string name="text_size">Размер текста</string>
+    <string name="text_size_summary">Размер текста в карточках статей и в самих статьях</string>
+    <string name="pref_design_key_text_size_ui">pref_design_key_text_size_ui</string>
+    <string name="text_size_ui">Размер текста в карточках статей</string>
+    <string name="pref_design_key_text_size_article">pref_design_key_text_size_article</string>
+    <string name="text_size_article">Размер  текста в статьях</string>
+    <!--<string name="text_size_comments">Размер  текста комментариев</string>-->
     <!-- settings for Notifications -->
     <string name="pref_header_notifications_title">Уведомления</string>
     <string name="pref_header_notifications_summary">Разрешить, звук, переодичность etc</string>

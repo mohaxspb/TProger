@@ -2,11 +2,18 @@
 <items version="2" >
 
     <item
-        jar="E:\CODE\Android\development\TProger\app\build\intermediates\exploded-aar\jp.wasabeef\recyclerview-animators\2.0.0\jars\classes.jar"
+        jar="E:\CODE\Android\development\TProger\app\build\intermediates\exploded-aar\com.afollestad.material-dialogs\core\0.8.4.2\jars\classes.jar"
         jumboMode="false"
         revision="23.0.1"
-        sha1="4a70cdeeea9b109cfc5cbf5afef1203d350fb9df">
-        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\classes-9d4bb5f77e32fae288e7c70e8b487df4360a5b25.jar" />
+        sha1="f69d5ffbc9a060429c1c8c5c58a3fe35c4bed1e2">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\classes-f0296a10abbbfb5781694fe25da80550ab33ad6d.jar" />
+    </item>
+    <item
+        jar="E:\CODE\Android\development\TProger\app\build\intermediates\exploded-aar\me.zhanghai.android.materialprogressbar\library\1.1.4\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="2a24cba08e1d865a79e61335f5a1bd64d520106d">
+        <dex dex="E:\CODE\Android\development\TProger\app\build\intermediates\pre-dexed\debug\classes-a677d5696acd2a1727a5285cc7311fec1479dca5.jar" />
     </item>
 
 </items>

@@ -371,7 +371,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 //Toast "you got no connection
                 Toast.makeText(ctx, "Не удалось подключиться к интернету", Toast.LENGTH_SHORT).show();
                 Log.i(LOG, "NoNetworkException: Не удалось подключиться к интернету");
-                //TODO so we must load from cache (try to get data from roboSpice cache
+                //so we must load from cache (try to get data from roboSpice cache ??? maybe not...
+                //cause we try to load from cache first, so previously loaded arts are still here;
             }
             else
             {
@@ -419,12 +420,9 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 }
                 else
                 {
-//                    ArrayList<Article> emptyLisy=new ArrayList<>();
-//                    recyclerView.setAdapter(new RecyclerAdapterArtsList(emptyLisy));
                     ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyRemoveEach();
                     ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(artsList);
                 }
-//                recyclerView.setAdapter(new RecyclerAdapterArtsList(artsList));
             }
 
             recyclerView.clearOnScrollListeners();
@@ -438,7 +436,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                     performRequest(currentPageToLoad, false);
                 }
             });
-//            swipeRefreshLayout.setRefreshing(false);
             setLoading(false);
         }
 

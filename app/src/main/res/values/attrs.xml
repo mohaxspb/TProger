@@ -29,6 +29,8 @@
     <attr name="vibrationIcon" format="reference" />
     <attr name="aboutIcon" format="reference"/>
     <attr name="dashboardIcon" format="reference"/>
+    <attr name="pictureInPictureIcon" format="reference"/>
+
     <!--setting icons small-->
     <attr name="themeIconSmall" format="reference"/>
     <attr name="vibrationIconSmall" format="reference" />

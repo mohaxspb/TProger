@@ -7,7 +7,7 @@
         android:summaryOff="Ночной режим"
         android:summaryOn="Ночной режим"
         android:switchTextOff="Выкл"
-        android:switchTextOn="Вкл" />
+        android:switchTextOn="Вкл"/>
 
     <SwitchPreference
         android:defaultValue="false"
@@ -16,6 +16,46 @@
         android:summaryOff="В виде сетки"
         android:summaryOn="В виде сетки"
         android:switchTextOff="Выкл"
-        android:switchTextOn="Вкл" />
+        android:switchTextOn="Вкл"/>
 
+    <PreferenceCategory android:title="Размер текста">
+
+        <Preference
+            android:icon="?textSizeIcon"
+            android:key="@string/pref_design_key_text_size"
+            android:summary="@string/text_size_summary"
+            android:title="@string/text_size">
+        </Preference>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_design_art_card_category_title">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="?pictureInPictureIcon"
+            android:key="@string/pref_design_key_art_card_style"
+            android:summaryOff="Только заголовок"
+            android:summaryOn="Максимум информации"
+            android:switchTextOff="Выкл"
+            android:switchTextOn="Вкл"/>
+        <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="@string/pref_design_key_art_card_style"
+            android:icon="?defaultImage"
+            android:key="@string/pref_design_key_art_card_image"
+            android:summaryOff="Картинки НЕ загружаются"
+            android:summaryOn="Картинки отображаются"
+            android:switchTextOff="Выкл"
+            android:switchTextOn="Вкл"/>
+        <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="@string/pref_design_key_art_card_style"
+            android:icon="?pagesIcon"
+            android:key="preview_show"
+            android:summaryOff="Краткое содержание"
+            android:summaryOn="Краткое содержание"
+            android:switchTextOff="Выкл"
+            android:switchTextOn="Вкл"/>
+    </PreferenceCategory>
 </PreferenceScreen>
