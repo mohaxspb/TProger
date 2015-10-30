@@ -89,11 +89,14 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                 paramsImg = (LinearLayout.LayoutParams) maxHolder.img.getLayoutParams();
 
                 int widthDevice = ctx.getResources().getDisplayMetrics().widthPixels;
+                Log.i(LOG, "widthDevice: " + widthDevice);
                 float scale = (float) widthDevice / a.getImageWidth();
-                int height = (int) scale * a.getImageHeight();
+                Log.i(LOG, "scale: " + scale);
+                float height = (scale) * a.getImageHeight();
+                Log.i(LOG, "height: " + height);
 
 //                paramsImg.width = widthDevice;
-                paramsImg.height = height;
+                paramsImg.height = (int)height;
 
                 maxHolder.img.setLayoutParams(paramsImg);
 
