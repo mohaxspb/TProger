@@ -1,18 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/text_size_ui"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:drawableLeft="?textSizeIcon"
-        android:drawableStart="?textSizeIcon"
-        android:text="@string/text_size_ui"/>
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/text_size_ui"
+            android:layout_width="100dp"
+            android:layout_gravity="center|right"
+            android:gravity="center"
+            android:layout_height="50dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:text="@string/text_size_ui"/>
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_toStartOf="@id/text_size_ui"
+            android:layout_toLeftOf="@id/text_size_ui"
+            android:contentDescription="@string/app_name"
+            android:background="?textSizeIcon"
+            android:src="?textSizeIcon"/>
+
+        <!--android:drawableLeft="?textSizeIcon"-->
+        <!--android:drawableStart="?textSizeIcon"-->
+    </RelativeLayout>
 
     <SeekBar
         android:id="@+id/seekbar_ui"

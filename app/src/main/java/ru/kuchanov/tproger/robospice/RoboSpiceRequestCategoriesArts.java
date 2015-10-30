@@ -31,6 +31,8 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
     String category;
     int page;
 
+    boolean resetCategoryInDB=false;
+
     public RoboSpiceRequestCategoriesArts(Context ctx, String category, int page)
     {
         super(Articles.class);
@@ -46,10 +48,26 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
 
     }
 
+    public void setResetCategoryInDB()
+    {
+        resetCategoryInDB=true;
+    }
+
     @Override
     public Articles loadDataFromNetwork() throws Exception
     {
         Log.i(LOG, "ArrayListModel loadDataFromNetwork() called");
+
+        int categoryId = Category.getCategoryIdByUrl(this.category, databaseHelper);
+
+        if (resetCategoryInDB)
+        {
+            Log.i(LOG, "resetCategoryInDB");
+            //all we need - is to delete all artCat by category...
+            ArrayList<ArticleCategory> allArtCatList= (ArrayList<ArticleCategory>) databaseHelper.getDaoArtCat().queryBuilder().
+                    where().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).query();
+            databaseHelper.getDaoArtCat().delete(allArtCatList);
+        }
 
         String responseBody = makeRequest();
 
@@ -57,7 +75,7 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         //write to DB
         list = Article.writeArtsList(list, databaseHelper);
 
-        int categoryId = Category.getCategoryIdByUrl(this.category, databaseHelper);
+
 
         int newArtsQuont = ArticleCategory.writeArtsListToArtCatFromTop(list, categoryId, databaseHelper);
         //TODO we can pass quont through Articles class via field...

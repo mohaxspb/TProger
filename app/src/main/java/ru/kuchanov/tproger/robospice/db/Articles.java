@@ -21,6 +21,9 @@ public class Articles
     @ForeignCollectionField(eager = false)
     private Collection<Article> result;
 
+    @DatabaseField
+    private boolean containsBottomArt=false;
+
     public int getId()
     {
         return id;
@@ -43,8 +46,20 @@ public class Articles
         return result;
     }
 
+
+
     public void setResult(Collection<Article> result)
     {
         this.result = result;
+    }
+
+    public boolean isContainsBottomArt()
+    {
+        return containsBottomArt;
+    }
+
+    public void setContainsBottomArt(boolean containsBottomArt)
+    {
+        this.containsBottomArt = containsBottomArt;
     }
 }

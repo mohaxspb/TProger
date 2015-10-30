@@ -29,6 +29,7 @@ import java.util.Collections;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.AppSinglton;
+import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapterArtsList;
 import ru.kuchanov.tproger.RecyclerViewOnScrollListener;
@@ -126,7 +127,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             public void onRefresh()
             {
                 currentPageToLoad = 1;
-                performRequest(1, true);
+                performRequest(1, true, false);
             }
         });
 
@@ -161,7 +162,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 {
                     Log.i(LOG, "OnLoadMore called!");
                     currentPageToLoad++;
-                    performRequest(currentPageToLoad, false);
+                    performRequest(currentPageToLoad, false, false);
                 }
             });
         }
@@ -201,7 +202,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         //make request for it
         if (artsList.size() == 0)
         {
-            performRequest(1, false);
+            performRequest(1, false, false);
         }
     }
 
@@ -215,9 +216,10 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         spiceManagerOffline.shouldStop();
     }
 
-    private void performRequest(int page, boolean forceRefresh)
+    private void performRequest(int page, boolean forceRefresh, boolean resetCategoryInDB)
     {
-        Log.i(LOG, "performRequest with page: " + page + " and forceRefresh: " + String.valueOf(forceRefresh));
+//        Log.i(LOG, "performRequest with page: " + page + " and forceRefresh: " + String.valueOf(forceRefresh));
+        Log.i(LOG, "performRequest with page: " + page + " and forceRefresh: " + forceRefresh);
 
         if (page == 1)
         {
@@ -232,6 +234,10 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             else
             {
                 RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category, page);
+                if (resetCategoryInDB)
+                {
+                    request.setResetCategoryInDB();
+                }
                 spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
             }
         }
@@ -361,6 +367,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         @Override
         public void onRequestFailure(SpiceException e)
         {
+            Log.i(LOG, "onRequestFailure");
             if (!isAdded())
             {
                 Log.e(LOG, "frag not added");
@@ -378,6 +385,20 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             {
                 e.printStackTrace();
             }
+
+            //reset onScrollListener (isuue #1)
+            recyclerView.clearOnScrollListeners();
+            recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
+            {
+                @Override
+                public void onLoadMore()
+                {
+                    Log.i(LOG, "OnLoadMore called!");
+                    currentPageToLoad++;
+                    performRequest(currentPageToLoad, false, false);
+                }
+            });
+
             setLoading(false);
             if (currentPageToLoad > 1)
             {
@@ -388,6 +409,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         @Override
         public void onRequestSuccess(Articles articles)
         {
+            Log.i(LOG, "onRequestSuccess");
             if (!isAdded())
             {
                 Log.e(LOG, "frag not added");
@@ -397,10 +419,23 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             {
                 //no data in cache?..
                 Log.i(LOG, "no data in cache for page: " + currentPageToLoad);
-                performRequest(currentPageToLoad, true);
+                performRequest(currentPageToLoad, true, false);
                 return;
             }
+
             ArrayList<Article> list = new ArrayList<>(articles.getResult());
+
+            if (list.size()!= Const.NUM_OF_ARTS_ON_PAGE && !articles.isContainsBottomArt())
+            {
+                //TODO error in DB - need to reset category;
+                Log.i(LOG, "error in DB - need to reset category;");
+                artsList = new ArrayList<>();
+                ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyRemoveEach();
+                ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(artsList);
+                currentPageToLoad = 1;
+                performRequest(currentPageToLoad, true, true);
+            }
+
 
             Log.i(LOG, "RECEIVE " + list.size() + " arts for page: " + currentPageToLoad);
 
@@ -433,7 +468,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 {
                     Log.i(LOG, "OnLoadMore called!");
                     currentPageToLoad++;
-                    performRequest(currentPageToLoad, false);
+                    performRequest(currentPageToLoad, false, false);
                 }
             });
             setLoading(false);

@@ -26,7 +26,6 @@ public class FragmentDialogTextAppearance extends DialogFragment
 
     public static FragmentDialogTextAppearance newInstance()
     {
-//        FragmentDialogTextAppearance frag = new FragmentDialogTextAppearance();
         return new FragmentDialogTextAppearance();
     }
 

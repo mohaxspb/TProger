@@ -81,6 +81,7 @@ public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceReques
 
         boolean isLastArtCatByPageIsBottom = lastArtCatByPage.isInitialInCategory();
 //        Log.i(LOG, "isLastArtCatByPageIsBottom: "+String.valueOf(isLastArtCatByPageIsBottom));
+//        Log.i(LOG, "artCatListFromDBFromGivenPage.size(): "+artCatListFromDBFromGivenPage.size());
 
         if ((artCatListFromDBFromGivenPage.size() == Const.NUM_OF_ARTS_ON_PAGE) || isLastArtCatByPageIsBottom)
         {
@@ -94,6 +95,11 @@ public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceReques
 
             Articles articles = new Articles();
             articles.setResult(list);
+
+            if(isLastArtCatByPageIsBottom)
+            {
+                articles.setContainsBottomArt(true);
+            }
 
             return articles;
         }
