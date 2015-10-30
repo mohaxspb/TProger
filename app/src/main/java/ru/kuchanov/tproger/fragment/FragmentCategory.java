@@ -425,7 +425,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
             ArrayList<Article> list = new ArrayList<>(articles.getResult());
 
-            if (list.size()!= Const.NUM_OF_ARTS_ON_PAGE && !articles.isContainsBottomArt())
+            if (list.size() != Const.NUM_OF_ARTS_ON_PAGE && !articles.isContainsBottomArt())
             {
                 //TODO error in DB - need to reset category;
                 Log.i(LOG, "error in DB - need to reset category;");
@@ -457,6 +457,26 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 {
                     ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyRemoveEach();
                     ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(artsList);
+                }
+
+                int newArtssQuont = articles.getNumOfNewArts();
+                switch (newArtssQuont)
+                {
+                    case -2:
+                        //not set - do nothing
+                        break;
+                    case -1:
+                        //initial loading  - do nothing
+                        break;
+                    case 0:
+                        Toast.makeText(ctx, "Новых статей не обнаружено!", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 10:
+                        Toast.makeText(ctx, "Обнаружено более 10 новых статей!", Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        Toast.makeText(ctx, "Обнаружено " + newArtssQuont + " новых статей!", Toast.LENGTH_SHORT).show();
+                        break;
                 }
             }
 

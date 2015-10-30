@@ -82,6 +82,7 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         Log.i(LOG, "newArtsQuont: " + newArtsQuont);
 
         Articles articles = new Articles();
+        articles.setNumOfNewArts(newArtsQuont);
         articles.setResult(list);
 
         return articles;

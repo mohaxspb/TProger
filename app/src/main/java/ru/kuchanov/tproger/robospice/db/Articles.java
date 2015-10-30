@@ -22,7 +22,21 @@ public class Articles
     private Collection<Article> result;
 
     @DatabaseField
-    private boolean containsBottomArt=false;
+    private boolean containsBottomArt = false;
+
+    /**
+     * can be
+     * (-1) - initial loading
+     * (0) - no new
+     * (1-9) exact quont of new arts
+     * (10) - 10 or more new arts;
+     *
+     * or
+     * -2 if is not setted
+     *
+     */
+    @DatabaseField
+    private int numOfNewArts = -1;
 
     public int getId()
     {
@@ -47,7 +61,6 @@ public class Articles
     }
 
 
-
     public void setResult(Collection<Article> result)
     {
         this.result = result;
@@ -61,5 +74,15 @@ public class Articles
     public void setContainsBottomArt(boolean containsBottomArt)
     {
         this.containsBottomArt = containsBottomArt;
+    }
+
+    public int getNumOfNewArts()
+    {
+        return numOfNewArts;
+    }
+
+    public void setNumOfNewArts(int numOfNewArts)
+    {
+        this.numOfNewArts = numOfNewArts;
     }
 }

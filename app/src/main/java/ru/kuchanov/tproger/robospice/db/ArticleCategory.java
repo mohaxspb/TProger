@@ -256,6 +256,13 @@ public class ArticleCategory
         //4) set nextArtId for last art in given list (last, that dont have equal id with oldTopArtCat
         //5) return how many new arts we get
 
+        /**
+         * can be
+         * (-1) - initial loading
+         * (0) - no new
+         * (1-9) exact quont of new arts
+         * (10) - 10 or more new arts;
+         */
         int quontOfNewArtsInCategory = -1;
 
         ArrayList<ArticleCategory> artCatListToWrite = new ArrayList<>();
