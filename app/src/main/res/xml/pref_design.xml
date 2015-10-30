@@ -1,23 +1,25 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <SwitchPreference
-        android:defaultValue="false"
-        android:icon="?nightModeIcon"
-        android:key="@string/pref_design_key_night_mode"
-        android:summaryOff="Ночной режим"
-        android:summaryOn="Ночной режим"
-        android:switchTextOff="Выкл"
-        android:switchTextOn="Вкл"/>
+    <PreferenceCategory
+        android:title="@string/pref_design_main_category_title">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="?nightModeIcon"
+            android:key="@string/pref_design_key_night_mode"
+            android:summaryOff="Ночной режим"
+            android:summaryOn="Ночной режим"
+            android:switchTextOff="Выкл"
+            android:switchTextOn="Вкл"/>
 
-    <SwitchPreference
-        android:defaultValue="false"
-        android:icon="?dashboardIcon"
-        android:key="@string/pref_design_key_list_style"
-        android:summaryOff="В виде сетки"
-        android:summaryOn="В виде сетки"
-        android:switchTextOff="Выкл"
-        android:switchTextOn="Вкл"/>
-
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="?dashboardIcon"
+            android:key="@string/pref_design_key_list_style"
+            android:summaryOff="В виде сетки"
+            android:summaryOn="В виде сетки"
+            android:switchTextOff="Выкл"
+            android:switchTextOn="Вкл"/>
+    </PreferenceCategory>
     <PreferenceCategory android:title="Размер текста">
 
         <Preference

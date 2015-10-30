@@ -53,6 +53,7 @@
     <string name="pref_about_github_key">pref_about_github_key</string>
     <string name="pref_about_github_title">Ссылка на GitHub</string>
     <string name="pref_about_github_summary">Откроется браузер</string>
+    <string name="pref_design_main_category_title">Основные</string>
 
 
 </resources>

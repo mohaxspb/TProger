@@ -459,8 +459,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                     ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(artsList);
                 }
 
-                int newArtssQuont = articles.getNumOfNewArts();
-                switch (newArtssQuont)
+                int newArtsQuont = articles.getNumOfNewArts();
+                switch (newArtsQuont)
                 {
                     case -2:
                         //not set - do nothing
@@ -475,7 +475,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                         Toast.makeText(ctx, "Обнаружено более 10 новых статей!", Toast.LENGTH_SHORT).show();
                         break;
                     default:
-                        Toast.makeText(ctx, "Обнаружено " + newArtssQuont + " новых статей!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ctx, "Обнаружено " + newArtsQuont + " новых статей!", Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
