@@ -3,6 +3,7 @@
     <attr name="myCardBackgroundColor" format="color"/>
     <attr name="myCardBackgroundColorDark" format="color"/>
     <!---->
+    <attr name="overflowIcon" format="reference" />
     <attr name="settingsIcon" format="reference"/>
     <attr name="commentsIcon" format="reference"/>
     <attr name="shareIcon" format="reference"/>
@@ -52,4 +53,8 @@
     <attr name="clearIcon" format="reference"/>
     <attr name="createIcon" format="reference"/>
     <attr name="favoriteStarIcon" format="reference"/>
+
+    <!--<attr name="readenIcon" format="reference" />-->
+    <!--<attr name="unreadenIcon" format="reference" />-->
+
 </resources>

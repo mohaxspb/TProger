@@ -1,46 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.kuchanov.tproger" >
+<manifest package="ru.kuchanov.tproger"
+          xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
-        android:versionCode="0042"
-        android:versionName="0.0.42"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/My.Theme.Light" >
-
-
-
+        android:theme="@style/My.Theme.Light"
+        android:versionCode="0042"
+        android:versionName="0.0.42">
 
         <activity
             android:name=".activity.ActivityMain"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".activity.ActivitySettings"
-            android:label="@string/title_activity_activity_settings" >
+            android:label="@string/title_activity_activity_settings">
         </activity>
 
         <service
-        android:name=".robospice.HtmlSpiceService"
-        android:enabled="true"
-        android:exported="true" >
-    </service>
+            android:name=".robospice.HtmlSpiceService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
         <service
             android:name=".robospice.HtmlSpiceServiceOffline"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true">
         </service>
     </application>
 

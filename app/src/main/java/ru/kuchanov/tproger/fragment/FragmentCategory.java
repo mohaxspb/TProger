@@ -152,7 +152,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         //fill recycler with data of make request for it
         if (artsList.size() != 0)
         {
-            recyclerView.setAdapter(new RecyclerAdapterArtsList(artsList));
+            recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
 
             recyclerView.clearOnScrollListeners();
             recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
@@ -451,7 +451,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 artsList = new ArrayList<>(list);
                 if (recyclerView.getAdapter() == null)
                 {
-                    recyclerView.setAdapter(new RecyclerAdapterArtsList(artsList));
+                    recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
                 }
                 else
                 {

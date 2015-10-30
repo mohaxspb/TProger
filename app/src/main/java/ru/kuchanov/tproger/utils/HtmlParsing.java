@@ -96,7 +96,7 @@ public class HtmlParsing
             String imageUrl = null;
             int imageWidth = 0;
             int imageHeight = 0;
-            Elements imageDiv = postTitleBox.getElementsByClass("entry-image");
+            Elements imageDiv = article.getElementsByClass("entry-image");
             if (imageDiv.size() != 0)
             {
                 Elements img = imageDiv.get(0).getElementsByTag("img");

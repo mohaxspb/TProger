@@ -20,6 +20,7 @@
             android:switchTextOff="Выкл"
             android:switchTextOn="Вкл"/>
     </PreferenceCategory>
+
     <PreferenceCategory android:title="Размер текста">
 
         <Preference

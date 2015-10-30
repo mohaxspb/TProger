@@ -16,6 +16,7 @@
         <item name="myCardBackgroundColor">@color/material_grey_50</item>
         <item name="myCardBackgroundColorDark">@color/material_grey_300</item>
         <!-- settings icons -->
+        <item name="overflowIcon">@drawable/ic_more_vert_white_48dp</item>
         <item name="themeIcon">@drawable/ic_color_lens_grey600_48dp</item>
         <item name="vibrationIcon">@drawable/ic_vibration_grey600_48dp</item>
         <item name="aboutIcon">@drawable/ic_info_grey600_48dp</item>
@@ -55,6 +56,9 @@
         <item name="clearIcon">@drawable/ic_clear_grey600_48dp</item>
         <item name="createIcon">@drawable/ic_create_grey600_48dp</item>
         <item name="favoriteStarIcon">@drawable/ic_grade_grey600_48dp</item>
+
+        <!--<item name="readenIcon">@drawable/ic_drafts_grey600_48dp</item>-->
+        <!--<item name="unreadenIcon">@drawable/ic_markunread_grey600_48dp</item>-->
     </style>
 
     <style name="My.Theme.Light" parent="Base.Theme.Light" >
@@ -78,6 +82,7 @@
         <item name="myCardBackgroundColorDark">@color/material_grey_700</item>
         <!-- icons -->
 
+        <item name="overflowIcon">@drawable/ic_more_vert_grey600_48dp</item>
         <item name="themeIconSmall">@drawable/ic_color_lens_white_36dp</item>
         <item name="vibrationIconSmall">@drawable/ic_vibration_white_36dp</item>
         <item name="aboutIconSmall">@drawable/ic_info_white_36dp</item>
@@ -113,6 +118,9 @@
         <item name="clearIcon">@drawable/ic_clear_white_48dp</item>
         <item name="createIcon">@drawable/ic_create_white_48dp</item>
         <item name="favoriteStarIcon">@drawable/ic_grade_white_48dp</item>
+
+        <!--<item name="readenIcon">@drawable/ic_drafts_white_48dp</item>-->
+        <!--<item name="unreadenIcon">@drawable/ic_markunread_white_48dp</item>-->
     </style>
 
     <style name="My.Theme.Dark" parent="Base.Theme.Dark" >

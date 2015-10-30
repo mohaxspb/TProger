@@ -61,6 +61,8 @@ dependencies {
     compile('com.afollestad.material-dialogs:core:0.8.4.2@aar') {
         transitive = true
     }
+    //UIL
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
 
     //materialDialogs
     repositories {
