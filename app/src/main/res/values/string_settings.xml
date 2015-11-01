@@ -20,6 +20,26 @@
     <string name="text_size_ui">Размер текста в карточках статей</string>
     <string name="pref_design_key_text_size_article">pref_design_key_text_size_article</string>
     <string name="text_size_article">Размер  текста в статьях</string>
+
+    <string name="pref_design_key_art_card_more_actions">pref_design_key_art_card_more_actions</string>
+    <string name="pref_design_key_art_card_preview_show">pref_design_key_art_card_preview_show</string>
+
+    <string name="pref_design_main_category_title">Основные</string>
+    <string name="pref_design_key_col_num">pref_design_key_col_num</string>
+    <string name="pref_design_title_col_num">Число колонок</string>
+
+    <string-array name="pref_design_col_num_entries">
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <string-array name="pref_design_col_num_values">
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
     <!--<string name="text_size_comments">Размер  текста комментариев</string>-->
     <!-- settings for Notifications -->
     <string name="pref_header_notifications_title">Уведомления</string>
@@ -53,7 +73,5 @@
     <string name="pref_about_github_key">pref_about_github_key</string>
     <string name="pref_about_github_title">Ссылка на GitHub</string>
     <string name="pref_about_github_summary">Откроется браузер</string>
-    <string name="pref_design_main_category_title">Основные</string>
-
 
 </resources>

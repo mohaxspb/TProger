@@ -69,6 +69,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
     private SharedPreferences pref;
 
+    private int numOfColsInGridLayoutManager = 2;
+
     private ArrayList<Article> artsList = new ArrayList<>();
 
     public static FragmentCategory newInstance(String category)
@@ -112,6 +114,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
         this.pref.registerOnSharedPreferenceChangeListener(this);
+
+        this.numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(this.getString(R.string.pref_design_key_col_num), "2"));
     }
 
     @Override
@@ -136,7 +140,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
         if (isGridManager)
         {
-            recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+            recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
         }
         else
         {
@@ -303,7 +307,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             if (isGridManager)
             {
                 ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyRemoveEach();
-                this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+                this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
                 ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyAddEach();
             }
             else
@@ -312,6 +316,27 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 this.recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
                 ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyAddEach();
             }
+        }
+        if (key.equals(this.getString(R.string.pref_design_key_col_num)))
+        {
+            boolean isGridManager = sharedPreferences.getBoolean(this.getString(R.string.pref_design_key_list_style), false);
+
+            this.numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(key, "2"));
+
+            if (isGridManager)
+            {
+                ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyRemoveEach();
+                this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
+                ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyAddEach();
+            }
+            else
+            {
+                //nothing to do;
+            }
+        }
+        if (key.equals(this.getString(R.string.pref_design_key_art_card_style)))
+        {
+            recyclerView.getAdapter().notifyDataSetChanged();
         }
     }
 
@@ -497,7 +522,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         @Override
         public void onRequestNotFound()
         {
-            Log.i(LOG, "onRequestNotFound called");
+//            Log.i(LOG, "onRequestNotFound called");
         }
     }
 }

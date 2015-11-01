@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +16,13 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.util.ArrayList;
 
 import ru.kuchanov.tproger.robospice.db.Article;
+import ru.kuchanov.tproger.utils.DipToPx;
 import ru.kuchanov.tproger.utils.MyUIL;
 
 public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
     public static final String LOG = RecyclerAdapterArtsList.class.getSimpleName();
-    boolean isSimple;
+    //    boolean showMaxInfo;
     private ArrayList<Article> artsList;
     private SharedPreferences pref;
     private Context ctx;
@@ -32,7 +32,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     {
         this.ctx = ctx;
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
-        isSimple = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
+//        showMaxInfo = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
 
         imageLoader = MyUIL.get(ctx);
 
@@ -51,52 +51,78 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     {
         RecyclerView.ViewHolder vh;
 
-        if (isSimple)
+//        boolean showMaxInfo = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
+//        if (showMaxInfo)
+//        {
+//            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_max, parent, false);
+//            vh = new ViewHolderMaximum(v);
+//            return vh;
+//        }
+//        else
+//        {
+//            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_min, parent, false);
+//            vh = new ViewHolderMinimum(v);
+//            return vh;
+//        }
+
+        View v;
+        switch (viewType)
         {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_min, parent, false);
-            vh = new ViewHolderMinimum(v);
-            return vh;
+            case 1:
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_max, parent, false);
+                vh = new ViewHolderMaximum(v);
+                return vh;
+            case 0:
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_min, parent, false);
+                vh = new ViewHolderMinimum(v);
+                return vh;
+            default:
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_min, parent, false);
+                vh = new ViewHolderMinimum(v);
+                return vh;
         }
-        else
-        {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_max, parent, false);
-            vh = new ViewHolderMaximum(v);
-            return vh;
-        }
+    }
+
+    @Override
+    public int getItemViewType(int position)
+    {
+        // Just as an example, return 0 or 2 depending on position
+        // Note that unlike in ListView adapters, types don't have to be contiguous
+        boolean showMaxInfo = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
+        return (showMaxInfo) ? 1 : 0;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position)
     {
         Article a = artsList.get(position);
-        if (isSimple)
-        {
-            ViewHolderMinimum minHolder = (ViewHolderMinimum) holder;
-            minHolder.title.setText(a.getTitle());
-        }
-        else
+        boolean showMaxInfo = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
+        if (showMaxInfo)
         {
             ViewHolderMaximum maxHolder = (ViewHolderMaximum) holder;
             maxHolder.title.setText(a.getTitle());
 
-            Log.i(LOG, "a.getImageUrl(): " + a.getImageUrl());
-//            Log.i(LOG, "a.getImageWidth(): " + a.getImageWidth());
-//            Log.i(LOG, "a.getImageHeight(): " + a.getImageHeight());
-
+            //Main image
             LinearLayout.LayoutParams paramsImg;
             if (a.getImageUrl() != null)
             {
                 paramsImg = (LinearLayout.LayoutParams) maxHolder.img.getLayoutParams();
 
                 int widthDevice = ctx.getResources().getDisplayMetrics().widthPixels;
-                Log.i(LOG, "widthDevice: " + widthDevice);
-                float scale = (float) widthDevice / a.getImageWidth();
-                Log.i(LOG, "scale: " + scale);
-                float height = (scale) * a.getImageHeight();
-                Log.i(LOG, "height: " + height);
+                float width = widthDevice;
 
-//                paramsImg.width = widthDevice;
-                paramsImg.height = (int)height;
+                boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
+                if (isGridManager)
+                {
+                    int numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(ctx.getString(R.string.pref_design_key_col_num), "2"));
+                    width /= (float) numOfColsInGridLayoutManager;
+                }
+
+                float scale = width / a.getImageWidth();
+                float height = (scale) * a.getImageHeight();
+
+                paramsImg.width = (int) width;
+                paramsImg.height = (int) height;
 
                 maxHolder.img.setLayoutParams(paramsImg);
 
@@ -109,6 +135,31 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                 paramsImg.height = 0;
                 maxHolder.img.setLayoutParams(paramsImg);
             }
+            //overflowIcon
+            View overflowParent = (View) maxHolder.overflow.getParent();
+            LinearLayout.LayoutParams paramsOverflow;
+            boolean showOverflow = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_more_actions), false);
+            if (showOverflow)
+            {
+                paramsOverflow = (LinearLayout.LayoutParams) overflowParent.getLayoutParams();
+                paramsOverflow.height = (int) DipToPx.convert(40, ctx);
+                paramsOverflow.width = (int) DipToPx.convert(40, ctx);
+                overflowParent.setLayoutParams(paramsOverflow);
+                //TODO set onClick
+            }
+            else
+            {
+                paramsOverflow = (LinearLayout.LayoutParams) overflowParent.getLayoutParams();
+                paramsOverflow.height = 0;
+                paramsOverflow.width = 0;
+                overflowParent.setLayoutParams(paramsOverflow);
+                overflowParent.setOnClickListener(null);
+            }
+        }
+        else
+        {
+            ViewHolderMinimum minHolder = (ViewHolderMinimum) holder;
+            minHolder.title.setText(a.getTitle());
         }
     }
 
@@ -149,12 +200,14 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     {
         public TextView title;
         public ImageView img;
+        public ImageView overflow;
 
         public ViewHolderMaximum(View v)
         {
             super(v);
             title = (TextView) v.findViewById(R.id.title);
             img = (ImageView) v.findViewById(R.id.art_card_img);
+            overflow = (ImageView) v.findViewById(R.id.actions);
         }
     }
 }

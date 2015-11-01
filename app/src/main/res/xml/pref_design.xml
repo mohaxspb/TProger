@@ -19,6 +19,16 @@
             android:summaryOn="В виде сетки"
             android:switchTextOff="Выкл"
             android:switchTextOn="Вкл"/>
+
+        <ListPreference
+            android:icon="?viewModuleIcon"
+            android:key="@string/pref_design_key_col_num"
+            android:title="@string/pref_design_title_col_num"
+            android:entries="@array/pref_design_col_num_entries"
+            android:entryValues="@array/pref_design_col_num_values"
+            android:defaultValue="2"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Размер текста">
@@ -52,10 +62,19 @@
             android:switchTextOff="Выкл"
             android:switchTextOn="Вкл"/>
         <SwitchPreference
+            android:defaultValue="false"
+            android:dependency="@string/pref_design_key_art_card_style"
+            android:icon="?overflowIcon"
+            android:key="@string/pref_design_key_art_card_more_actions"
+            android:summaryOff="Кнопка дополнительных действий"
+            android:summaryOn="Кнопка дополнительных действий"
+            android:switchTextOff="Выкл"
+            android:switchTextOn="Вкл"/>
+        <SwitchPreference
             android:defaultValue="true"
             android:dependency="@string/pref_design_key_art_card_style"
             android:icon="?pagesIcon"
-            android:key="preview_show"
+            android:key="@string/pref_design_key_art_card_preview_show"
             android:summaryOff="Краткое содержание"
             android:summaryOn="Краткое содержание"
             android:switchTextOff="Выкл"

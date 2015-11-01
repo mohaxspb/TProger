@@ -16,11 +16,12 @@
         <item name="myCardBackgroundColor">@color/material_grey_50</item>
         <item name="myCardBackgroundColorDark">@color/material_grey_300</item>
         <!-- settings icons -->
-        <item name="overflowIcon">@drawable/ic_more_vert_white_48dp</item>
+        <item name="overflowIcon">@drawable/ic_more_vert_grey600_48dp</item>
         <item name="themeIcon">@drawable/ic_color_lens_grey600_48dp</item>
         <item name="vibrationIcon">@drawable/ic_vibration_grey600_48dp</item>
         <item name="aboutIcon">@drawable/ic_info_grey600_48dp</item>
         <item name="dashboardIcon">@drawable/ic_dashboard_grey600_48dp</item>
+        <item name="viewModuleIcon">@drawable/ic_view_module_grey600_48dp</item>
         <item name="pictureInPictureIcon">@drawable/ic_picture_in_picture_grey600_48dp</item>
         <item name="pagesIcon">@drawable/ic_pages_grey600_48dp</item>
 
@@ -82,11 +83,12 @@
         <item name="myCardBackgroundColorDark">@color/material_grey_700</item>
         <!-- icons -->
 
-        <item name="overflowIcon">@drawable/ic_more_vert_grey600_48dp</item>
+        <item name="overflowIcon">@drawable/ic_more_vert_white_48dp</item>
         <item name="themeIconSmall">@drawable/ic_color_lens_white_36dp</item>
         <item name="vibrationIconSmall">@drawable/ic_vibration_white_36dp</item>
         <item name="aboutIconSmall">@drawable/ic_info_white_36dp</item>
         <item name="dashboardIcon">@drawable/ic_dashboard_white_48dp</item>
+        <item name="viewModuleIcon">@drawable/ic_view_module_white_48dp</item>
         <item name="pictureInPictureIcon">@drawable/ic_picture_in_picture_white_48dp</item>
         <item name="pagesIcon">@drawable/ic_pages_white_48dp</item>
 

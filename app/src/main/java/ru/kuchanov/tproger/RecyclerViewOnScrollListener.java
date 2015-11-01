@@ -40,10 +40,12 @@ public abstract class RecyclerViewOnScrollListener extends OnScrollListener
 
         if(isGridManager)
         {
+            int numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(ctx.getString(R.string.pref_design_key_col_num), "2"));
+
             managerGrid = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
             visibleItemCount = managerGrid.getChildCount();
             totalItemCount = managerGrid.getItemCount();
-            firstVisibleItem = managerGrid.findFirstVisibleItemPositions(new int[2])[0];
+            firstVisibleItem = managerGrid.findFirstVisibleItemPositions(new int[numOfColsInGridLayoutManager])[0];
         }
         else
         {

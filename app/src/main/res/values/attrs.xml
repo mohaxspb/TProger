@@ -30,6 +30,7 @@
     <attr name="vibrationIcon" format="reference" />
     <attr name="aboutIcon" format="reference"/>
     <attr name="dashboardIcon" format="reference"/>
+    <attr name="viewModuleIcon" format="reference"/>
     <attr name="pictureInPictureIcon" format="reference"/>
 
     <!--setting icons small-->
