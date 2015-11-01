@@ -5,6 +5,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
 import ru.kuchanov.tproger.R;
+import ru.kuchanov.tproger.activity.ActivitySettings;
 
 /**
  * Created by Юрий on 21.09.2015 16:36.
@@ -20,6 +21,12 @@ public class FragmentPreferenceDesign extends PreferenceFragment
     {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_design);
+
+        // Bind the summaries of EditText/List/Dialog/Ringtone preferences
+        // to their values. When their values change, their summaries are
+        // updated to reflect the new value, per the Android Design
+        // guidelines.
+        ActivitySettings.bindPreferenceSummaryToValue(findPreference(this.getString(R.string.pref_design_key_col_num)));
 
         //textSize
         Preference prefTextSize = findPreference(this.getString(R.string.pref_design_key_text_size));

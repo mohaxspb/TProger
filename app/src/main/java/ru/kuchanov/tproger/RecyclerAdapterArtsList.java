@@ -51,35 +51,18 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     {
         RecyclerView.ViewHolder vh;
 
-//        boolean showMaxInfo = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
-//        if (showMaxInfo)
-//        {
-//            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_max, parent, false);
-//            vh = new ViewHolderMaximum(v);
-//            return vh;
-//        }
-//        else
-//        {
-//            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_min, parent, false);
-//            vh = new ViewHolderMinimum(v);
-//            return vh;
-//        }
-
-        View v;
-        switch (viewType)
+        boolean showMaxInfo = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
+        if (showMaxInfo)
         {
-            case 1:
-                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_max, parent, false);
-                vh = new ViewHolderMaximum(v);
-                return vh;
-            case 0:
-                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_min, parent, false);
-                vh = new ViewHolderMinimum(v);
-                return vh;
-            default:
-                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_min, parent, false);
-                vh = new ViewHolderMinimum(v);
-                return vh;
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_max, parent, false);
+            vh = new ViewHolderMaximum(v);
+            return vh;
+        }
+        else
+        {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_min, parent, false);
+            vh = new ViewHolderMinimum(v);
+            return vh;
         }
     }
 
