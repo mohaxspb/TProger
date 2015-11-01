@@ -8,7 +8,7 @@
     android:layout_marginRight="5dp"
     android:background="@android:color/transparent">-->
 
-<ru.kuchanov.tproger.custom.view.MySwipeRefreshLayout
+<ru.kuchanov.tproger.custom.view.CustomSwipeRefreshLayout
     android:id="@+id/swipe_refresh"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -21,4 +21,4 @@
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-</ru.kuchanov.tproger.custom.view.MySwipeRefreshLayout>
+</ru.kuchanov.tproger.custom.view.CustomSwipeRefreshLayout>

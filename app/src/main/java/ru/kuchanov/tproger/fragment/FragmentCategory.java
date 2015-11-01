@@ -33,7 +33,7 @@ import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapterArtsList;
 import ru.kuchanov.tproger.RecyclerViewOnScrollListener;
-import ru.kuchanov.tproger.custom.view.MySwipeRefreshLayout;
+import ru.kuchanov.tproger.custom.view.CustomSwipeRefreshLayout;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventCollapsed;
 import ru.kuchanov.tproger.otto.EventExpanded;
@@ -59,7 +59,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
     protected MySpiceManager spiceManager = AppSinglton.getInstance().getSpiceManager();
     protected MySpiceManager spiceManagerOffline = AppSinglton.getInstance().getSpiceManagerOffline();
-    protected MySwipeRefreshLayout swipeRefreshLayout;
+    protected CustomSwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
     private String category;
     private Context ctx;
@@ -124,8 +124,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         Log.i(LOG, "onCreateView called");
         View v = inflater.inflate(R.layout.fragment_category, container, false);
 
-        swipeRefreshLayout = (MySwipeRefreshLayout) v.findViewById(R.id.swipe_refresh);
-        swipeRefreshLayout.setOnRefreshListener(new MySwipeRefreshLayout.OnRefreshListener()
+        swipeRefreshLayout = (CustomSwipeRefreshLayout) v.findViewById(R.id.swipe_refresh);
+        swipeRefreshLayout.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener()
         {
             @Override
             public void onRefresh()
