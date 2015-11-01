@@ -44,6 +44,7 @@ import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArtsFromBottomOff
 import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArtsOffline;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.Articles;
+import ru.kuchanov.tproger.utils.AttributeGetter;
 
 /**
  * Created by Юрий on 17.09.2015 17:20.
@@ -360,11 +361,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             }
             else
             {
-                int[] textSizeAttr = new int[]{android.R.attr.actionBarSize};
-                TypedValue typedValue = new TypedValue();
-                TypedArray a = ctx.obtainStyledAttributes(typedValue.data, textSizeAttr);
-                int actionBarSize = a.getDimensionPixelSize(0, 100);
-                a.recycle();
+                int actionBarSize= AttributeGetter.getDimentionPixelSize(ctx, android.R.attr.actionBarSize);
                 DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
                 int height = displayMetrics.heightPixels;
                 swipeRefreshLayout.setProgressViewEndTarget(false, height - actionBarSize * 2);
