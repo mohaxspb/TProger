@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +14,16 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.DipToPx;
+import ru.kuchanov.tproger.utils.MyHtmlTagHandler;
 import ru.kuchanov.tproger.utils.MyUIL;
+import ru.kuchanov.tproger.utils.UILImageGetter;
 
 public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
@@ -138,6 +144,31 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                 overflowParent.setLayoutParams(paramsOverflow);
                 overflowParent.setOnClickListener(null);
             }
+            //preview
+            LinearLayout.LayoutParams paramsPreview;
+            boolean showPreview = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_preview_show), false);
+            if (showPreview)
+            {
+                paramsPreview = (LinearLayout.LayoutParams) maxHolder.preview.getLayoutParams();
+                paramsPreview.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                maxHolder.preview.setLayoutParams(paramsPreview);
+
+//                maxHolder.preview.setText(a.getPreview());
+                maxHolder.preview.setText(
+                        Html.fromHtml(
+                                a.getPreview(), new UILImageGetter(maxHolder.preview, ctx), new MyHtmlTagHandler()));
+            }
+            else
+            {
+                paramsPreview = (LinearLayout.LayoutParams) maxHolder.preview.getLayoutParams();
+                paramsPreview.height = 0;
+                maxHolder.preview.setLayoutParams(paramsPreview);
+            }
+            //date
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy 'в' HH:mm", Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+//                Log.i(LOG, sdf.format(pubDate));//prints date in the format sdf
+            maxHolder.date.setText(sdf.format(a.getPubDate()));
         }
         else
         {
@@ -182,15 +213,19 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     public static class ViewHolderMaximum extends RecyclerView.ViewHolder
     {
         public TextView title;
+        public TextView date;
         public ImageView img;
         public ImageView overflow;
+        public TextView preview;
 
         public ViewHolderMaximum(View v)
         {
             super(v);
             title = (TextView) v.findViewById(R.id.title);
+            date = (TextView) v.findViewById(R.id.date);
             img = (ImageView) v.findViewById(R.id.art_card_img);
             overflow = (ImageView) v.findViewById(R.id.actions);
+            preview = (TextView) v.findViewById(R.id.preview);
         }
     }
 }

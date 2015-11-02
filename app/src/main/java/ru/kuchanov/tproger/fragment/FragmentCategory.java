@@ -335,7 +335,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 //nothing to do;
             }
         }
-        if (key.equals(this.getString(R.string.pref_design_key_art_card_style)))
+        if (key.equals(this.getString(R.string.pref_design_key_art_card_style))
+                || key.equals(this.getString(R.string.pref_design_key_art_card_preview_show)))
         {
             recyclerView.getAdapter().notifyDataSetChanged();
         }
@@ -361,7 +362,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             }
             else
             {
-                int actionBarSize= AttributeGetter.getDimentionPixelSize(ctx, android.R.attr.actionBarSize);
+                int actionBarSize = AttributeGetter.getDimentionPixelSize(ctx, android.R.attr.actionBarSize);
                 DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
                 int height = displayMetrics.heightPixels;
                 swipeRefreshLayout.setProgressViewEndTarget(false, height - actionBarSize * 2);
@@ -514,6 +515,11 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 }
             });
             setLoading(false);
+
+            for(Article a: artsList)
+            {
+                Log.i(LOG, a.getPreview());
+            }
         }
 
         @Override

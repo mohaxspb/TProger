@@ -86,18 +86,18 @@
                             android:src="?overflowIcon"/>
                     </com.balysv.materialripple.MaterialRippleLayout>
                 </LinearLayout>
-
-                <!-- preview -->
-
-                <TextView
-                    android:id="@+id/preview"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:text="@string/hello_world"
-                    android:textColor="?android:textColorPrimary"/>
             </LinearLayout>
         </com.balysv.materialripple.MaterialRippleLayout>
+
+        <!-- preview -->
+
+        <TextView
+            android:id="@+id/preview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="@string/hello_world"
+            android:textColor="?android:textColorPrimary"/>
 
         <!-- bottom panel with share btn, save&read icons , comments btn -->
 

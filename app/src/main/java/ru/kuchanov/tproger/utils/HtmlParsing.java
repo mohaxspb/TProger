@@ -33,8 +33,8 @@ public class HtmlParsing
 
         //check title if it contains "Страница не найдена" and throw exception
         //that means, that we try to load page, that not exists
-        Element pageTitle=doc.getElementsByTag("title").first();
-        if(pageTitle.html().contains("Страница не найдена"))
+        Element pageTitle = doc.getElementsByTag("title").first();
+        if (pageTitle.html().contains("Страница не найдена"))
         {
             throw new Exception(Const.ERROR_404_WHILE_PARSING_PAGE);
         }
@@ -109,9 +109,10 @@ public class HtmlParsing
             }
             String preview;
             Element previewDiv = article.getElementsByClass("entry-content").get(0);
-//            Element previewP = previewDiv.getElementsByTag("p").get(0);
-//            preview = previewP.html();
+            previewDiv.select("footer").remove();
             preview = previewDiv.html();
+            preview = preview.replaceAll("</p>", "");
+            preview = preview.replaceAll("<p>", "<p></p>");
 
             Article a = new Article();
             a.setUrl(url);
