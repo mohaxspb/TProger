@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.method.LinkMovementMethod;
+import android.text.style.URLSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +25,7 @@ import java.util.TimeZone;
 
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.DipToPx;
+import ru.kuchanov.tproger.utils.MakeLinksClicable;
 import ru.kuchanov.tproger.utils.MyHtmlTagHandler;
 import ru.kuchanov.tproger.utils.MyUIL;
 import ru.kuchanov.tproger.utils.UILImageGetter;
@@ -157,6 +162,28 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                 maxHolder.preview.setText(
                         Html.fromHtml(
                                 a.getPreview(), new UILImageGetter(maxHolder.preview, ctx), new MyHtmlTagHandler()));
+
+                maxHolder.preview.setLinksClickable(true);
+                maxHolder.preview.setMovementMethod(LinkMovementMethod.getInstance());
+
+                CharSequence text = maxHolder.preview.getText();
+                if (text instanceof Spannable)
+                {
+                    int end = text.length();
+                    Spannable sp = (Spannable) maxHolder.preview.getText();
+                    URLSpan[] urls = sp.getSpans(0, end, URLSpan.class);
+                    SpannableStringBuilder style = new SpannableStringBuilder(text);
+                    //					style.clearSpans();//should clear old spans
+                    for (URLSpan url : urls)
+                    {
+                        style.removeSpan(url);
+                        MakeLinksClicable.CustomerTextClick click = new MakeLinksClicable.CustomerTextClick(url.getURL());
+                        style.setSpan(click, sp.getSpanStart(url), sp.getSpanEnd(url),
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }
+                    maxHolder.preview.setText(style);
+                }
+
             }
             else
             {
