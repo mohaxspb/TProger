@@ -330,10 +330,10 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
                 ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyAddEach();
             }
-            else
-            {
-                //nothing to do;
-            }
+//            else
+//            {
+//                //nothing to do;
+//            }
         }
         if (key.equals(this.getString(R.string.pref_design_key_art_card_style))
                 || key.equals(this.getString(R.string.pref_design_key_art_card_preview_show)))
@@ -384,6 +384,21 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         }
     }
 
+    private void resetOnScroll()
+    {
+        recyclerView.clearOnScrollListeners();
+        recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
+        {
+            @Override
+            public void onLoadMore()
+            {
+                Log.i(LOG, "OnLoadMore called!");
+                currentPageToLoad++;
+                performRequest(currentPageToLoad, false, false);
+            }
+        });
+    }
+
     //inner class of your spiced Activity
     private class ListFollowersRequestListener implements PendingRequestListener<Articles>
     {
@@ -410,17 +425,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             }
 
             //reset onScrollListener (isuue #1)
-            recyclerView.clearOnScrollListeners();
-            recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
-            {
-                @Override
-                public void onLoadMore()
-                {
-                    Log.i(LOG, "OnLoadMore called!");
-                    currentPageToLoad++;
-                    performRequest(currentPageToLoad, false, false);
-                }
-            });
+            resetOnScroll();
 
             setLoading(false);
             if (currentPageToLoad > 1)
@@ -450,15 +455,19 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
             if (list.size() != Const.NUM_OF_ARTS_ON_PAGE && !articles.isContainsBottomArt())
             {
-                //TODO error in DB - need to reset category;
+                //error in DB - need to reset category;
                 Log.i(LOG, "error in DB - need to reset category;");
                 artsList = new ArrayList<>();
                 ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyRemoveEach();
                 ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(artsList);
                 currentPageToLoad = 1;
                 performRequest(currentPageToLoad, true, true);
-            }
 
+                resetOnScroll();
+                setLoading(false);
+
+                return;
+            }
 
             Log.i(LOG, "RECEIVE " + list.size() + " arts for page: " + currentPageToLoad);
 
@@ -503,23 +512,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 }
             }
 
-            recyclerView.clearOnScrollListeners();
-            recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
-            {
-                @Override
-                public void onLoadMore()
-                {
-                    Log.i(LOG, "OnLoadMore called!");
-                    currentPageToLoad++;
-                    performRequest(currentPageToLoad, false, false);
-                }
-            });
+            resetOnScroll();
             setLoading(false);
-
-            for(Article a: artsList)
-            {
-                Log.i(LOG, a.getPreview());
-            }
         }
 
         @Override
@@ -528,4 +522,5 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //            Log.i(LOG, "onRequestNotFound called");
         }
     }
+
 }

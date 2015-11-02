@@ -5,6 +5,9 @@ package ru.kuchanov.tproger.utils;
  * For ExpListTest.
  */
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 /**
  * class for formatting Html and extracting some tags from p tag;
  */
@@ -259,4 +262,15 @@ public class HtmlTextFormatting
 //
 //        return newTagToReturn;
 //    }
+
+    public static boolean hasUnsupportedTags(String html)
+    {
+        Document doc = Jsoup.parse(html);
+
+        if (/*doc.getElementsByTag("code").size() != 0 || */doc.getElementsByTag("table").size() != 0)
+        {
+            return true;
+        }
+        return false;
+    }
 }

@@ -1,11 +1,5 @@
 package ru.kuchanov.tproger.utils;
 
-/**
- * Created by Юрий on 01.11.2015 23:47.
- * For ExpListTest.
- */
-
-
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
