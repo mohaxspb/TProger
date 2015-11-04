@@ -475,7 +475,10 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
             if (currentPageToLoad > 1)
             {
-                artsList.addAll(list);
+//                artsList.addAll(list);
+                ArrayList<Article> prevList=new ArrayList<>(artsList);
+                prevList.addAll(list);
+                artsList = new ArrayList<>(prevList);
                 ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(list);
             }
             else

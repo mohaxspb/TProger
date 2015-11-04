@@ -15,7 +15,7 @@ import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
-import ru.kuchanov.tproger.utils.HtmlParsing;
+import ru.kuchanov.tproger.utils.html.HtmlParsing;
 
 /**
  * Created by Юрий on 16.10.2015 16:43.

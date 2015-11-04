@@ -1,4 +1,4 @@
-package ru.kuchanov.tproger.utils;
+package ru.kuchanov.tproger.utils.html;
 
 import android.text.Editable;
 import android.text.Html.TagHandler;

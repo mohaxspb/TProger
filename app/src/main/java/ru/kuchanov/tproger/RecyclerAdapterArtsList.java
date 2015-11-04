@@ -4,21 +4,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.method.LinkMovementMethod;
-import android.text.style.URLSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+
+import org.jsoup.nodes.Element;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,11 +22,9 @@ import java.util.TimeZone;
 
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.DipToPx;
-import ru.kuchanov.tproger.utils.HtmlTextFormatting;
-import ru.kuchanov.tproger.utils.MakeLinksClicable;
-import ru.kuchanov.tproger.utils.MyHtmlTagHandler;
 import ru.kuchanov.tproger.utils.MyUIL;
-import ru.kuchanov.tproger.utils.UILImageGetter;
+import ru.kuchanov.tproger.utils.html.HtmlParsing;
+import ru.kuchanov.tproger.utils.html.HtmlToView;
 
 public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
@@ -157,80 +150,63 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             boolean showPreview = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_preview_show), false);
             if (showPreview)
             {
-                if (HtmlTextFormatting.hasUnsupportedTags(a.getPreview()))
-                {
-                    paramsPreview = (LinearLayout.LayoutParams) maxHolder.preview.getLayoutParams();
-                    paramsPreview.height = 0;
-                    maxHolder.preview.setLayoutParams(paramsPreview);
+                ArrayList<Element> elements = HtmlParsing.getElementListFromHtml(a.getPreview());
 
-                    WebView webView = new WebView(ctx);
+                HtmlToView.add(maxHolder.preview, elements);
 
-                    int indexOfPreview = maxHolder.mainLin.indexOfChild(maxHolder.preview);
-                    maxHolder.mainLin.addView(webView, indexOfPreview);
-
-                    LinearLayout.LayoutParams webParams = (LinearLayout.LayoutParams) webView.getLayoutParams();
-                    webParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
-                    webParams.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                    webView.setLayoutParams(webParams);
-
-                    Log.i(LOG, a.getPreview());
-
-//                    webView.loadData(a.getPreview(), "text/html", "utf-8");
-                    webView.loadDataWithBaseURL(null, a.getPreview(), "text/html", "UTF-8", null);
-                }
-                else
-                {
-                    paramsPreview = (LinearLayout.LayoutParams) maxHolder.preview.getLayoutParams();
-                    paramsPreview.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                    maxHolder.preview.setLayoutParams(paramsPreview);
-
-                    maxHolder.preview.setText(
-                            Html.fromHtml(
-                                    a.getPreview(), new UILImageGetter(maxHolder.preview, ctx), new MyHtmlTagHandler()));
-
-                    maxHolder.preview.setLinksClickable(true);
-                    maxHolder.preview.setMovementMethod(LinkMovementMethod.getInstance());
-
-                    CharSequence text = maxHolder.preview.getText();
-                    if (text instanceof Spannable)
-                    {
-                        int end = text.length();
-                        Spannable sp = (Spannable) maxHolder.preview.getText();
-                        URLSpan[] urls = sp.getSpans(0, end, URLSpan.class);
-                        SpannableStringBuilder style = new SpannableStringBuilder(text);
-                        //					style.clearSpans();//should clear old spans
-                        for (URLSpan url : urls)
-                        {
-                            style.removeSpan(url);
-                            MakeLinksClicable.CustomerTextClick click = new MakeLinksClicable.CustomerTextClick(url.getURL());
-                            style.setSpan(click, sp.getSpanStart(url), sp.getSpanEnd(url),
-                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        }
-                        maxHolder.preview.setText(style);
-                    }
-                }
+//                if (HtmlTextFormatting.hasUnsupportedTags(a.getPreview()))
+//                {
+//                    paramsPreview = (LinearLayout.LayoutParams) maxHolder.preview.getLayoutParams();
+//                    paramsPreview.height = 0;
+//                    maxHolder.preview.setLayoutParams(paramsPreview);
+//
+//                    WebView webView = new WebView(ctx);
+//
+//                    int indexOfPreview = maxHolder.mainLin.indexOfChild(maxHolder.preview);
+//                    maxHolder.mainLin.addView(webView, indexOfPreview);
+//
+//                    LinearLayout.LayoutParams webParams = (LinearLayout.LayoutParams) webView.getLayoutParams();
+//                    webParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
+//                    webParams.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+//                    webView.setLayoutParams(webParams);
+//
+//                    webView.loadDataWithBaseURL(null, a.getPreview(), "text/html", "UTF-8", null);
+//                }
+//                else
+//                {
+//                    String previewText = a.getPreview();
+//
+//                    previewText = previewText.replaceAll("</p>", "");
+//                    previewText = previewText.replaceAll("<p>", "<p></p>");
+//
+//                    paramsPreview = (LinearLayout.LayoutParams) maxHolder.preview.getLayoutParams();
+//                    paramsPreview.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+//                    maxHolder.preview.setLayoutParams(paramsPreview);
+//
+////                    maxHolder.preview.setText(
+////                            Html.fromHtml(
+////                                    previewText, new UILImageGetter(maxHolder.preview, ctx), new MyHtmlTagHandler()));
+////
+////                    maxHolder.preview.setLinksClickable(true);
+////                    maxHolder.preview.setMovementMethod(LinkMovementMethod.getInstance());
+////
+////                    CharSequence text = maxHolder.preview.getText();
+////                    if (text instanceof Spannable)
+////                    {
+////                        maxHolder.preview.setText(MakeLinksClicable.reformatText(text));
+////                    }
+//                }
 
             }
             else
             {
+                if(maxHolder.preview.getChildCount()!=0)
+                {
+                    maxHolder.preview.removeAllViews();
+                }
                 paramsPreview = (LinearLayout.LayoutParams) maxHolder.preview.getLayoutParams();
                 paramsPreview.height = 0;
                 maxHolder.preview.setLayoutParams(paramsPreview);
-
-                boolean hasWebView = false;
-                View webView=null;
-                for (int i = 0; i < maxHolder.mainLin.getChildCount() && !hasWebView; i++)
-                {
-                    View v = maxHolder.mainLin.getChildAt(i);
-
-                    hasWebView = v instanceof WebView;
-                    webView=v;
-                }
-                if(hasWebView)
-                {
-                    maxHolder.mainLin.removeView(webView);
-                }
-
             }
             //date
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy 'в' HH:mm", Locale.getDefault());
@@ -284,7 +260,8 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         public TextView date;
         public ImageView img;
         public ImageView overflow;
-        public TextView preview;
+
+        public LinearLayout preview;
 
         public LinearLayout mainLin;
 
@@ -295,7 +272,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             date = (TextView) v.findViewById(R.id.date);
             img = (ImageView) v.findViewById(R.id.art_card_img);
             overflow = (ImageView) v.findViewById(R.id.actions);
-            preview = (TextView) v.findViewById(R.id.preview);
+            preview = (LinearLayout) v.findViewById(R.id.preview);
             mainLin = (LinearLayout) v.findViewById(R.id.art_card_main_lin);
         }
     }

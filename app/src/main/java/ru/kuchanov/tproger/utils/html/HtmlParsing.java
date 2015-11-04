@@ -1,4 +1,4 @@
-package ru.kuchanov.tproger.utils;
+package ru.kuchanov.tproger.utils.html;
 
 import android.util.Log;
 
@@ -112,15 +112,15 @@ public class HtmlParsing
             previewDiv.select("footer").remove();
             preview = previewDiv.html();
 
-            if (HtmlTextFormatting.hasUnsupportedTags(preview))
-            {
-                preview = "<html><head><meta charset=\"UTF-8\"></head><body>" + preview + "</body></html>";
-            }
-            else
-            {
-                preview = preview.replaceAll("</p>", "");
-                preview = preview.replaceAll("<p>", "<p></p>");
-            }
+//            if (HtmlTextFormatting.hasUnsupportedTags(preview))
+//            {
+//                preview = "<html><head><meta charset=\"UTF-8\"></head><body>" + preview + "</body></html>";
+//            }
+//            else
+//            {
+//                preview = preview.replaceAll("</p>", "");
+//                preview = preview.replaceAll("<p>", "<p></p>");
+//            }
 
             Article a = new Article();
             a.setUrl(url);
@@ -137,5 +137,16 @@ public class HtmlParsing
         }
 
         return list;
+    }
+
+    public static ArrayList<Element> getElementListFromHtml(String html)
+    {
+//        ArrayList<Element> list = new ArrayList<>();
+
+        Document doc = Jsoup.parse(html);
+
+//        Log.i(LOG, "doc.children(): " + doc.body().children());
+
+        return doc.body().children();
     }
 }

@@ -1,4 +1,4 @@
-package ru.kuchanov.tproger.utils;
+package ru.kuchanov.tproger.utils.html;
 
 /**
  * Created by Юрий on 01.11.2015 23:45.
@@ -7,6 +7,7 @@ package ru.kuchanov.tproger.utils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 /**
  * class for formatting Html and extracting some tags from p tag;
@@ -267,7 +268,25 @@ public class HtmlTextFormatting
     {
         Document doc = Jsoup.parse(html);
 
-        if (/*doc.getElementsByTag("code").size() != 0 || */doc.getElementsByTag("table").size() != 0)
+        if (doc.getElementsByTag("table").size() != 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean hasInnerUnsupportedTags(Element el)
+    {
+        if (el.getElementsByTag("table").size() != 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isUnsupportedTag(Element el)
+    {
+        if (el.tagName().equals("table"))
         {
             return true;
         }

@@ -1,6 +1,9 @@
-package ru.kuchanov.tproger.utils;
+package ru.kuchanov.tproger.utils.html;
 
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.style.ClickableSpan;
+import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.View;
 
@@ -77,4 +80,21 @@ public class MakeLinksClicable
 //            			Toast.makeText(widget.getContext(), mUrl, Toast.LENGTH_LONG).show();
     }
 
+    public static SpannableStringBuilder reformatText(CharSequence text)
+    {
+        int end = text.length();
+        Spannable sp = (Spannable) text;
+        URLSpan[] urls = sp.getSpans(0, end, URLSpan.class);
+        SpannableStringBuilder style = new SpannableStringBuilder(text);
+        //					style.clearSpans();//should clear old spans
+        for (URLSpan url : urls)
+        {
+            style.removeSpan(url);
+            MakeLinksClicable.CustomerTextClick click = new MakeLinksClicable.CustomerTextClick(url.getURL());
+            style.setSpan(click, sp.getSpanStart(url), sp.getSpanEnd(url),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        return style;
+    }
 }

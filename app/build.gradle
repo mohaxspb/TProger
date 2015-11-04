@@ -33,7 +33,7 @@ android {
 
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     //riple lib
     compile 'com.balysv:material-ripple:1.0.2'
     //support libs
@@ -63,7 +63,6 @@ dependencies {
     }
     //UIL
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
-
     //materialDialogs
     repositories {
         maven { url "https://jitpack.io" }
