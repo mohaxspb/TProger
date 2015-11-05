@@ -35,6 +35,7 @@ import ru.kuchanov.tproger.RecyclerAdapterArtsList;
 import ru.kuchanov.tproger.RecyclerViewOnScrollListener;
 import ru.kuchanov.tproger.custom.view.CustomSwipeRefreshLayout;
 import ru.kuchanov.tproger.otto.BusProvider;
+import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.otto.EventCollapsed;
 import ru.kuchanov.tproger.otto.EventExpanded;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
@@ -493,15 +494,18 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                     ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyRemoveEach();
                     ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(artsList);
                 }
+                recyclerView.getAdapter().notifyDataSetChanged();
 
                 int newArtsQuont = articles.getNumOfNewArts();
                 switch (newArtsQuont)
                 {
                     case -2:
                         //not set - do nothing
-                        break;
+//                        break;
                     case -1:
                         //initial loading  - do nothing
+                        //update cover
+                        BusProvider.getInstance().post(new EventArtsReceived(artsList));
                         break;
                     case 0:
                         Toast.makeText(ctx, "Новых статей не обнаружено!", Toast.LENGTH_SHORT).show();

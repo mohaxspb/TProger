@@ -26,9 +26,13 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.squareup.otto.Subscribe;
+
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
@@ -38,6 +42,7 @@ import ru.kuchanov.tproger.navigation.PagerAdapterMain;
 import ru.kuchanov.tproger.navigation.PagerAdapterOnPageChangeListener;
 import ru.kuchanov.tproger.navigation.TabLayoutOnTabSelectedListener;
 import ru.kuchanov.tproger.otto.BusProvider;
+import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.otto.EventCollapsed;
 import ru.kuchanov.tproger.otto.EventExpanded;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
@@ -46,6 +51,7 @@ import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.utils.DataBaseFileSaver;
+import ru.kuchanov.tproger.utils.MyUIL;
 import ru.kuchanov.tproger.utils.ScreenProperties;
 
 public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger
@@ -492,6 +498,119 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             {
             }
         });
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+//        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        BusProvider.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void onArtsReceived(final EventArtsReceived event)
+    {
+        Log.i(LOG, "EventArtsReceived: " + String.valueOf(event.getArts().size()));
+
+        Timer timer=new Timer();
+        TimerTask timerTask=new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        updateImageFromArts(event.getArts());
+                    }
+                });
+            }
+        };
+
+        timer.schedule(timerTask, 5000, 5000);
+    }
+
+    public void updateImageFromArts(ArrayList<Article> arts)
+    {
+//        Log.i(LOG, "updateImage with position in pager: "+positionInPager);
+
+        //find arts with image
+        final ArrayList<Article> artsWithImage=new ArrayList<>();
+        for (Article a: arts)
+        {
+            if(a.getImageUrl()!=null)
+            {
+                artsWithImage.add(a);
+            }
+        }
+        if(artsWithImage.size()==0)
+        {
+            return;
+        }
+
+        cover2.setAlpha(0);
+        cover2.setScaleX(1);
+        cover2.setScaleY(1);
+        cover2.animate().cancel();
+
+
+        if (!isCollapsed)
+        {
+            appBar.setExpanded(true, true);
+        }
+
+        //prevent showing transition coloring if cover isn't showing
+        if (this.cover.getAlpha() == 0)
+        {
+//            cover.setImageResource(coverImgsIds[positionInPager]);
+            MyUIL.getDefault(ctx).displayImage(artsWithImage.get(0).getImageUrl(), cover);
+                    Log.e(LOG, "onLoadingComplete: ");
+//                    cover.setImageBitmap(loadedImage);
+            return;
+        }
+
+
+                cover2.animate().alpha(1).scaleX(15).scaleY(15).setDuration(600).setListener(new Animator.AnimatorListener()
+                {
+                    @Override
+                    public void onAnimationStart(Animator animation)
+                    {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation)
+                    {
+                        Log.e(LOG, "onAnimationEnd: ");
+                        MyUIL.getDefault(ctx).displayImage(artsWithImage.get(0).getImageUrl(), cover);
+                        cover2.animate().alpha(0).setDuration(600);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation)
+                    {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation)
+                    {
+                    }
+                });
     }
 
     public void startAnimation()

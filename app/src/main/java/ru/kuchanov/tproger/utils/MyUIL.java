@@ -53,4 +53,26 @@ public class MyUIL
         return imageLoader;
 
     }
+
+    public static ImageLoader getDefault(Context act)
+    {
+        //UniversalImageLoader
+        File cacheDir = new File(Environment.getExternalStorageDirectory(), "Odnako/Cache");
+
+        //switch to true if you want logging
+        L.writeLogs(false);
+
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(act)
+                .build();
+
+        ImageLoader imageLoader = ImageLoader.getInstance();
+
+        if (!imageLoader.isInited())
+        {
+            imageLoader.init(config);
+        }
+
+        return imageLoader;
+
+    }
 }

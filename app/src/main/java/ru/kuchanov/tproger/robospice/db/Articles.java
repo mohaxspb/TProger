@@ -36,7 +36,7 @@ public class Articles
      *
      */
     @DatabaseField
-    private int numOfNewArts = -1;
+    private int numOfNewArts = -2;
 
     public int getId()
     {
