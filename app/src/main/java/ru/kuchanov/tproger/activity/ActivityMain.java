@@ -37,14 +37,13 @@ import java.util.TimerTask;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
 import ru.kuchanov.tproger.navigation.ImageChanger;
+import ru.kuchanov.tproger.navigation.MyOnOffsetChangedListener;
 import ru.kuchanov.tproger.navigation.NavigationViewOnNavigationItemSelectedListener;
 import ru.kuchanov.tproger.navigation.PagerAdapterMain;
 import ru.kuchanov.tproger.navigation.PagerAdapterOnPageChangeListener;
 import ru.kuchanov.tproger.navigation.TabLayoutOnTabSelectedListener;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
-import ru.kuchanov.tproger.otto.EventCollapsed;
-import ru.kuchanov.tproger.otto.EventExpanded;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
@@ -52,7 +51,6 @@ import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.utils.DataBaseFileSaver;
 import ru.kuchanov.tproger.utils.MyUIL;
-import ru.kuchanov.tproger.utils.ScreenProperties;
 
 public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger
 {
@@ -61,79 +59,28 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
     private final static String LOG = ActivityMain.class.getSimpleName();
 
-    protected final int[] coverImgsIds = {R.drawable.drawer_header, R.drawable.cremlin, R.drawable.petergof};
+    protected final int[] coverImgsIds = {R.drawable.tproger_small, R.drawable.cremlin, R.drawable.petergof};
     protected Toolbar toolbar;
     protected NavigationView navigationView;
-    protected ImageView cover;
     protected DrawerLayout drawerLayout;
     protected ActionBarDrawerToggle mDrawerToggle;
     protected boolean drawerOpened;
     protected ViewPager pager;
     protected int checkedDrawerItemId;
-    protected SharedPreferences pref;
     protected boolean isCollapsed;
     protected View cover2;
     protected AppBarLayout appBar;
     //    protected CollapsingToolbarLayout collapsingToolbarLayout;
     protected TabLayout tabLayout;
-    protected int verticalOffsetPrevious = 0;
-    protected boolean fullyExpanded = true;
+    private ImageView cover;
+    private int verticalOffsetPrevious = 0;
+
     private Context ctx;
-    protected AppBarLayout.OnOffsetChangedListener onOffsetChangedListener = new AppBarLayout.OnOffsetChangedListener()
-    {
-        @Override
-        public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset)
-        {
-            if (verticalOffset < 0)
-            {
-                BusProvider.getInstance().post(new EventCollapsed());
-                if (verticalOffsetPrevious == 0)
-                {
-                    BusProvider.getInstance().post(new EventCollapsed());
-                    fullyExpanded = false;
-                }
-            }
-            else
-            {
-                if (verticalOffsetPrevious < 0)
-                {
-                    BusProvider.getInstance().post(new EventExpanded());
-                    fullyExpanded = true;
-                }
-            }
-            verticalOffsetPrevious = verticalOffset;
-//            Log.i(LOG, "verticalOffset: "+verticalOffset);
+    private SharedPreferences pref;
 
-            //move backgroubng image and its bottom border
-            cover.setY(verticalOffset * 0.7f);
-            View cover2outSide = findViewById(R.id.cover_2);
-            cover2outSide.setY(verticalOffset * 0.7f);
+    private ArrayList<Article> artsWithImage = new ArrayList<>();
 
-            if (verticalOffset < -appBarLayout.getHeight() * 0.7f)
-            {
-                if (cover.getAlpha() != 0)
-                {
-                    cover.animate().alpha(0).setDuration(600);
-                }
-            }
-            else
-            {
-                //show cover if we start to expand collapsingToolbarLayout
-                int heightOfToolbarAndStatusBar = toolbar.getHeight() + ScreenProperties.getStatusBarHeight(ctx);
-                int s = appBarLayout.getHeight() - heightOfToolbarAndStatusBar;
-                isCollapsed = (verticalOffset > -s);// ? false : true;
-                if (cover.getAlpha() < 1 && isCollapsed)
-                {
-                    cover.animate().alpha(1).setDuration(600);
-                }
-            }
-        }
-    };
-
-    public boolean isFullyExpanded()
-    {
-        return fullyExpanded;
-    }
+    private boolean fullyExpanded = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -163,7 +110,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         setUpPagerAndTabs();
 
         appBar.setExpanded(isCollapsed, true);
-        appBar.addOnOffsetChangedListener(onOffsetChangedListener);
+        appBar.addOnOffsetChangedListener(new MyOnOffsetChangedListener(this));
 
         setUpBackgroundAnimation();
     }
@@ -362,8 +309,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                     //also delete article obj
                     Article a = Article.getArticleById(h, artCatToDelete.getArticleId());
                     Article.printInLog(a);
-                    int updatedRows=h.getDaoArticle().delete(a);
-                    Log.i(LOG, "updatedRows: "+updatedRows);
+                    int updatedRows = h.getDaoArticle().delete(a);
+                    Log.i(LOG, "updatedRows: " + updatedRows);
 
                     h.getDaoArtCat().delete(artCatToDelete);
                 }
@@ -376,7 +323,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
                 try
                 {
-                    ArrayList<Articles> articles= (ArrayList<Articles>) h.getDao(Articles.class).queryForAll();
+                    ArrayList<Articles> articles = (ArrayList<Articles>) h.getDao(Articles.class).queryForAll();
                     h.getDao(Articles.class).delete(articles);
                 }
                 catch (SQLException e)
@@ -432,10 +379,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             {
                 themeMenuItem.setChecked(true);
             }
-//            else
-//            {
-//                themeMenuItem.setChecked(false);
-//            }
 
             boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
             MenuItem listStyleMenuItem = menu.findItem(R.id.list_style_switcher);
@@ -443,10 +386,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             {
                 listStyleMenuItem.setChecked(true);
             }
-//            else
-//            {
-//                listStyleMenuItem.setChecked(false);
-//            }
         }
         return super.onPrepareOptionsPanel(view, menu);
     }
@@ -500,12 +439,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         });
     }
 
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-//        BusProvider.getInstance().register(this);
-    }
 
     @Override
     protected void onStart()
@@ -526,91 +459,89 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     {
         Log.i(LOG, "EventArtsReceived: " + String.valueOf(event.getArts().size()));
 
-        Timer timer=new Timer();
-        TimerTask timerTask=new TimerTask()
+        artsWithImage = new ArrayList<>();
+        for (Article a : event.getArts())
         {
-            @Override
-            public void run()
-            {
-                runOnUiThread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        updateImageFromArts(event.getArts());
-                    }
-                });
-            }
-        };
-
-        timer.schedule(timerTask, 5000, 5000);
-    }
-
-    public void updateImageFromArts(ArrayList<Article> arts)
-    {
-//        Log.i(LOG, "updateImage with position in pager: "+positionInPager);
-
-        //find arts with image
-        final ArrayList<Article> artsWithImage=new ArrayList<>();
-        for (Article a: arts)
-        {
-            if(a.getImageUrl()!=null)
+            if (a.getImageUrl() != null)
             {
                 artsWithImage.add(a);
             }
         }
-        if(artsWithImage.size()==0)
+
+        if (artsWithImage.size() != 0)
         {
-            return;
+            Timer timer = new Timer();
+            TimerTask timerTask = new TimerTask()
+            {
+                @Override
+                public void run()
+                {
+                    runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            updateImageFromArts(artsWithImage);
+                        }
+                    });
+                }
+            };
+
+            timer.schedule(timerTask, 5000, 5000);
         }
+    }
+
+    public void updateImageFromArts(final ArrayList<Article> artsWithImage)
+    {
+//        Log.i(LOG, "updateImage with position in pager: "+positionInPager);
 
         cover2.setAlpha(0);
         cover2.setScaleX(1);
         cover2.setScaleY(1);
         cover2.animate().cancel();
 
-
-        if (!isCollapsed)
-        {
-            appBar.setExpanded(true, true);
-        }
+//        if (!isCollapsed)
+//        if (!fullyExpanded)
+//        {
+//            appBar.setExpanded(true, true);
+//        }
 
         //prevent showing transition coloring if cover isn't showing
         if (this.cover.getAlpha() == 0)
         {
 //            cover.setImageResource(coverImgsIds[positionInPager]);
-            MyUIL.getDefault(ctx).displayImage(artsWithImage.get(0).getImageUrl(), cover);
-                    Log.e(LOG, "onLoadingComplete: ");
+            MyUIL.getDefault(ctx).displayImage(artsWithImage.get(1).getImageUrl(), cover);
+//                    Log.e(LOG, "onLoadingComplete: ");
 //                    cover.setImageBitmap(loadedImage);
             return;
         }
 
 
-                cover2.animate().alpha(1).scaleX(15).scaleY(15).setDuration(600).setListener(new Animator.AnimatorListener()
-                {
-                    @Override
-                    public void onAnimationStart(Animator animation)
-                    {
-                    }
+        cover2.animate().alpha(1).scaleX(15).scaleY(15).setDuration(600).setListener(new Animator.AnimatorListener()
+        {
+            @Override
+            public void onAnimationStart(Animator animation)
+            {
+            }
 
-                    @Override
-                    public void onAnimationEnd(Animator animation)
-                    {
-                        Log.e(LOG, "onAnimationEnd: ");
-                        MyUIL.getDefault(ctx).displayImage(artsWithImage.get(0).getImageUrl(), cover);
-                        cover2.animate().alpha(0).setDuration(600);
-                    }
+            @Override
+            public void onAnimationEnd(Animator animation)
+            {
+//                        Log.e(LOG, "onAnimationEnd: ");
+                MyUIL.getDefault(ctx).displayImage(artsWithImage.get(1).getImageUrl(), cover);
+                cover2.animate().alpha(0).setDuration(600);
+            }
 
-                    @Override
-                    public void onAnimationCancel(Animator animation)
-                    {
-                    }
+            @Override
+            public void onAnimationCancel(Animator animation)
+            {
+            }
 
-                    @Override
-                    public void onAnimationRepeat(Animator animation)
-                    {
-                    }
-                });
+            @Override
+            public void onAnimationRepeat(Animator animation)
+            {
+            }
+        });
     }
 
     public void startAnimation()
@@ -648,5 +579,45 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     public boolean getIsCollapsed()
     {
         return this.isCollapsed;
+    }
+
+    public void setCollapsed(boolean isCollapsed)
+    {
+        this.isCollapsed = isCollapsed;
+    }
+
+    public int getVerticalOffsetPrevious()
+    {
+        return verticalOffsetPrevious;
+    }
+
+    public void setVerticalOffsetPrevious(int verticalOffsetPrevious)
+    {
+        this.verticalOffsetPrevious = verticalOffsetPrevious;
+    }
+
+    public ImageView getCover()
+    {
+        return cover;
+    }
+
+    public View getCover2()
+    {
+        return cover2;
+    }
+
+    public Toolbar getToolbar()
+    {
+        return toolbar;
+    }
+
+    public boolean isFullyExpanded()
+    {
+        return fullyExpanded;
+    }
+
+    public void setFullyExpanded(boolean fullyExpanded)
+    {
+        this.fullyExpanded= fullyExpanded;
     }
 }

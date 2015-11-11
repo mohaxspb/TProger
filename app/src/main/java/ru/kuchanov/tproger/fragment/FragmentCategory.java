@@ -2,7 +2,6 @@ package ru.kuchanov.tproger.fragment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -11,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -345,7 +343,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
     private void setLoading(boolean isLoading)
     {
-        Log.i(LOG, "isLoading: " + isLoading + " isLoadingFromTop: " + isLoadingFromTop + " swipeRefreshLayout.isRefreshing(): " + swipeRefreshLayout.isRefreshing());
+        //Log.i(LOG, "isLoading: " + isLoading + " isLoadingFromTop: " + isLoadingFromTop + " swipeRefreshLayout.isRefreshing(): " + swipeRefreshLayout.isRefreshing());
         this.isLoading = isLoading;
 
         if (isLoading && swipeRefreshLayout.isRefreshing())
@@ -372,12 +370,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         }
         else
         {
-            int[] textSizeAttr = new int[]{android.R.attr.actionBarSize};
-            int indexOfAttrTextSize = 0;
-            TypedValue typedValue = new TypedValue();
-            TypedArray a = ctx.obtainStyledAttributes(typedValue.data, textSizeAttr);
-            int actionBarSize = a.getDimensionPixelSize(indexOfAttrTextSize, 100);
-            a.recycle();
+            int actionBarSize = AttributeGetter.getDimentionPixelSize(ctx, android.R.attr.actionBarSize);
             //this.swipeRef.setProgressViewOffset(false, 0, actionBarSize);
             swipeRefreshLayout.setProgressViewEndTarget(false, actionBarSize);
 //            swipeRefreshLayout.setProgressViewEndTarget(false, 0);
