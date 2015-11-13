@@ -50,12 +50,14 @@ import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.utils.DataBaseFileSaver;
+import ru.kuchanov.tproger.utils.MyRandomUtil;
 import ru.kuchanov.tproger.utils.MyUIL;
 
 public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger
 {
     protected static final String NAV_ITEM_ID = "NAV_ITEM_ID";
     protected static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
+    protected static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
 
     private final static String LOG = ActivityMain.class.getSimpleName();
 
@@ -66,8 +68,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     protected ActionBarDrawerToggle mDrawerToggle;
     protected boolean drawerOpened;
     protected ViewPager pager;
-    protected int checkedDrawerItemId;
-    protected boolean isCollapsed;
+    protected int checkedDrawerItemId = R.id.tab_1;
+    protected boolean isCollapsed = true;
     protected View cover2;
     protected AppBarLayout appBar;
     //    protected CollapsingToolbarLayout collapsingToolbarLayout;
@@ -79,6 +81,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     private SharedPreferences pref;
 
     private ArrayList<Article> artsWithImage = new ArrayList<>();
+    private int prevPosOfImage = -1;
 
     private boolean fullyExpanded = true;
 
@@ -113,6 +116,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         appBar.addOnOffsetChangedListener(new MyOnOffsetChangedListener(this));
 
         setUpBackgroundAnimation();
+
+        this.updateImageFromArts(artsWithImage);
     }
 
     private void initializeViews()
@@ -129,19 +134,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         pager = (ViewPager) this.findViewById(R.id.pager);
     }
 
-    private void restoreState(Bundle state)
-    {
-        if (state == null)
-        {
-            checkedDrawerItemId = R.id.tab_1;
-            isCollapsed = true;
-        }
-        else
-        {
-            checkedDrawerItemId = state.getInt(NAV_ITEM_ID, R.id.tab_1);
-            isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
-        }
-    }
 
     private void setUpBackgroundAnimation()
     {
@@ -343,7 +335,19 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         super.onSaveInstanceState(outState);
         outState.putInt(NAV_ITEM_ID, this.checkedDrawerItemId);
         outState.putBoolean(KEY_IS_COLLAPSED, isCollapsed);
+        outState.putInt(KEY_PREV_COVER_SOURCE, this.prevPosOfImage);
+        outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsWithImage);
+    }
 
+    private void restoreState(Bundle state)
+    {
+        if (state != null)
+        {
+            checkedDrawerItemId = state.getInt(NAV_ITEM_ID, R.id.tab_1);
+            isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
+            prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
+            artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
+        }
     }
 
     @Override
@@ -495,29 +499,34 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     {
 //        Log.i(LOG, "updateImage with position in pager: "+positionInPager);
 
+        final int positionInList;
+        switch (artsWithImage.size())
+        {
+            case 0:
+                //cant be, but return anyway;
+                return;
+            case 1:
+                positionInList = 0;
+                break;
+            default:
+                positionInList = MyRandomUtil.nextInt(prevPosOfImage, artsWithImage.size());
+                break;
+        }
+        prevPosOfImage = positionInList;
+
         cover2.setAlpha(0);
         cover2.setScaleX(1);
         cover2.setScaleY(1);
         cover2.animate().cancel();
 
-//        if (!isCollapsed)
-//        if (!fullyExpanded)
-//        {
-//            appBar.setExpanded(true, true);
-//        }
-
         //prevent showing transition coloring if cover isn't showing
         if (this.cover.getAlpha() == 0)
         {
-//            cover.setImageResource(coverImgsIds[positionInPager]);
-            MyUIL.getDefault(ctx).displayImage(artsWithImage.get(1).getImageUrl(), cover);
-//                    Log.e(LOG, "onLoadingComplete: ");
-//                    cover.setImageBitmap(loadedImage);
+            MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
             return;
         }
 
-
-        cover2.animate().alpha(1).scaleX(15).scaleY(15).setDuration(600).setListener(new Animator.AnimatorListener()
+        cover2.animate().alpha(1).scaleX(15).scaleY(15).setDuration(800).setListener(new Animator.AnimatorListener()
         {
             @Override
             public void onAnimationStart(Animator animation)
@@ -528,8 +537,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             public void onAnimationEnd(Animator animation)
             {
 //                        Log.e(LOG, "onAnimationEnd: ");
-                MyUIL.getDefault(ctx).displayImage(artsWithImage.get(1).getImageUrl(), cover);
-                cover2.animate().alpha(0).setDuration(600);
+                MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
+                cover2.animate().alpha(0).setDuration(800);
             }
 
             @Override
@@ -618,6 +627,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
     public void setFullyExpanded(boolean fullyExpanded)
     {
-        this.fullyExpanded= fullyExpanded;
+        this.fullyExpanded = fullyExpanded;
     }
 }
