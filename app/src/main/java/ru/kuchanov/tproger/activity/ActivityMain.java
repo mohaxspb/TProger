@@ -53,7 +53,7 @@ import ru.kuchanov.tproger.utils.DataBaseFileSaver;
 import ru.kuchanov.tproger.utils.MyRandomUtil;
 import ru.kuchanov.tproger.utils.MyUIL;
 
-public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger
+public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger, SharedPreferences.OnSharedPreferenceChangeListener
 {
     protected static final String NAV_ITEM_ID = "NAV_ITEM_ID";
     protected static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
@@ -122,6 +122,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
 //        this.updateImageFromArts(artsWithImage);
         this.onArtsReceived(new EventArtsReceived(artsWithImage));
+
+        this.pref.registerOnSharedPreferenceChangeListener(this);
     }
 
     private void initializeViews()
@@ -414,6 +416,21 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             appBar.setExpanded(true, true);
         }
 
+        //prevent changing images if we are not on artsListFragment in main pager
+        if (pager.getCurrentItem() != 0)
+        {
+            if (timer != null && timerTask != null)
+            {
+                timerTask.cancel();
+                timer.cancel();
+            }
+        }
+        else
+        {
+            this.onArtsReceived(new EventArtsReceived(artsWithImage));
+            return;
+        }
+
         //prevent showing transition coloring if cover isn't showing
         if (this.cover.getAlpha() == 0)
         {
@@ -476,9 +493,20 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             }
         }
 
+        //prevent changing images if we are not on artsListFragment in main pager
+        if (pager.getCurrentItem() != 0)
+        {
+            if (timer != null && timerTask != null)
+            {
+                timerTask.cancel();
+                timer.cancel();
+            }
+            return;
+        }
+
         if (artsWithImage.size() != 0)
         {
-            if(timer!=null && timerTask!=null)
+            if (timer != null && timerTask != null)
             {
                 timerTask.cancel();
                 timer.cancel();
@@ -499,15 +527,13 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                     });
                 }
             };
-
-            timer.schedule(timerTask, 5000, 5000);
+            timer.schedule(timerTask, 0, 5000);
         }
     }
 
     public void updateImageFromArts(final ArrayList<Article> artsWithImage)
     {
 //        Log.i(LOG, "updateImage with position in pager: "+positionInPager);
-
         final int positionInList;
         switch (artsWithImage.size())
         {
@@ -637,5 +663,14 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     public void setFullyExpanded(boolean fullyExpanded)
     {
         this.fullyExpanded = fullyExpanded;
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+    {
+        if (key.equals(this.getString(R.string.pref_design_key_night_mode)))
+        {
+            this.recreate();
+        }
     }
 }

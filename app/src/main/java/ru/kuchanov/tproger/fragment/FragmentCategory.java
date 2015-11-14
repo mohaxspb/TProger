@@ -113,9 +113,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         }
 
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
-        this.pref.registerOnSharedPreferenceChangeListener(this);
-
         this.numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(this.getString(R.string.pref_design_key_col_num), "2"));
+        this.pref.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -486,17 +485,9 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 }
                 else
                 {
-                    Log.i(LOG, "Before remove");
                     ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyRemoveEach();
-////                    ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(artsList);
-//                    recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
-////                    ((RecyclerAdapterArtsList) recyclerView.getAdapter()).resetData(artsList);
-                    Log.i(LOG, "Before add");
-//                    ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyDataSetChanged();
                     ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyAddEach();
-                    Log.i(LOG, "After add");
                 }
-//                recyclerView.getAdapter().notifyDataSetChanged();
 
                 int newArtsQuont = articles.getNumOfNewArts();
                 switch (newArtsQuont)
