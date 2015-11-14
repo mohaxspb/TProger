@@ -20,7 +20,7 @@ public class ArticleCategory
 {
     public static final String LOG = ArticleCategory.class.getSimpleName();
     public static final String FIELD_ARTICLE_ID = "articleId";
-    public static final String FIELD_CATEGORY_ID = "category_id";
+    public static final String FIELD_CATEGORY_ID = "categoryId";
     public static final String FIELD_NEXT_ARTICLE_ID = "nextArticleId";
     public static final String FIELD_PREVIOUS_ARTICLE_ID = "previousArticleId";
     public static final String FIELD_IS_INITIAL_IN_CATEGORY = "isInitialInCategory";
@@ -33,7 +33,7 @@ public class ArticleCategory
     private int articleId;
 
     @DatabaseField(columnName = FIELD_CATEGORY_ID)
-    private int category_id;
+    private int categoryId;
 
     @DatabaseField(columnName = FIELD_NEXT_ARTICLE_ID)
     private int nextArticleId = -1;
@@ -123,7 +123,7 @@ public class ArticleCategory
                         {
                             //first matched!
                             //2)
-                            int nextArtId=(i==arts.size()-1)?-1:arts.get(i+1).getId();
+                            int nextArtId = (i == arts.size() - 1) ? -1 : arts.get(i + 1).getId();
                             lastArtCatByPage.setNextArticleId(nextArtId);
                             daoArtCat.createOrUpdate(lastArtCatByPage);
                             matched = true;
@@ -159,7 +159,7 @@ public class ArticleCategory
                             }
 
                             ArticleCategory artCatToWrite = new ArticleCategory();
-                            artCatToWrite.setCategory_id(categoryId);
+                            artCatToWrite.setCategoryId(categoryId);
                             artCatToWrite.setArticleId(a.getId());
                             Article nextArtInLoop = (arts.size() > i + 1) ? arts.get(i + 1) : null;
                             int nextArtIdInLoop = (nextArtInLoop == null) ? -1 : nextArtInLoop.getId();
@@ -212,7 +212,7 @@ public class ArticleCategory
                     }
 
                     ArticleCategory artCatToWrite = new ArticleCategory();
-                    artCatToWrite.setCategory_id(categoryId);
+                    artCatToWrite.setCategoryId(categoryId);
                     artCatToWrite.setArticleId(a.getId());
                     Article nextArtInLoop = (arts.size() > i + 1) ? arts.get(i + 1) : null;
                     int nextArtIdInLoop = (nextArtInLoop == null) ? -1 : nextArtInLoop.getId();
@@ -281,7 +281,7 @@ public class ArticleCategory
                 //so write artCat and set isTop to true for first row
                 ArticleCategory artCat = new ArticleCategory();
                 artCat.setArticleId(arts.get(0).getId());
-                artCat.setCategory_id(categoryId);
+                artCat.setCategoryId(categoryId);
                 artCat.setTopInCategory(true);
                 Article nextArt = (arts.size() > 1) ? arts.get(1) : null;
                 int nextArtId = (nextArt == null) ? -1 : nextArt.getId();
@@ -295,7 +295,7 @@ public class ArticleCategory
 
                     ArticleCategory artCatToWrite = new ArticleCategory();
                     artCatToWrite.setArticleId(a.getId());
-                    artCatToWrite.setCategory_id(categoryId);
+                    artCatToWrite.setCategoryId(categoryId);
                     Article nextArtInLoop = (arts.size() > i + 1) ? arts.get(i + 1) : null;
                     int nextArtIdInLoop = (nextArtInLoop == null) ? -1 : nextArtInLoop.getId();
                     artCatToWrite.setNextArticleId(nextArtIdInLoop);
@@ -349,7 +349,14 @@ public class ArticleCategory
                 {
                     ArticleCategory artCatToWrite = new ArticleCategory();
                     artCatToWrite.setArticleId(a.getId());
-                    artCatToWrite.setCategory_id(categoryId);
+                    artCatToWrite.setCategoryId(categoryId);
+                    //check if there is such entry in DB and set it's id to artCat obj
+                    ArticleCategory artCatInDB = ArticleCategory.getIdByArticleAndCategoryIds(h, artCatToWrite.getArticleId(), artCatToWrite.getCategoryId());
+                    if (artCatInDB != null)
+                    {
+                        artCatToWrite.setId(artCatInDB.getId());
+                    }
+
                     Article nextArtInLoop = (arts.size() > i + 1) ? arts.get(i + 1) : null;
                     int nextArtIdInLoop = (nextArtInLoop == null) ? -1 : nextArtInLoop.getId();
                     artCatToWrite.setNextArticleId(nextArtIdInLoop);
@@ -358,12 +365,15 @@ public class ArticleCategory
 
                     artCatListToWrite.add(artCatToWrite);
 
+                    quontOfNewArtsInCategory = i;
+
                     //also check if we at last iteration
                     //which means that no given article matched oldTopArtCat
                     //and so we have >=10 new arts
                     if (i == arts.size() - 1)
                     {
                         //return 10, which means >=10... Yeah it sucks(((
+//                        quontOfNewArtsInCategory++;
                         quontOfNewArtsInCategory++;
                     }
                 }
@@ -382,6 +392,25 @@ public class ArticleCategory
         }
 
         return quontOfNewArtsInCategory;
+    }
+
+    public static ArticleCategory getIdByArticleAndCategoryIds(MyRoboSpiceDatabaseHelper h, int articleId, int category_id)
+    {
+        ArticleCategory artCat = null;
+        try
+        {
+            Dao<ArticleCategory, Integer> daoArticleCategory = h.getDao(ArticleCategory.class);
+
+            artCat = daoArticleCategory.queryBuilder().where().
+                    eq(ArticleCategory.FIELD_CATEGORY_ID, category_id).and().
+                    eq(ArticleCategory.FIELD_ARTICLE_ID, articleId).queryForFirst();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return artCat;
     }
 
 
@@ -515,11 +544,11 @@ public class ArticleCategory
 
     public static ArticleCategory getPrevArtCat(MyRoboSpiceDatabaseHelper h, ArticleCategory artCat)
     {
-        ArticleCategory prevArtCat=null;
+        ArticleCategory prevArtCat = null;
         try
         {
             prevArtCat = h.getDaoArtCat().queryBuilder().where().eq(ArticleCategory.FIELD_ARTICLE_ID, artCat.getPreviousArticleId()).
-                    and().eq(ArticleCategory.FIELD_CATEGORY_ID, artCat.getCategory_id()).queryForFirst();
+                    and().eq(ArticleCategory.FIELD_CATEGORY_ID, artCat.getCategoryId()).queryForFirst();
         }
         catch (SQLException e)
         {
@@ -539,14 +568,14 @@ public class ArticleCategory
         this.articleId = articleId;
     }
 
-    public int getCategory_id()
+    public int getCategoryId()
     {
-        return category_id;
+        return categoryId;
     }
 
-    public void setCategory_id(int category_id)
+    public void setCategoryId(int categoryId)
     {
-        this.category_id = category_id;
+        this.categoryId = categoryId;
     }
 
     public int getNextArticleId()

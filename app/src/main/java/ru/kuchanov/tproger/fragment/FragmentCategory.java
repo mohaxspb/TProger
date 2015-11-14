@@ -474,6 +474,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 prevList.addAll(list);
                 artsList = new ArrayList<>(prevList);
                 ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(list);
+                BusProvider.getInstance().post(new EventArtsReceived(artsList));
             }
             else
             {
@@ -481,13 +482,21 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 if (recyclerView.getAdapter() == null)
                 {
                     recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
+                    ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyAddEach();
                 }
                 else
                 {
+                    Log.i(LOG, "Before remove");
                     ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyRemoveEach();
-                    ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(artsList);
+////                    ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(artsList);
+//                    recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
+////                    ((RecyclerAdapterArtsList) recyclerView.getAdapter()).resetData(artsList);
+                    Log.i(LOG, "Before add");
+//                    ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyDataSetChanged();
+                    ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyAddEach();
+                    Log.i(LOG, "After add");
                 }
-                recyclerView.getAdapter().notifyDataSetChanged();
+//                recyclerView.getAdapter().notifyDataSetChanged();
 
                 int newArtsQuont = articles.getNumOfNewArts();
                 switch (newArtsQuont)
@@ -497,8 +506,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //                        break;
                     case -1:
                         //initial loading  - do nothing
-                        //update cover
-                        BusProvider.getInstance().post(new EventArtsReceived(artsList));
                         break;
                     case 0:
                         Toast.makeText(ctx, "Новых статей не обнаружено!", Toast.LENGTH_SHORT).show();
@@ -510,6 +517,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                         Toast.makeText(ctx, "Обнаружено " + newArtsQuont + " новых статей!", Toast.LENGTH_SHORT).show();
                         break;
                 }
+                //update cover
+                BusProvider.getInstance().post(new EventArtsReceived(artsList));
             }
 
             resetOnScroll();

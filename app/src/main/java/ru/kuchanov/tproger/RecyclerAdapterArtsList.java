@@ -46,6 +46,12 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         artsList = dataset;
     }
 
+//    public void resetData(ArrayList<Article> dataToAdd)
+//    {
+//        artsList.clear();
+//        artsList = new ArrayList<>(dataToAdd);
+//    }
+
     public void addData(ArrayList<Article> dataToAdd)
     {
         int prevSize = artsList.size();
@@ -200,7 +206,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             }
             else
             {
-                if(maxHolder.preview.getChildCount()!=0)
+                if (maxHolder.preview.getChildCount() != 0)
                 {
                     maxHolder.preview.removeAllViews();
                 }
@@ -229,7 +235,11 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
 
     public void notifyRemoveEach()
     {
-        for (int i = 0; i < artsList.size(); i++)
+//        for (int i = 0; i < artsList.size(); i++)
+//        {
+//            notifyItemRemoved(i);
+//        }
+        for (int i = artsList.size()-1; i >= 0 ; i--)
         {
             notifyItemRemoved(i);
         }

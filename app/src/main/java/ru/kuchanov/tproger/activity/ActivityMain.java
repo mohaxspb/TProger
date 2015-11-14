@@ -85,6 +85,9 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
     private boolean fullyExpanded = true;
 
+    private Timer timer;
+    private TimerTask timerTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -117,7 +120,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
         setUpBackgroundAnimation();
 
-        this.updateImageFromArts(artsWithImage);
+//        this.updateImageFromArts(artsWithImage);
+        this.onArtsReceived(new EventArtsReceived(artsWithImage));
     }
 
     private void initializeViews()
@@ -474,8 +478,13 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
         if (artsWithImage.size() != 0)
         {
-            Timer timer = new Timer();
-            TimerTask timerTask = new TimerTask()
+            if(timer!=null && timerTask!=null)
+            {
+                timerTask.cancel();
+                timer.cancel();
+            }
+            timer = new Timer();
+            timerTask = new TimerTask()
             {
                 @Override
                 public void run()
