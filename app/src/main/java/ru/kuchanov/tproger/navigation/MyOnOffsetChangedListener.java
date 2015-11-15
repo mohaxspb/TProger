@@ -6,6 +6,7 @@ import ru.kuchanov.tproger.activity.ActivityMain;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventCollapsed;
 import ru.kuchanov.tproger.otto.EventExpanded;
+import ru.kuchanov.tproger.utils.DipToPx;
 import ru.kuchanov.tproger.utils.ScreenProperties;
 
 /**
@@ -46,7 +47,7 @@ public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedLi
 
         //move background image and its bottom border
         activityMain.getCover().setY(verticalOffset * 0.7f);
-       activityMain.getCover2().setY(verticalOffset * 0.7f);
+        activityMain.getCover2Border().setY(verticalOffset * 0.7f + DipToPx.convert(290, activityMain));
 
         if (verticalOffset < -appBarLayout.getHeight() * 0.7f)
         {

@@ -96,17 +96,7 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         request.url(this.url);
 
         Response response = client.newCall(request.build()).execute();
-//        String responseBody = response.body().string();
 
         return response.body().string();
     }
-
-    /**
-     * This method generates a unique cache key for this request. In this case
-     * our cache key depends just on the keyword.
-     */
-//    public String createCacheKey()
-//    {
-//        return "categoriesArtsList." + category + Const.SLASH + page;
-//    }
 }

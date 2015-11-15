@@ -71,6 +71,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     protected int checkedDrawerItemId = R.id.tab_1;
     protected boolean isCollapsed = true;
     protected View cover2;
+    protected View cover2Border;
     protected AppBarLayout appBar;
     //    protected CollapsingToolbarLayout collapsingToolbarLayout;
     protected TabLayout tabLayout;
@@ -83,7 +84,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     private ArrayList<Article> artsWithImage = new ArrayList<>();
     private int prevPosOfImage = -1;
 
-    private boolean fullyExpanded = true;
+    protected boolean fullyExpanded = true;
 
     private Timer timer;
     private TimerTask timerTask;
@@ -130,6 +131,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     {
         cover = (ImageView) findViewById(R.id.cover);
         cover2 = findViewById(R.id.cover_2_inside);
+//        cover2 = findViewById(R.id.cover_2);
+        cover2Border = findViewById(R.id.cover_2_border);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -645,9 +648,9 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         return cover;
     }
 
-    public View getCover2()
+    public View getCover2Border()
     {
-        return cover2;
+        return cover2Border;
     }
 
     public Toolbar getToolbar()
@@ -655,14 +658,15 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         return toolbar;
     }
 
-    public boolean isFullyExpanded()
-    {
-        return fullyExpanded;
-    }
+//    public boolean isFullyExpanded()
+//    {
+//        return fullyExpanded;
+//    }
 
     public void setFullyExpanded(boolean fullyExpanded)
     {
         this.fullyExpanded = fullyExpanded;
+//        Log.i(LOG, "fullyExpanded: "+fullyExpanded);
     }
 
     @Override
