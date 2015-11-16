@@ -73,7 +73,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     protected View cover2;
     protected View cover2Border;
     protected AppBarLayout appBar;
-    //    protected CollapsingToolbarLayout collapsingToolbarLayout;
     protected TabLayout tabLayout;
     private ImageView cover;
     private int verticalOffsetPrevious = 0;
@@ -666,7 +665,12 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     public void setFullyExpanded(boolean fullyExpanded)
     {
         this.fullyExpanded = fullyExpanded;
-//        Log.i(LOG, "fullyExpanded: "+fullyExpanded);
+        Log.i(LOG, "fullyExpanded: "+fullyExpanded);
+    }
+
+    public TabLayout getTabLayout()
+    {
+        return tabLayout;
     }
 
     @Override
@@ -677,4 +681,5 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             this.recreate();
         }
     }
+
 }

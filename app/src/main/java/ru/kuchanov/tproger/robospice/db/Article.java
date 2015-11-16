@@ -139,7 +139,7 @@ public class Article implements Parcelable
 
     public static ArrayList<Article> writeArtsList(ArrayList<Article> dataToWrite, MyRoboSpiceDatabaseHelper h)
     {
-        ArrayList<Article> createdData = new ArrayList<Article>();
+        ArrayList<Article> createdData = new ArrayList<>();
 
         for (Article a : dataToWrite)
         {

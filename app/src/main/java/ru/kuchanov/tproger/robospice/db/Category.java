@@ -4,6 +4,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.sql.SQLException;
+import java.util.Date;
 
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 
@@ -17,8 +18,7 @@ public class Category
     public static final String LOG = Category.class.getSimpleName();
     public static final String FIELD_URL = "url";
     public static final String FIELD_TITLE = "title";
-//    public static final String FIELD_INITIAL_ART_URL = "initialArtUrl";
-//    public static final String FIELD_TOP_ART_URL = "topArtUrl";
+    public static final String FIELD_REFRESHED = "refreshed";
 
     @DatabaseField(generatedId = true)
     private int id;
@@ -29,11 +29,47 @@ public class Category
     @DatabaseField(canBeNull = false, columnName = FIELD_TITLE)
     private String title;
 
-//    @DatabaseField(columnName = FIELD_INITIAL_ART_URL)
-//    private String initialArtUrl;
-//
-//    @DatabaseField(columnName = FIELD_TOP_ART_URL)
-//    private String topArtUrl;
+    @DatabaseField(canBeNull = false, columnName = FIELD_REFRESHED)
+    private Date refreshed = new Date(0);
+
+    /**
+     * @return id of category by url or -1 id can't find or on SQLException
+     */
+    public static int getCategoryIdByUrl(String url, MyRoboSpiceDatabaseHelper h)
+    {
+        int id = -1;
+
+        Category c = null;
+        try
+        {
+            c = h.getDao(Category.class).queryBuilder().where().eq(Category.FIELD_URL, url).queryForFirst();
+            if (c != null)
+            {
+                id = c.getId();
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return id;
+    }
+
+    public static Category getCategoryByUrl(String url, MyRoboSpiceDatabaseHelper h)
+    {
+        Category c = null;
+        try
+        {
+            c = h.getDaoCategory().queryBuilder().where().eq(Category.FIELD_URL, url).queryForFirst();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return c;
+    }
 
     public int getId()
     {
@@ -65,48 +101,13 @@ public class Category
         this.title = title;
     }
 
-//    public String getInitialArtUrl()
-//    {
-//        return initialArtUrl;
-//    }
-//
-//    public void setInitialArtUrl(String initialArtUrl)
-//    {
-//        this.initialArtUrl = initialArtUrl;
-//    }
-//
-//    public String getTopArtUrl()
-//    {
-//        return topArtUrl;
-//    }
-//
-//    public void setTopArtUrl(String topArtUrl)
-//    {
-//        this.topArtUrl = topArtUrl;
-//    }
-
-    /**
-     *
-     * @return id of category by url or -1 id can't find or on SQLException
-     */
-    public static int getCategoryIdByUrl(String url, MyRoboSpiceDatabaseHelper h)
+    public Date getRefreshed()
     {
-        int id=-1;
+        return refreshed;
+    }
 
-        Category c= null;
-        try
-        {
-            c = h.getDao(Category.class).queryBuilder().where().eq(Category.FIELD_URL, url).queryForFirst();
-            if (c!=null)
-            {
-                id=c.getId();
-            }
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-
-        return id;
+    public void setRefreshed(Date refreshed)
+    {
+        this.refreshed = refreshed;
     }
 }

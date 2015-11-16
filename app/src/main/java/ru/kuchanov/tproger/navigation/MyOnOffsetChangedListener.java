@@ -1,6 +1,7 @@
 package ru.kuchanov.tproger.navigation;
 
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.TabLayout;
 
 import ru.kuchanov.tproger.activity.ActivityMain;
 import ru.kuchanov.tproger.otto.BusProvider;
@@ -32,6 +33,12 @@ public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedLi
             {
                 BusProvider.getInstance().post(new EventCollapsed());
                 activityMain.setFullyExpanded(false);
+
+                TabLayout tab = activityMain.getTabLayout();
+                if (tab.getSelectedTabPosition() == 0)
+                {
+                    tab.setLeft(0);
+                }
             }
         }
         else
@@ -40,6 +47,12 @@ public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedLi
             {
                 BusProvider.getInstance().post(new EventExpanded());
                 activityMain.setFullyExpanded(true);
+
+                TabLayout tab = activityMain.getTabLayout();
+                if (tab.getSelectedTabPosition() == 0)
+                {
+                    tab.setLeft(100);
+                }
             }
         }
         activityMain.setVerticalOffsetPrevious(verticalOffset);

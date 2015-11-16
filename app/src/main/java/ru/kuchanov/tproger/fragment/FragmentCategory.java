@@ -236,7 +236,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             }
             else
             {
-                RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category, page);
+                RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category/*, page*/);
                 if (resetCategoryInDB)
                 {
                     request.setResetCategoryInDB();

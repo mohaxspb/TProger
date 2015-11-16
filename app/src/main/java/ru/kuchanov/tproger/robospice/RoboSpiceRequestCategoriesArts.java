@@ -9,6 +9,8 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.robospice.db.Article;
@@ -29,20 +31,20 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
     MyRoboSpiceDatabaseHelper databaseHelper;
     String url;
     String category;
-    int page;
+//    int page;
 
-    boolean resetCategoryInDB=false;
+    boolean resetCategoryInDB = false;
 
-    public RoboSpiceRequestCategoriesArts(Context ctx, String category, int page)
+    public RoboSpiceRequestCategoriesArts(Context ctx, String category/*, int page*/)
     {
         super(Articles.class);
 
         this.ctx = ctx;
         this.category = category;
-        this.page = page;
+//        this.page = page;
 
 //        this.url = "http://tproger.ru/page/1/";
-        this.url = Const.DOMAIN_MAIN + category + Const.SLASH + "page" + Const.SLASH + page + Const.SLASH;
+        this.url = Const.DOMAIN_MAIN + category + Const.SLASH + "page" + Const.SLASH + 1 + Const.SLASH;
 
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
 
@@ -50,7 +52,7 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
 
     public void setResetCategoryInDB()
     {
-        resetCategoryInDB=true;
+        resetCategoryInDB = true;
     }
 
     @Override
@@ -58,14 +60,21 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
     {
         Log.i(LOG, "ArrayListModel loadDataFromNetwork() called");
 
-        int categoryId = Category.getCategoryIdByUrl(this.category, databaseHelper);
+//        Category c = databaseHelper.getDaoCategory().
+        Category cat = Category.getCategoryByUrl(this.category, databaseHelper);
+        if (cat == null)
+        {
+            //TODO need to think can we create new one here
+            throw new NullPointerException("no such category in DB!");
+        }
+//        int categoryId = Category.getCategoryIdByUrl(this.category, databaseHelper);
 
         if (resetCategoryInDB)
         {
             Log.i(LOG, "resetCategoryInDB");
             //all we need - is to delete all artCat by category...
-            ArrayList<ArticleCategory> allArtCatList= (ArrayList<ArticleCategory>) databaseHelper.getDaoArtCat().queryBuilder().
-                    where().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).query();
+            ArrayList<ArticleCategory> allArtCatList = (ArrayList<ArticleCategory>) databaseHelper.getDaoArtCat().queryBuilder().
+                    where().eq(ArticleCategory.FIELD_CATEGORY_ID, cat.getId()).query();
             databaseHelper.getDaoArtCat().delete(allArtCatList);
         }
 
@@ -75,11 +84,13 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         //write to DB
         list = Article.writeArtsList(list, databaseHelper);
 
-
-
-        int newArtsQuont = ArticleCategory.writeArtsListToArtCatFromTop(list, categoryId, databaseHelper);
-        //TODO we can pass quont through Articles class via field...
+        int newArtsQuont = ArticleCategory.writeArtsListToArtCatFromTop(list, cat.getId(), databaseHelper);
+        //we can pass quont through Articles class via field...
         Log.i(LOG, "newArtsQuont: " + newArtsQuont);
+
+        //update refreshed date of category to currentTimeInMills
+        cat.setRefreshed(Calendar.getInstance(TimeZone.getTimeZone("GMT+00:00")).getTime());
+        databaseHelper.getDaoCategory().createOrUpdate(cat);
 
         Articles articles = new Articles();
         articles.setNumOfNewArts(newArtsQuont);
