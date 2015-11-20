@@ -36,6 +36,7 @@ import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.otto.EventCollapsed;
 import ru.kuchanov.tproger.otto.EventExpanded;
+import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArts;
 import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArtsFromBottom;
@@ -43,6 +44,7 @@ import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArtsFromBottomOff
 import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArtsOffline;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.Articles;
+import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 
 /**
@@ -61,7 +63,9 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     protected MySpiceManager spiceManagerOffline = AppSinglton.getInstance().getSpiceManagerOffline();
     protected CustomSwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
-    private String category;
+    private String categoryUrl;
+    private MyRoboSpiceDatabaseHelper databaseHelper;
+    private Category category;
     private Context ctx;
     private int currentPageToLoad = 1;
     private boolean isLoading = false;
@@ -102,7 +106,12 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         super.onCreate(savedInstanceState);
 
         Bundle args = this.getArguments();
-        this.category = args.getString(KEY_CATEGORY);
+        this.categoryUrl = args.getString(KEY_CATEGORY);
+
+//        long time = System.currentTimeMillis();
+        this.databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+        this.category = Category.getCategoryByUrl(categoryUrl, databaseHelper);
+//        Log.i(LOG, "Time is: " + String.valueOf(System.currentTimeMillis() - time));
 
         if (savedInstanceState != null)
         {
@@ -231,12 +240,12 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             //if !forceRefresh we must load arts from DB
             if (!forceRefresh)
             {
-                RoboSpiceRequestCategoriesArtsOffline requestFromDB = new RoboSpiceRequestCategoriesArtsOffline(ctx, category);
+                RoboSpiceRequestCategoriesArtsOffline requestFromDB = new RoboSpiceRequestCategoriesArtsOffline(ctx, categoryUrl);
                 spiceManagerOffline.execute(requestFromDB, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
             }
             else
             {
-                RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, category/*, page*/);
+                RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, categoryUrl/*, page*/);
                 if (resetCategoryInDB)
                 {
                     request.setResetCategoryInDB();
@@ -250,12 +259,12 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             this.setLoading(true);
             if (!forceRefresh)
             {
-                RoboSpiceRequestCategoriesArtsFromBottomOffline request = new RoboSpiceRequestCategoriesArtsFromBottomOffline(ctx, category, page);
+                RoboSpiceRequestCategoriesArtsFromBottomOffline request = new RoboSpiceRequestCategoriesArtsFromBottomOffline(ctx, categoryUrl, page);
                 spiceManagerOffline.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
             }
             else
             {
-                RoboSpiceRequestCategoriesArtsFromBottom request = new RoboSpiceRequestCategoriesArtsFromBottom(ctx, category, page);
+                RoboSpiceRequestCategoriesArtsFromBottom request = new RoboSpiceRequestCategoriesArtsFromBottom(ctx, categoryUrl, page);
                 spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
             }
         }
@@ -468,8 +477,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
             if (currentPageToLoad > 1)
             {
-//                artsList.addAll(list);
-                ArrayList<Article> prevList=new ArrayList<>(artsList);
+                ArrayList<Article> prevList = new ArrayList<>(artsList);
                 prevList.addAll(list);
                 artsList = new ArrayList<>(prevList);
                 ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(list);
@@ -522,5 +530,4 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //            Log.i(LOG, "onRequestNotFound called");
         }
     }
-
 }

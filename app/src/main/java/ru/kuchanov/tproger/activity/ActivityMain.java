@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
@@ -63,6 +66,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
     protected final int[] coverImgsIds = {R.drawable.tproger_small, R.drawable.cremlin, R.drawable.petergof};
     protected Toolbar toolbar;
+    protected CollapsingToolbarLayout collapsingToolbarLayout;
     protected NavigationView navigationView;
     protected DrawerLayout drawerLayout;
     protected ActionBarDrawerToggle mDrawerToggle;
@@ -74,17 +78,13 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     protected View cover2Border;
     protected AppBarLayout appBar;
     protected TabLayout tabLayout;
+    protected boolean fullyExpanded = true;
     private ImageView cover;
     private int verticalOffsetPrevious = 0;
-
     private Context ctx;
     private SharedPreferences pref;
-
     private ArrayList<Article> artsWithImage = new ArrayList<>();
     private int prevPosOfImage = -1;
-
-    protected boolean fullyExpanded = true;
-
     private Timer timer;
     private TimerTask timerTask;
 
@@ -112,6 +112,14 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
         initializeViews();
 
+        //TODO test
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);
+
+        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+        cover.setColorFilter(filter);
+        ////////////////
+
         setUpNavigationDrawer();
         setUpPagerAndTabs();
 
@@ -137,6 +145,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         appBar = (AppBarLayout) this.findViewById(R.id.app_bar_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
         pager = (ViewPager) this.findViewById(R.id.pager);
@@ -657,6 +666,12 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         return toolbar;
     }
 
+
+    public CollapsingToolbarLayout getCollapsingToolbarLayout()
+    {
+        return collapsingToolbarLayout;
+    }
+
 //    public boolean isFullyExpanded()
 //    {
 //        return fullyExpanded;
@@ -665,7 +680,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     public void setFullyExpanded(boolean fullyExpanded)
     {
         this.fullyExpanded = fullyExpanded;
-        Log.i(LOG, "fullyExpanded: "+fullyExpanded);
+        Log.i(LOG, "fullyExpanded: " + fullyExpanded);
     }
 
     public TabLayout getTabLayout()

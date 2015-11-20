@@ -2,6 +2,8 @@ package ru.kuchanov.tproger.navigation;
 
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewCompat;
+import android.view.ViewGroup;
 
 import ru.kuchanov.tproger.activity.ActivityMain;
 import ru.kuchanov.tproger.otto.BusProvider;
@@ -33,12 +35,6 @@ public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedLi
             {
                 BusProvider.getInstance().post(new EventCollapsed());
                 activityMain.setFullyExpanded(false);
-
-                TabLayout tab = activityMain.getTabLayout();
-                if (tab.getSelectedTabPosition() == 0)
-                {
-                    tab.setLeft(0);
-                }
             }
         }
         else
@@ -47,15 +43,23 @@ public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedLi
             {
                 BusProvider.getInstance().post(new EventExpanded());
                 activityMain.setFullyExpanded(true);
-
-                TabLayout tab = activityMain.getTabLayout();
-                if (tab.getSelectedTabPosition() == 0)
-                {
-                    tab.setLeft(100);
-                }
             }
         }
         activityMain.setVerticalOffsetPrevious(verticalOffset);
+
+        if (activityMain.getCollapsingToolbarLayout().getHeight() + verticalOffset < 2 * ViewCompat.getMinimumHeight(activityMain.getCollapsingToolbarLayout()))
+        {
+            TabLayout tab = activityMain.getTabLayout();
+            ViewGroup viewInTabsScrollView = (ViewGroup) tab.getChildAt(0);
+            viewInTabsScrollView.setPadding(0, 0, 0, 0);
+        }
+        else
+        {
+            TabLayout tab = activityMain.getTabLayout();
+            ViewGroup viewInTabsScrollView = (ViewGroup) tab.getChildAt(0);
+            viewInTabsScrollView.setPadding(100, 0, 100, 0);
+        }
+
 //            Log.i(LOG, "verticalOffset: "+verticalOffset);
 
         //move background image and its bottom border

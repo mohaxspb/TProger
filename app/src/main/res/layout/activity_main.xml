@@ -2,6 +2,7 @@
     android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
@@ -18,7 +19,8 @@
             android:layout_height="290dp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
-            android:src="@drawable/tproger_small"/>
+            android:src="@drawable/tproger_small"
+            tools:ignore="contentDescription"/>
 
         <LinearLayout
             android:id="@+id/cover_2"
@@ -43,9 +45,9 @@
 
         <View
             android:id="@+id/cover_2_border"
-            android:layout_marginTop="290dp"
             android:layout_width="match_parent"
             android:layout_height="710dp"
+            android:layout_marginTop="290dp"
             android:background="?android:windowBackground"/>
 
         <android.support.design.widget.AppBarLayout
@@ -59,11 +61,11 @@
             <android.support.design.widget.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
-                app:titleEnabled="false"
                 android:layout_height="@dimen/detail_backdrop_height"
                 android:minHeight="?attr/actionBarSize"
                 app:contentScrim="?attr/colorPrimary"
-                app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
+                app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
+                app:titleEnabled="false">
 
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
@@ -81,6 +83,7 @@
                     android:gravity="bottom|end"
                     android:minHeight="40dip"
                     app:layout_scrollFlags="scroll|enterAlways"
+                    app:tabIndicatorHeight="3dp"
                     app:tabGravity="center"
                     app:tabMode="scrollable"/>
 
