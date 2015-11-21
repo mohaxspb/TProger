@@ -3,6 +3,7 @@ package ru.kuchanov.tproger.navigation;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewCompat;
+import android.view.View;
 import android.view.ViewGroup;
 
 import ru.kuchanov.tproger.activity.ActivityMain;
@@ -18,6 +19,8 @@ import ru.kuchanov.tproger.utils.ScreenProperties;
  */
 public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedListener
 {
+    public static final String LOG = MyOnOffsetChangedListener.class.getSimpleName();
+
     ActivityMain activityMain;
 
     public MyOnOffsetChangedListener(ActivityMain activityMain)
@@ -57,7 +60,16 @@ public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedLi
         {
             TabLayout tab = activityMain.getTabLayout();
             ViewGroup viewInTabsScrollView = (ViewGroup) tab.getChildAt(0);
-            viewInTabsScrollView.setPadding(100, 0, 100, 0);
+
+            int screenWidth = ScreenProperties.getWidth(activityMain);
+
+            View firstTab = viewInTabsScrollView.getChildAt(0);
+            View lastTab = viewInTabsScrollView.getChildAt(viewInTabsScrollView.getChildCount() - 1);
+
+            int firstTabWidth = firstTab.getWidth();
+            int lastTabWidth = lastTab.getWidth();
+
+            viewInTabsScrollView.setPadding((screenWidth-firstTabWidth)/2, 0, (screenWidth-lastTabWidth)/2, 0);
         }
 
 //            Log.i(LOG, "verticalOffset: "+verticalOffset);

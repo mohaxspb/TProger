@@ -680,7 +680,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     public void setFullyExpanded(boolean fullyExpanded)
     {
         this.fullyExpanded = fullyExpanded;
-        Log.i(LOG, "fullyExpanded: " + fullyExpanded);
+//        Log.i(LOG, "fullyExpanded: " + fullyExpanded);
     }
 
     public TabLayout getTabLayout()
