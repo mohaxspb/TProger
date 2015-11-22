@@ -661,6 +661,11 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         return toolbar;
     }
 
+    public ViewPager getPager()
+    {
+        return this.pager;
+    }
+
 
     public CollapsingToolbarLayout getCollapsingToolbarLayout()
     {

@@ -78,9 +78,19 @@ public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedLi
             int firstTabWidth = firstTab.getWidth();
             int lastTabWidth = lastTab.getWidth();
 
-            viewInTabsScrollView.setPadding((screenWidth - firstTabWidth) / 2, 0, (screenWidth - lastTabWidth) / 2, 0);
-        }
+            int leftPadding = (screenWidth - firstTabWidth) / 2;
+            int rightPadding = (screenWidth - lastTabWidth) / 2;
 
+            viewInTabsScrollView.setPadding(leftPadding, 0, rightPadding, 0);
+
+            //scroll tabs to center selected
+            int offset = 0;
+            for (int i = 0; i < activityMain.getPager().getCurrentItem(); i++)
+            {
+                offset += viewInTabsScrollView.getChildAt(i).getWidth();
+            }
+            tab.scrollTo(offset, 0);
+        }
 //            Log.i(LOG, "verticalOffset: "+verticalOffset);
 
         //move background image and its bottom border
