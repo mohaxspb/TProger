@@ -1,8 +1,6 @@
 package ru.kuchanov.tproger.fragment;
 
 import android.content.Intent;
-import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -13,6 +11,7 @@ import android.widget.Toast;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.activity.ActivitySettings;
+import ru.kuchanov.tproger.utils.AttributeGetter;
 
 /**
  * Created by Юрий on 21.09.2015 17:57.
@@ -38,6 +37,10 @@ public class FragmentPreferenceAbout extends PreferenceFragment
             if (numOfClicks > 7)
             {
                 numOfClicks = 0;
+                if (getView() == null)
+                {
+                    return false;
+                }
                 Snackbar snackbar = Snackbar.make(getView(), "Пасхальный SnackBar!", Snackbar.LENGTH_LONG);
                 snackbar.setAction("Тык!", new View.OnClickListener()
                 {
@@ -58,11 +61,7 @@ public class FragmentPreferenceAbout extends PreferenceFragment
                     }
                 });
                 View snackBarView = snackbar.getView();
-                int colorId;
-                int[] attrs = new int[]{R.attr.colorPrimaryDark};
-                TypedArray ta = getActivity().obtainStyledAttributes(attrs);
-                colorId = ta.getColor(0, Color.GRAY);
-                ta.recycle();
+                int colorId = AttributeGetter.getColor(getActivity(), R.attr.colorPrimaryDark);
                 snackBarView.setBackgroundColor(colorId);
                 snackbar.show();
             }

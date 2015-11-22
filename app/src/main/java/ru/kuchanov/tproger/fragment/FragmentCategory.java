@@ -179,7 +179,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             });
         }
 
-//        swipeRefreshLayout.setRefreshing(isLoading);
         this.setLoading(isLoading);
 
         return v;
@@ -188,23 +187,22 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     @Override
     public void onAttach(Context context)
     {
-        Log.i(LOG, "onAttach called");
+//        Log.i(LOG, "onAttach called");
         super.onAttach(context);
-
         this.ctx = this.getActivity();
     }
 
     @Override
     public void onDetach()
     {
-        Log.i(LOG, "onDetach called");
+//        Log.i(LOG, "onDetach called");
         super.onDetach();
     }
 
     @Override
     public void onStart()
     {
-        Log.i(LOG, "onStart called");
+//        Log.i(LOG, "onStart called");
         super.onStart();
 
         spiceManager.start(ctx);
@@ -337,10 +335,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
                 ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyAddEach();
             }
-//            else
-//            {
-//                //nothing to do;
-//            }
         }
         if (key.equals(this.getString(R.string.pref_design_key_art_card_style))
                 || key.equals(this.getString(R.string.pref_design_key_art_card_preview_show)))
@@ -505,15 +499,18 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //                        break;
                     case -1:
                         //initial loading  - do nothing
+                        //here we can match current time-Category.refreshed with default refresh period and start request from web
                         break;
                     case 0:
                         Toast.makeText(ctx, "Новых статей не обнаружено!", Toast.LENGTH_SHORT).show();
                         break;
                     case 10:
                         Toast.makeText(ctx, "Обнаружено более 10 новых статей!", Toast.LENGTH_SHORT).show();
+                        recyclerView.getAdapter().notifyDataSetChanged();
                         break;
                     default:
                         Toast.makeText(ctx, "Обнаружено " + newArtsQuont + " новых статей!", Toast.LENGTH_SHORT).show();
+                        recyclerView.getAdapter().notifyDataSetChanged();
                         break;
                 }
                 //update cover

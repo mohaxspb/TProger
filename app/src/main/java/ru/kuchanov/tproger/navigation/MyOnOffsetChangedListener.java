@@ -28,9 +28,18 @@ public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedLi
         this.activityMain = activityMain;
     }
 
+
+    /**
+     * @param verticalOffset is getY() of appBarLayout
+     */
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset)
     {
+//        Log.i(LOG, "verTOff: " + verticalOffset);
+//        int minToolbarHeight = ViewCompat.getMinimumHeight(activityMain.getToolbar());
+//        Log.i(LOG, "minToolbarHeight: " + minToolbarHeight);
+//        Log.i(LOG, "appBarLayout.getHeight():  " + appBarLayout.getHeight());
+//        Log.i(LOG, "activityMain.getCollapsingToolbarLayout().getHeight():  " + activityMain.getCollapsingToolbarLayout().getHeight());
         if (verticalOffset < 0)
         {
             BusProvider.getInstance().post(new EventCollapsed());
@@ -69,7 +78,7 @@ public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedLi
             int firstTabWidth = firstTab.getWidth();
             int lastTabWidth = lastTab.getWidth();
 
-            viewInTabsScrollView.setPadding((screenWidth-firstTabWidth)/2, 0, (screenWidth-lastTabWidth)/2, 0);
+            viewInTabsScrollView.setPadding((screenWidth - firstTabWidth) / 2, 0, (screenWidth - lastTabWidth) / 2, 0);
         }
 
 //            Log.i(LOG, "verticalOffset: "+verticalOffset);

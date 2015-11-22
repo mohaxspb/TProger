@@ -128,7 +128,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
         setUpBackgroundAnimation();
 
-//        this.updateImageFromArts(artsWithImage);
         this.onArtsReceived(new EventArtsReceived(artsWithImage));
 
         this.pref.registerOnSharedPreferenceChangeListener(this);
@@ -421,11 +420,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         cover2.setScaleY(1);
         cover2.animate().cancel();
 
-        Log.e(LOG, "isCollapsed: " + String.valueOf(isCollapsed));
-        if (!isCollapsed)
-        {
-            appBar.setExpanded(true, true);
-        }
+        appBar.setExpanded(isCollapsed, true);
 
         //prevent changing images if we are not on artsListFragment in main pager
         if (pager.getCurrentItem() != 0)
@@ -696,5 +691,4 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             this.recreate();
         }
     }
-
 }
