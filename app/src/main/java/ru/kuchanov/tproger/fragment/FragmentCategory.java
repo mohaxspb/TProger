@@ -90,7 +90,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
-        Log.i(LOG, "onSaveInstanceState called");
+//        Log.i(LOG, "onSaveInstanceState called");
         super.onSaveInstanceState(outState);
 
         outState.putBoolean(KEY_IS_LOADING, isLoading);
@@ -102,7 +102,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        Log.i(LOG, "onCreate called");
+//        Log.i(LOG, "onCreate called");
         super.onCreate(savedInstanceState);
 
         Bundle args = this.getArguments();
@@ -129,7 +129,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        Log.i(LOG, "onCreateView called");
+//        Log.i(LOG, "onCreateView called");
         View v = inflater.inflate(R.layout.fragment_category, container, false);
 
         swipeRefreshLayout = (CustomSwipeRefreshLayout) v.findViewById(R.id.swipe_refresh);

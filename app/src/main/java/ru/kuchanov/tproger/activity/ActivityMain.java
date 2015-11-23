@@ -127,7 +127,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         setUpNavigationDrawer();
         setUpPagerAndTabs();
 
-        appBar.setExpanded(isCollapsed, true);
+//        appBar.setExpanded(isCollapsed, true);
         appBar.addOnOffsetChangedListener(new MyOnOffsetChangedListener(this));
 
         setUpBackgroundAnimation();
@@ -437,8 +437,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             if (behavior != null)
             {
                 int toolbarMinHeight = ViewCompat.getMinimumHeight(toolbar);
-                Log.i(LOG, "toolbarMinHeight: " + toolbarMinHeight);
-                behavior.onNestedPreScroll(coordinatorLayout, appBar, pager, 0, -2*toolbarMinHeight, new int[2]);
+                behavior.onNestedPreScroll(coordinatorLayout, appBar, pager, 0, -2 * toolbarMinHeight, new int[2]);
             }
         }
 
@@ -489,7 +488,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             }
         });
     }
-
 
     @Override
     protected void onStart()
