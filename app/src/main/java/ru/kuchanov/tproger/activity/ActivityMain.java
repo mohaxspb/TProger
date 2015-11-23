@@ -11,9 +11,11 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -72,6 +74,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     protected ActionBarDrawerToggle mDrawerToggle;
     protected boolean drawerOpened;
     protected ViewPager pager;
+    protected CoordinatorLayout coordinatorLayout;
+
     protected int checkedDrawerItemId = R.id.tab_1;
     protected boolean isCollapsed = true;
     protected View cover2;
@@ -148,6 +152,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
         pager = (ViewPager) this.findViewById(R.id.pager);
+
+        coordinatorLayout = (CoordinatorLayout) this.findViewById(R.id.coordinator);
     }
 
 
@@ -420,7 +426,21 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         cover2.setScaleY(1);
         cover2.animate().cancel();
 
-        appBar.setExpanded(isCollapsed, true);
+        //TODO that is normal. Use it if other attempts fails;
+//        appBar.setExpanded(isCollapsed, true);
+
+        if (!isCollapsed)
+        {
+            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) appBar.getLayoutParams();
+            AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) params.getBehavior();
+
+            if (behavior != null)
+            {
+                int toolbarMinHeight = ViewCompat.getMinimumHeight(toolbar);
+                Log.i(LOG, "toolbarMinHeight: " + toolbarMinHeight);
+                behavior.onNestedPreScroll(coordinatorLayout, appBar, pager, 0, -2*toolbarMinHeight, new int[2]);
+            }
+        }
 
         //prevent changing images if we are not on artsListFragment in main pager
         if (pager.getCurrentItem() != 0)

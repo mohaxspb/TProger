@@ -39,7 +39,7 @@ public class Category
     {
         int id = -1;
 
-        Category c = null;
+        Category c;
         try
         {
             c = h.getDao(Category.class).queryBuilder().where().eq(Category.FIELD_URL, url).queryForFirst();
