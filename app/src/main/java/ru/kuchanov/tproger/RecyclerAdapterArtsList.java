@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -235,11 +236,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
 
     public void notifyRemoveEach()
     {
-//        for (int i = 0; i < artsList.size(); i++)
-//        {
-//            notifyItemRemoved(i);
-//        }
-        for (int i = artsList.size()-1; i >= 0 ; i--)
+        for (int i = artsList.size() - 1; i >= 0; i--)
         {
             notifyItemRemoved(i);
         }
@@ -250,6 +247,15 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         for (int i = 0; i < artsList.size(); i++)
         {
             notifyItemInserted(i);
+        }
+    }
+
+    public void notifyChangeEach()
+    {
+        for (int i = 0; i < artsList.size(); i++)
+        {
+            Log.i(LOG, artsList.get(i).getTitle());
+            notifyItemChanged(i);
         }
     }
 

@@ -52,7 +52,6 @@ import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
-import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.utils.DataBaseFileSaver;
 import ru.kuchanov.tproger.utils.MyRandomUtil;
@@ -307,9 +306,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 return true;
             case R.id.db_recreate:
                 h.recreateDB();
-
                 this.recreate();
-
                 return true;
             case R.id.db_delete_last_art_cat:
                 Log.i(LOG, "deleting last art from DB");
@@ -334,11 +331,26 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 }
                 return true;
             case R.id.db_delete_table_articles:
+//                try
+//                {
+//                    ArrayList<Articles> articles = (ArrayList<Articles>) h.getDao(Articles.class).queryForAll();
+//                    h.getDao(Articles.class).delete(articles);
+//                }
+//                catch (SQLException e)
+//                {
+//                    e.printStackTrace();
+//                }
+                Category category = Category.getCategoryByUrl("", h);
+                ArticleCategory topArtCat = ArticleCategory.getTopArtCat(category.getId(), h);
+                ArticleCategory secondArtCat = ArticleCategory.getNextArtCat(h, topArtCat);
+
+                secondArtCat.setTopInCategory(true);
+                secondArtCat.setPreviousArticleId(-1);
 
                 try
                 {
-                    ArrayList<Articles> articles = (ArrayList<Articles>) h.getDao(Articles.class).queryForAll();
-                    h.getDao(Articles.class).delete(articles);
+                    h.getDaoArtCat().delete(topArtCat);
+                    h.getDaoArtCat().createOrUpdate(secondArtCat);
                 }
                 catch (SQLException e)
                 {
@@ -595,7 +607,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             @Override
             public void onAnimationEnd(Animator animation)
             {
-//                        Log.e(LOG, "onAnimationEnd: ");
                 MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
                 cover2.animate().alpha(0).setDuration(800);
             }

@@ -35,9 +35,17 @@ public class ArticleCategory
     @DatabaseField(columnName = FIELD_CATEGORY_ID)
     private int categoryId;
 
+    /**
+     * next means that if this is first in list sorted by pubDate and has id=1
+     * so next has id=2
+     */
     @DatabaseField(columnName = FIELD_NEXT_ARTICLE_ID)
     private int nextArticleId = -1;
 
+    /**
+     * next means that if this is second in list sorted by pubDate and has id=2
+     * so previous has id=1
+     */
     @DatabaseField(columnName = FIELD_PREVIOUS_ARTICLE_ID)
     private int previousArticleId = -1;
 
@@ -556,6 +564,22 @@ public class ArticleCategory
         }
 
         return prevArtCat;
+    }
+
+    public static ArticleCategory getNextArtCat(MyRoboSpiceDatabaseHelper h, ArticleCategory artCat)
+    {
+        ArticleCategory nextArtCat = null;
+        try
+        {
+            nextArtCat = h.getDaoArtCat().queryBuilder().where().eq(ArticleCategory.FIELD_ARTICLE_ID, artCat.getNextArticleId()).
+                    and().eq(ArticleCategory.FIELD_CATEGORY_ID, artCat.getCategoryId()).queryForFirst();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return nextArtCat;
     }
 
     public int getArticleId()

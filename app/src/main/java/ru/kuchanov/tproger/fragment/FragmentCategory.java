@@ -219,7 +219,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     @Override
     public void onStop()
     {
-        Log.i(LOG, "onStop called");
+//        Log.i(LOG, "onStop called");
         super.onStop();
 
         spiceManager.shouldStop();
@@ -479,7 +479,9 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             }
             else
             {
-                artsList = new ArrayList<>(list);
+//                artsList = new ArrayList<>(list);
+                artsList.clear();
+                artsList.addAll(list);
                 if (recyclerView.getAdapter() == null)
                 {
                     recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
@@ -500,17 +502,16 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                     case -1:
                         //initial loading  - do nothing
                         //here we can match current time-Category.refreshed with default refresh period and start request from web
+
                         break;
                     case 0:
                         Toast.makeText(ctx, "Новых статей не обнаружено!", Toast.LENGTH_SHORT).show();
                         break;
                     case 10:
                         Toast.makeText(ctx, "Обнаружено более 10 новых статей!", Toast.LENGTH_SHORT).show();
-                        recyclerView.getAdapter().notifyDataSetChanged();
                         break;
                     default:
                         Toast.makeText(ctx, "Обнаружено " + newArtsQuont + " новых статей!", Toast.LENGTH_SHORT).show();
-                        recyclerView.getAdapter().notifyDataSetChanged();
                         break;
                 }
                 //update cover
