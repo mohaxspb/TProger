@@ -24,12 +24,12 @@ public class MakeLinksClicable
         public void onClick(View widget)
         {
             Log.i(LOG, "url clicked: " + this.mUrl);
-        }
+//        }
         //TODO add check by url
 //            if (this.mUrl.contains("odnako.org/blogs/"))
 //            {
 //                final AppCompatActivity act = (AppCompatActivity) widget.getContext();
-
+//
 //                Fragment newFragment = new FragmentArticle();
 //                Article a = new Article();
 //                a.setUrl(this.mUrl);
@@ -76,7 +76,7 @@ public class MakeLinksClicable
 //                Intent i = new Intent(Intent.ACTION_VIEW);
 //                i.setData(Uri.parse(mUrl));
 //                widget.getContext().startActivity(i);
-//            }
+            }
 //            			Toast.makeText(widget.getContext(), mUrl, Toast.LENGTH_LONG).show();
     }
 

@@ -2,6 +2,10 @@
     <string name="title_activity_activity_settings">Настройки</string>
 
     <!-- Strings related to Settings -->
+
+    <string name="pref_key_on">Вкл</string>
+    <string name="pref_key_off">Выкл</string>
+
     <!-- Design settings -->
     <string name="pref_header_design_title">Внешний вид</string>
     <string name="pref_header_design_summary">Ночной режим, шрифты etc</string>
@@ -74,4 +78,9 @@
     <string name="pref_about_github_title">Ссылка на GitHub</string>
     <string name="pref_about_github_summary">Откроется браузер</string>
 
+    <!-- settings for SystemSetting -->
+    <string name="pref_header_system_title">Системные</string>
+    <string name="pref_header_system_summary">Обновление при запуске и т.д.</string>
+    <string name="pref_system_key_autorenew">pref_system_key_autorenew</string>
+    <string name="pref_system_autorenew_summary">Обновление при запуске</string>
 </resources>

@@ -13,6 +13,12 @@
         android:title="@string/pref_header_notifications_title"/>
 
     <header
+        android:fragment="ru.kuchanov.tproger.fragment.FragmentPreferenceSystem"
+        android:icon="?settingsIconSmall"
+        android:summary="@string/pref_header_system_summary"
+        android:title="@string/pref_header_system_title"/>
+
+    <header
         android:fragment="ru.kuchanov.tproger.fragment.FragmentPreferenceAbout"
         android:icon="?aboutIconSmall"
         android:summary="@string/pref_header_about_summary"

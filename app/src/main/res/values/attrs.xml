@@ -32,11 +32,13 @@
     <attr name="dashboardIcon" format="reference"/>
     <attr name="viewModuleIcon" format="reference"/>
     <attr name="pictureInPictureIcon" format="reference"/>
+    <attr name="autorenewIcon" format="reference"/>
 
     <!--setting icons small-->
     <attr name="themeIconSmall" format="reference"/>
     <attr name="vibrationIconSmall" format="reference" />
     <attr name="aboutIconSmall" format="reference"/>
+    <attr name="settingsIconSmall" format="reference"/>
 
     <attr name="systemSettingsIcon" format="reference"/>
     <attr name="marketDownlodIcon" format="reference"/>

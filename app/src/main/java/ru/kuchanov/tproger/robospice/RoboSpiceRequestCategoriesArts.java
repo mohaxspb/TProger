@@ -58,7 +58,7 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
     @Override
     public Articles loadDataFromNetwork() throws Exception
     {
-        Log.i(LOG, "ArrayListModel loadDataFromNetwork() called");
+        Log.i(LOG, "loadDataFromNetwork called");
 
 //        Category c = databaseHelper.getDaoCategory().
         Category cat = Category.getCategoryByUrl(this.category, databaseHelper);

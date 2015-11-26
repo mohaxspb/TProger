@@ -18,6 +18,7 @@ import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.fragment.FragmentPreferenceAbout;
 import ru.kuchanov.tproger.fragment.FragmentPreferenceDesign;
 import ru.kuchanov.tproger.fragment.FragmentPreferenceNotifications;
+import ru.kuchanov.tproger.fragment.FragmentPreferenceSystem;
 
 
 /**
@@ -34,6 +35,8 @@ import ru.kuchanov.tproger.fragment.FragmentPreferenceNotifications;
 public class ActivitySettings extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {
 
+    public static final String PREF_KEY_NIGHT_MODE = "pref_design_key_night_mode";
+    private final static String LOG = ActivitySettings.class.getSimpleName();
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -99,7 +102,7 @@ public class ActivitySettings extends PreferenceActivity implements SharedPrefer
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        int themeId = R.style.Theme_Preference_Light;
+        int themeId;// = R.style.Theme_Preference_Light;
         //get default settings to get all settings later
         PreferenceManager.setDefaultValues(this, R.xml.pref_design, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_notification, true);
@@ -154,14 +157,15 @@ public class ActivitySettings extends PreferenceActivity implements SharedPrefer
     {
         return FragmentPreferenceDesign.class.getName().equals(fragmentName)
                 || FragmentPreferenceNotifications.class.getName().equals(fragmentName)
-                || FragmentPreferenceAbout.class.getName().equals(fragmentName);
+                || FragmentPreferenceAbout.class.getName().equals(fragmentName)
+                || FragmentPreferenceSystem.class.getName().equals(fragmentName);
     }
 
     //change theme by restarting activity
     @Override
     public void onSharedPreferenceChanged(SharedPreferences pref, String key)
     {
-        Log.d(LOG, "onSharedPreferenceChanged key: "+key);
+        Log.d(LOG, "onSharedPreferenceChanged key: " + key);
 
         switch (key)
         {
@@ -170,7 +174,4 @@ public class ActivitySettings extends PreferenceActivity implements SharedPrefer
                 break;
         }
     }
-
-    private final static String LOG = ActivitySettings.class.getSimpleName();
-    public static final String PREF_KEY_NIGHT_MODE="pref_design_key_night_mode";
 }

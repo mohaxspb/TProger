@@ -1,11 +1,16 @@
 package ru.kuchanov.tproger.robospice.db;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.sql.SQLException;
 import java.util.Date;
 
+import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 
 /**
@@ -69,6 +74,23 @@ public class Category
         }
 
         return c;
+    }
+
+    /**
+     * @return true if lastRefreshedDate was more than refreshPeriod mills ago from now;
+     */
+    public static boolean refreshDateExpired(Category category, Context ctx)
+    {
+        long currentTimeInMills = System.currentTimeMillis();
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+
+        int refreshPeriodInHours = ctx.getResources().getInteger(R.integer.refresh_period_hours);
+        long millsInRefreshPeriod = refreshPeriodInHours * 60 * 60 * 1000;
+
+        long millsFromLastRefresh = currentTimeInMills - category.getRefreshed().getTime();
+
+        return millsFromLastRefresh > millsInRefreshPeriod;
     }
 
     public int getId()

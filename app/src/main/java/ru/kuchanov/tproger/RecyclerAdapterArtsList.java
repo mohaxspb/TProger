@@ -53,12 +53,12 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
 //        artsList = new ArrayList<>(dataToAdd);
 //    }
 
-    public void addData(ArrayList<Article> dataToAdd)
-    {
-        int prevSize = artsList.size();
-        artsList.addAll(dataToAdd);
-        this.notifyItemRangeInserted(prevSize, artsList.size());
-    }
+//    public void addData(ArrayList<Article> dataToAdd)
+//    {
+//        int prevSize = artsList.size();
+//        artsList.addAll(dataToAdd);
+//        this.notifyItemRangeInserted(prevSize, artsList.size());
+//    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
@@ -234,21 +234,21 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         return artsList.size();
     }
 
-    public void notifyRemoveEach()
-    {
-        for (int i = artsList.size() - 1; i >= 0; i--)
-        {
-            notifyItemRemoved(i);
-        }
-    }
-
-    public void notifyAddEach()
-    {
-        for (int i = 0; i < artsList.size(); i++)
-        {
-            notifyItemInserted(i);
-        }
-    }
+//    public void notifyRemoveEach()
+//    {
+//        for (int i = artsList.size() - 1; i >= 0; i--)
+//        {
+//            notifyItemRemoved(i);
+//        }
+//    }
+//
+//    public void notifyAddEach()
+//    {
+//        for (int i = 0; i < artsList.size(); i++)
+//        {
+//            notifyItemInserted(i);
+//        }
+//    }
 
     public void notifyChangeEach()
     {
