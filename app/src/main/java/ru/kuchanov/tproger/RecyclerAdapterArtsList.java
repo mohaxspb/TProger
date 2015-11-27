@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,11 +93,16 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position)
     {
+        float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
+
         Article a = artsList.get(position);
         boolean showMaxInfo = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
         if (showMaxInfo)
         {
             ViewHolderMaximum maxHolder = (ViewHolderMaximum) holder;
+
+            //TITLE
+            maxHolder.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * maxHolder.title.getTextSize());
             maxHolder.title.setText(a.getTitle());
 
             //Main image
@@ -105,8 +111,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             {
                 paramsImg = (LinearLayout.LayoutParams) maxHolder.img.getLayoutParams();
 
-                int widthDevice = ctx.getResources().getDisplayMetrics().widthPixels;
-                float width = widthDevice;
+                float width = ctx.getResources().getDisplayMetrics().widthPixels;
 
                 boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
                 if (isGridManager)
@@ -143,6 +148,14 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                 paramsOverflow.width = (int) DipToPx.convert(40, ctx);
                 overflowParent.setLayoutParams(paramsOverflow);
                 //TODO set onClick
+                overflowParent.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        Log.i(LOG, "overflowParent CLICKED!!!");
+                    }
+                });
             }
             else
             {
@@ -158,52 +171,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             if (showPreview)
             {
                 ArrayList<Element> elements = HtmlParsing.getElementListFromHtml(a.getPreview());
-
                 HtmlToView.add(maxHolder.preview, elements);
-
-//                if (HtmlTextFormatting.hasUnsupportedTags(a.getPreview()))
-//                {
-//                    paramsPreview = (LinearLayout.LayoutParams) maxHolder.preview.getLayoutParams();
-//                    paramsPreview.height = 0;
-//                    maxHolder.preview.setLayoutParams(paramsPreview);
-//
-//                    WebView webView = new WebView(ctx);
-//
-//                    int indexOfPreview = maxHolder.mainLin.indexOfChild(maxHolder.preview);
-//                    maxHolder.mainLin.addView(webView, indexOfPreview);
-//
-//                    LinearLayout.LayoutParams webParams = (LinearLayout.LayoutParams) webView.getLayoutParams();
-//                    webParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
-//                    webParams.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-//                    webView.setLayoutParams(webParams);
-//
-//                    webView.loadDataWithBaseURL(null, a.getPreview(), "text/html", "UTF-8", null);
-//                }
-//                else
-//                {
-//                    String previewText = a.getPreview();
-//
-//                    previewText = previewText.replaceAll("</p>", "");
-//                    previewText = previewText.replaceAll("<p>", "<p></p>");
-//
-//                    paramsPreview = (LinearLayout.LayoutParams) maxHolder.preview.getLayoutParams();
-//                    paramsPreview.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-//                    maxHolder.preview.setLayoutParams(paramsPreview);
-//
-////                    maxHolder.preview.setText(
-////                            Html.fromHtml(
-////                                    previewText, new UILImageGetter(maxHolder.preview, ctx), new MyHtmlTagHandler()));
-////
-////                    maxHolder.preview.setLinksClickable(true);
-////                    maxHolder.preview.setMovementMethod(LinkMovementMethod.getInstance());
-////
-////                    CharSequence text = maxHolder.preview.getText();
-////                    if (text instanceof Spannable)
-////                    {
-////                        maxHolder.preview.setText(MakeLinksClicable.reformatText(text));
-////                    }
-//                }
-
             }
             else
             {
@@ -219,6 +187,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy 'в' HH:mm", Locale.getDefault());
             sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 //                Log.i(LOG, sdf.format(pubDate));//prints date in the format sdf
+            maxHolder.date.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * maxHolder.date.getTextSize());
             maxHolder.date.setText(sdf.format(a.getPubDate()));
         }
         else
@@ -232,31 +201,6 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     public int getItemCount()
     {
         return artsList.size();
-    }
-
-//    public void notifyRemoveEach()
-//    {
-//        for (int i = artsList.size() - 1; i >= 0; i--)
-//        {
-//            notifyItemRemoved(i);
-//        }
-//    }
-//
-//    public void notifyAddEach()
-//    {
-//        for (int i = 0; i < artsList.size(); i++)
-//        {
-//            notifyItemInserted(i);
-//        }
-//    }
-
-    public void notifyChangeEach()
-    {
-        for (int i = 0; i < artsList.size(); i++)
-        {
-            Log.i(LOG, artsList.get(i).getTitle());
-            notifyItemChanged(i);
-        }
     }
 
     public static class ViewHolderMinimum extends RecyclerView.ViewHolder

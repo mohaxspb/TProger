@@ -304,7 +304,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
-        Log.i(LOG, "onSharedPreferenceChanged with key: " + key);
+//        Log.i(LOG, "onSharedPreferenceChanged with key: " + key);
         if (!isAdded())
         {
             return;
@@ -532,7 +532,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                     case -1:
                         //initial loading  - do nothing
                         //here we can match current time-Category.refreshed with default refresh period and start request from web
-
                         String autoRefreshIsOnKey = ctx.getString(R.string.pref_system_key_autorenew);
                         boolean autoRefreshIsOn = pref.getBoolean(autoRefreshIsOnKey, false);
                         if (autoRefreshIsOn)

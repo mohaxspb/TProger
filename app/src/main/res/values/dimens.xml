@@ -8,4 +8,7 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="list_item_avatar_size">40dp</dimen>
     <!--from crisbanes github-->
+    <dimen name="text_size_large">25sp</dimen>
+    <dimen name="text_size_primary">21sp</dimen>
+    <dimen name="text_size_secondary">17sp</dimen>
 </resources>

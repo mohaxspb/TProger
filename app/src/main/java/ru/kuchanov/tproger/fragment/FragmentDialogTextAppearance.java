@@ -19,10 +19,8 @@ import ru.kuchanov.tproger.R;
 public class FragmentDialogTextAppearance extends DialogFragment
 {
     final static String LOG = FragmentDialogTextAppearance.class.getSimpleName();
-
-    private Context ctx;
-
     SharedPreferences pref;
+    private Context ctx;
 
     public static FragmentDialogTextAppearance newInstance()
     {
@@ -53,9 +51,9 @@ public class FragmentDialogTextAppearance extends DialogFragment
 
         dialogTextSize = dialogTextSizeBuilder.build();
 
-        View customView=dialogTextSize.getCustomView();
+        View customView = dialogTextSize.getCustomView();
 
-        if(customView==null)
+        if (customView == null)
         {
             return dialogTextSize;
         }
@@ -68,7 +66,8 @@ public class FragmentDialogTextAppearance extends DialogFragment
 //        final TextView tvComments = (TextView) dialogTextSize.getCustomView().findViewById(R.id.text_size_comments);
 
         seekbarUI.setMax(150);
-        float scaleUI = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
+        final float scaleUI = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
+//        Log.i(LOG, "size = " + String.valueOf(scaleUI));
         int curProgressUI = (int) ((scaleUI - 0.50f) * 100);
         seekbarUI.setProgress(curProgressUI);
         seekbarUI.setOnSeekBarChangeListener(new OnSeekBarChangeListener()
@@ -86,9 +85,9 @@ public class FragmentDialogTextAppearance extends DialogFragment
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
             {
-                //				Log.d(LOG, "progress = " + String.valueOf(progress));
+//                Log.d(LOG, "progress = " + String.valueOf(progress));
                 float size = (progress / 100f) + 0.50f;
-                //				Log.d(LOG, "size = " + String.valueOf(size));
+//                Log.i(LOG, "size = " + String.valueOf(size));
                 tvUi.setTextSize(size * 21);
                 pref.edit().putFloat(ctx.getString(R.string.pref_design_key_text_size_ui), size).commit();
             }
