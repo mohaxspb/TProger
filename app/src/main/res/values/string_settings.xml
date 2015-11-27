@@ -18,7 +18,7 @@
 
     <string name="pref_design_key_text_size">pref_design_key_text_size</string>
     <string name="text_size_warning">Изменения вступят в силу после поворота экрана!</string>
-    <string name="text_size">Размер текста</string>
+    <string name="text_size_title">Размер текста</string>
     <string name="text_size_summary">Размер текста в карточках статей и в самих статьях</string>
     <string name="pref_design_key_text_size_ui">pref_design_key_text_size_ui</string>
     <string name="text_size_ui">Размер текста в карточках статей</string>

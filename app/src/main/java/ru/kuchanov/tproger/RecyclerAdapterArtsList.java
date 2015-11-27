@@ -102,7 +102,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             ViewHolderMaximum maxHolder = (ViewHolderMaximum) holder;
 
             //TITLE
-            maxHolder.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * maxHolder.title.getTextSize());
+            maxHolder.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
             maxHolder.title.setText(a.getTitle());
 
             //Main image
@@ -187,7 +187,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy 'в' HH:mm", Locale.getDefault());
             sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 //                Log.i(LOG, sdf.format(pubDate));//prints date in the format sdf
-            maxHolder.date.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * maxHolder.date.getTextSize());
+            maxHolder.date.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_secondary));
             maxHolder.date.setText(sdf.format(a.getPubDate()));
         }
         else

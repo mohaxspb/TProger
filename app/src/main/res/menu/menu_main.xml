@@ -10,7 +10,7 @@
         app:showAsAction="never"/>
     <group
         android:id="@+id/night_mode"
-        android:checkableBehavior="single" >
+        android:checkableBehavior="single">
         <item
             android:id="@+id/night_mode_switcher"
             android:icon="?nightModeIcon"
@@ -20,7 +20,7 @@
     </group>
     <group
         android:id="@+id/list_style"
-        android:checkableBehavior="single" >
+        android:checkableBehavior="single">
         <item
             android:id="@+id/list_style_switcher"
             android:icon="?dashboardIcon"
@@ -30,10 +30,17 @@
     </group>
 
     <item
-    android:id="@+id/db_export"
-    android:orderInCategory="1000"
-    android:title="@string/export_db"
-    app:showAsAction="never"/>
+        android:id="@+id/text_size_dialog"
+        android:icon="?textSizeIcon"
+        android:orderInCategory="900"
+        android:title="@string/text_size_title"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/db_export"
+        android:orderInCategory="1000"
+        android:title="@string/export_db"
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/db_recreate"

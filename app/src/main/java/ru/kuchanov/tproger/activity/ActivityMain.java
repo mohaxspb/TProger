@@ -40,6 +40,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ru.kuchanov.tproger.R;
+import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
 import ru.kuchanov.tproger.navigation.ImageChanger;
 import ru.kuchanov.tproger.navigation.MyOnOffsetChangedListener;
@@ -299,6 +300,10 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 }
                 this.supportInvalidateOptionsMenu();
 //                this.recreate();
+                return true;
+            case R.id.text_size_dialog:
+                FragmentDialogTextAppearance frag = FragmentDialogTextAppearance.newInstance();
+                frag.show(getFragmentManager(), "TextAppearance");
                 return true;
             case R.id.db_export:
                 String DBWritingResult = DataBaseFileSaver.copyDatabase(ctx, MyRoboSpiceDatabaseHelper.DB_NAME);
