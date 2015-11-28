@@ -93,18 +93,31 @@
 
         <!-- preview -->
 
-        <LinearLayout
-            android:id="@+id/preview"
+        <FrameLayout
+            android:id="@+id/preview_parent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:orientation="vertical"/>
+            android:layout_height="wrap_content">
 
+            <LinearLayout
+                android:id="@+id/preview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:orientation="vertical"/>
+
+            <View
+                android:id="@+id/preview_cover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/cover_top_to_bottom"/>
+        </FrameLayout>
         <!-- bottom panel with share btn, save&read icons -->
 
         <LinearLayout
+            android:id="@+id/bottom_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/cover_bottom_to_top"
             android:baselineAligned="false"
             android:orientation="horizontal">
 

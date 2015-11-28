@@ -8,12 +8,12 @@
 
     <style name="My.Theme.Dark" parent="Base.Theme.Dark">
         <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:navigationBarColor">@color/material_grey_900</item>
+        <item name="android:navigationBarColor">@color/my_material_grey_900</item>
     </style>
 
     <style name="Theme.Preference.Light" parent="Base.Theme.Light">
         <item name="android:windowActionBarOverlay">false</item>
-        <item name="android:windowBackground">@color/material_grey_300</item>
+        <item name="android:windowBackground">@color/my_material_grey_300</item>
         <item name="android:windowNoTitle">false</item>
         <item name="android:windowActionBar">true</item>
         <item name="android:navigationBarColor">@color/material_grey_500</item>
@@ -21,10 +21,10 @@
 
     <style name="Theme.Preference.Dark" parent="Base.Theme.Dark">
         <item name="android:windowActionBarOverlay">false</item>
-        <item name="android:windowBackground">@color/material_grey_800</item>
+        <item name="android:windowBackground">@color/my_material_grey_800</item>
         <item name="android:windowNoTitle">false</item>
         <item name="android:windowActionBar">true</item>
-        <item name="android:navigationBarColor">@color/material_grey_900</item>
+        <item name="android:navigationBarColor">@color/my_material_grey_900</item>
     </style>
 
 

@@ -83,4 +83,5 @@
     <string name="pref_header_system_summary">Обновление при запуске и т.д.</string>
     <string name="pref_system_key_autorenew">pref_system_key_autorenew</string>
     <string name="pref_system_autorenew_summary">Обновление при запуске</string>
+    <string name="pref_design_key_art_card_preview_short">pref_design_key_art_card_preview_short</string>
 </resources>

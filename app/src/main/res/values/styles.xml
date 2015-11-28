@@ -5,16 +5,16 @@
         <item name="colorPrimary">@color/material_grey_400</item>
         <item name="colorPrimaryDark">@color/material_grey_500</item>
         <item name="colorAccent">@color/material_indigo_500</item>
-        <item name="actionMenuTextAppearance">@color/material_grey_800</item>
-        <item name="android:textColor">@color/material_grey_800</item>
-        <item name="android:textColorPrimary">@color/material_grey_800</item>
+        <item name="actionMenuTextAppearance">@color/my_material_grey_800</item>
+        <item name="android:textColor">@color/my_material_grey_800</item>
+        <item name="android:textColorPrimary">@color/my_material_grey_800</item>
         <item name="android:textColorPrimaryInverse">@color/material_grey_400</item>
         <item name="android:textColorSecondary">@color/material_grey_700</item>
-        <item name="actionMenuTextColor">@color/material_grey_800</item>
-        <item name="android:windowBackground">@color/material_grey_100</item>
+        <item name="actionMenuTextColor">@color/my_material_grey_800</item>
+        <item name="android:windowBackground">@color/my_material_grey_100</item>
         <!--custom colors-->
-        <item name="myCardBackgroundColor">@color/material_grey_50</item>
-        <item name="myCardBackgroundColorDark">@color/material_grey_300</item>
+        <item name="myCardBackgroundColor">@color/my_material_grey_50</item>
+        <item name="myCardBackgroundColorDark">@color/my_material_grey_300</item>
         <!-- settings icons -->
         <item name="overflowIcon">@drawable/ic_more_vert_grey600_48dp</item>
         <item name="themeIcon">@drawable/ic_color_lens_grey600_48dp</item>
@@ -24,6 +24,7 @@
         <item name="viewModuleIcon">@drawable/ic_view_module_grey600_48dp</item>
         <item name="pictureInPictureIcon">@drawable/ic_picture_in_picture_grey600_48dp</item>
         <item name="pagesIcon">@drawable/ic_pages_grey600_48dp</item>
+        <item name="verticalAlignCenterIcon">@drawable/ic_vertical_align_center_grey600_48dp</item>
         <item name="autorenewIcon">@drawable/ic_autorenew_grey600_48dp</item>
 
         <item name="themeIconSmall">@drawable/ic_color_lens_grey600_36dp</item>
@@ -70,18 +71,18 @@
 
     <!-- Base application theme. Dark -->
     <style name="Base.Theme.Dark" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">@color/material_grey_800</item>
-        <item name="colorPrimaryDark">@color/material_grey_900</item>
+        <item name="colorPrimary">@color/my_material_grey_800</item>
+        <item name="colorPrimaryDark">@color/my_material_grey_900</item>
         <item name="colorAccent">@color/material_indigo_500</item>
         <item name="actionMenuTextAppearance">@color/material_grey_400</item>
         <item name="android:textColor">@color/material_grey_400</item>
-        <item name="android:textColorPrimary">@color/material_grey_300</item>
-        <item name="android:textColorPrimaryInverse">@color/material_grey_800</item>
+        <item name="android:textColorPrimary">@color/my_material_grey_300</item>
+        <item name="android:textColorPrimaryInverse">@color/my_material_grey_800</item>
         <item name="android:textColorSecondary">@color/material_grey_400</item>
         <item name="actionMenuTextColor">@color/material_grey_400</item>
-        <item name="android:windowBackground">@color/material_grey_900</item>
+        <item name="android:windowBackground">@color/my_material_grey_900</item>
         <!--custom colors-->
-        <item name="myCardBackgroundColor">@color/material_grey_800</item>
+        <item name="myCardBackgroundColor">@color/my_material_grey_800</item>
         <item name="myCardBackgroundColorDark">@color/material_grey_700</item>
         <!-- icons -->
 
@@ -93,6 +94,7 @@
         <item name="viewModuleIcon">@drawable/ic_view_module_white_48dp</item>
         <item name="pictureInPictureIcon">@drawable/ic_picture_in_picture_white_48dp</item>
         <item name="pagesIcon">@drawable/ic_pages_white_48dp</item>
+        <item name="verticalAlignCenterIcon">@drawable/ic_vertical_align_center_white_48dp</item>
         <item name="autorenewIcon">@drawable/ic_autorenew_white_48dp</item>
 
         <item name="themeIcon">@drawable/ic_color_lens_white_48dp</item>
@@ -135,14 +137,14 @@
 
     <style name="Theme.Preference.Light" parent="Base.Theme.Light">
         <item name="android:windowActionBarOverlay">false</item>
-        <item name="android:windowBackground">@color/material_grey_300</item>
+        <item name="android:windowBackground">@color/my_material_grey_300</item>
         <item name="android:windowNoTitle">false</item>
         <item name="android:windowActionBar">true</item>
     </style>
 
     <style name="Theme.Preference.Dark" parent="Base.Theme.Dark">
         <item name="android:windowActionBarOverlay">false</item>
-        <item name="android:windowBackground">@color/material_grey_800</item>
+        <item name="android:windowBackground">@color/my_material_grey_800</item>
         <item name="android:windowNoTitle">false</item>
         <item name="android:windowActionBar">true</item>
     </style>

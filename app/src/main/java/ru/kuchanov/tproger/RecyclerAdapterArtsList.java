@@ -9,6 +9,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -99,7 +100,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         boolean showMaxInfo = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
         if (showMaxInfo)
         {
-            ViewHolderMaximum maxHolder = (ViewHolderMaximum) holder;
+            final ViewHolderMaximum maxHolder = (ViewHolderMaximum) holder;
 
             //TITLE
             maxHolder.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
@@ -166,12 +167,59 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                 overflowParent.setOnClickListener(null);
             }
             //preview
-            LinearLayout.LayoutParams paramsPreview;
+//            final LinearLayout.LayoutParams paramsPreview;
+            final FrameLayout.LayoutParams paramsPreview;
+            paramsPreview = (FrameLayout.LayoutParams) maxHolder.preview.getLayoutParams();
             boolean showPreview = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_preview_show), false);
             if (showPreview)
             {
                 ArrayList<Element> elements = HtmlParsing.getElementListFromHtml(a.getPreview());
                 HtmlToView.add(maxHolder.preview, elements);
+
+                //shorting preview field
+                boolean shortPreview = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_preview_short), false);
+                if (shortPreview)
+                {
+                    paramsPreview.height = (int) DipToPx.convert(100, ctx);
+                    maxHolder.preview.setLayoutParams(paramsPreview);
+
+                    maxHolder.previewCover.setVisibility(View.VISIBLE);
+                    maxHolder.bottomPanel.setBackgroundResource(R.drawable.cover_bottom_to_top);
+                    final View.OnClickListener previewCoverCL = new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            boolean isFullHeight = paramsPreview.height == FrameLayout.LayoutParams.WRAP_CONTENT;
+                            Log.i(LOG, "maxHolder.preview CLICKED!!! and isFullHeight: " + isFullHeight);
+                            if (isFullHeight)
+                            {
+                                paramsPreview.height = (int) DipToPx.convert(100, ctx);
+                                maxHolder.preview.setLayoutParams(paramsPreview);
+
+                                maxHolder.previewCover.setVisibility(View.VISIBLE);
+                                maxHolder.bottomPanel.setBackgroundResource(R.drawable.cover_bottom_to_top);
+                            }
+                            else
+                            {
+                                paramsPreview.height = FrameLayout.LayoutParams.WRAP_CONTENT;
+                                maxHolder.preview.setLayoutParams(paramsPreview);
+
+                                maxHolder.previewCover.setVisibility(View.INVISIBLE);
+                                maxHolder.bottomPanel.setBackgroundResource(android.R.color.transparent);
+                            }
+                        }
+                    };
+                    maxHolder.previewCover.setOnClickListener(previewCoverCL);
+                }
+                else
+                {
+                    maxHolder.previewCover.setVisibility(View.INVISIBLE);
+                    maxHolder.bottomPanel.setBackgroundResource(android.R.color.transparent);
+
+                    paramsPreview.height = FrameLayout.LayoutParams.WRAP_CONTENT;
+                    maxHolder.preview.setLayoutParams(paramsPreview);
+                }
             }
             else
             {
@@ -179,9 +227,10 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                 {
                     maxHolder.preview.removeAllViews();
                 }
-                paramsPreview = (LinearLayout.LayoutParams) maxHolder.preview.getLayoutParams();
                 paramsPreview.height = 0;
                 maxHolder.preview.setLayoutParams(paramsPreview);
+
+                maxHolder.preview.setOnClickListener(null);
             }
             //date
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy 'в' HH:mm", Locale.getDefault());
@@ -223,6 +272,9 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
 
         public LinearLayout preview;
 
+        public View previewCover;
+        public LinearLayout bottomPanel;
+
         public LinearLayout mainLin;
 
         public ViewHolderMaximum(View v)
@@ -232,7 +284,11 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             date = (TextView) v.findViewById(R.id.date);
             img = (ImageView) v.findViewById(R.id.art_card_img);
             overflow = (ImageView) v.findViewById(R.id.actions);
+
             preview = (LinearLayout) v.findViewById(R.id.preview);
+            previewCover = v.findViewById(R.id.preview_cover);
+            bottomPanel = (LinearLayout) v.findViewById(R.id.bottom_panel);
+
             mainLin = (LinearLayout) v.findViewById(R.id.art_card_main_lin);
         }
     }

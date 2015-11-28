@@ -348,6 +348,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         if (key.equals(this.getString(R.string.pref_design_key_art_card_style))
                 || key.equals(this.getString(R.string.pref_design_key_art_card_preview_show))
                 || key.equals(this.getString(R.string.pref_design_key_text_size_ui))
+                || key.equals(this.getString(R.string.pref_design_key_art_card_preview_short))
                 )
         {
             recyclerView.getAdapter().notifyDataSetChanged();

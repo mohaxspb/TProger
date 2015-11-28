@@ -53,6 +53,7 @@
     <attr name="tabletIcon" format="reference"/>
     <attr name="archiveIcon" format="reference"/>
     <attr name="pagesIcon" format="reference"/>
+    <attr name="verticalAlignCenterIcon" format="reference"/>
     <attr name="clearIcon" format="reference"/>
     <attr name="createIcon" format="reference"/>
     <attr name="favoriteStarIcon" format="reference"/>

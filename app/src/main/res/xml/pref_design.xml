@@ -79,5 +79,14 @@
             android:summaryOn="Краткое содержание"
             android:switchTextOff="Выкл"
             android:switchTextOn="Вкл"/>
+        <SwitchPreference
+            android:defaultValue="false"
+            android:dependency="@string/pref_design_key_art_card_style"
+            android:icon="?verticalAlignCenterIcon"
+            android:key="@string/pref_design_key_art_card_preview_short"
+            android:summaryOff="Свёрнутое краткое содержание"
+            android:summaryOn="Свёрнутое краткое содержание"
+            android:switchTextOff="Выкл"
+            android:switchTextOn="Вкл"/>
     </PreferenceCategory>
 </PreferenceScreen>
