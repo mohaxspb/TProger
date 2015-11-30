@@ -65,7 +65,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     protected CustomSwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
     private String categoryUrl;
-    private MyRoboSpiceDatabaseHelper databaseHelper;
+
     private Category category;
     private AppCompatActivity act;
     private Context ctx;
@@ -110,10 +110,9 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         Bundle args = this.getArguments();
         this.categoryUrl = args.getString(KEY_CATEGORY);
 
-//        long time = System.currentTimeMillis();
-        this.databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+        MyRoboSpiceDatabaseHelper databaseHelper;
+        databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
         this.category = Category.getCategoryByUrl(categoryUrl, databaseHelper);
-//        Log.i(LOG, "Time is: " + String.valueOf(System.currentTimeMillis() - time));
 
         if (savedInstanceState != null)
         {
@@ -208,9 +207,15 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //        Log.i(LOG, "onStart called");
         super.onStart();
 
-        spiceManager.start(ctx);
+        if (!spiceManager.isStarted())
+        {
+            spiceManager.start(ctx);
+        }
         spiceManager.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
-        spiceManagerOffline.start(ctx);
+        if (!spiceManagerOffline.isStarted())
+        {
+            spiceManagerOffline.start(ctx);
+        }
         spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
         //make request for it
         if (artsList.size() == 0)
@@ -225,8 +230,14 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //        Log.i(LOG, "onStop called");
         super.onStop();
 
-        spiceManager.shouldStop();
-        spiceManagerOffline.shouldStop();
+        if (spiceManager.isStarted())
+        {
+            spiceManager.shouldStop();
+        }
+        if (spiceManagerOffline.isStarted())
+        {
+            spiceManagerOffline.shouldStop();
+        }
     }
 
     private void performRequest(int page, boolean forceRefresh, boolean resetCategoryInDB)
@@ -315,18 +326,14 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
             if (isGridManager)
             {
-//                ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyRemoveEach();
                 recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
                 this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
-//                ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyAddEach();
                 recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
             }
             else
             {
-//                ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyRemoveEach();
                 recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
                 this.recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
-//                ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyAddEach();
                 recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
             }
         }
@@ -338,10 +345,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
             if (isGridManager)
             {
-//                ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyRemoveEach();
                 recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
                 this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
-//                ((RecyclerAdapterArtsList) this.recyclerView.getAdapter()).notifyAddEach();
                 recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
             }
         }
@@ -486,17 +491,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
             Collections.sort(list, new Article.PubDateComparator());
 
-
-//            resetOnScroll();
-//            setLoading(false);
-
             if (currentPageToLoad > 1)
             {
-//                ArrayList<Article> prevList = new ArrayList<>(artsList);
-//                prevList.addAll(list);
-//                artsList = new ArrayList<>(prevList);
-//                ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(list);
-
                 int prevListSize = artsList.size();
                 artsList.addAll(list);
                 recyclerView.getAdapter().notifyItemRangeInserted(prevListSize, artsList.size());
@@ -506,21 +502,16 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             }
             else
             {
-//                artsList = new ArrayList<>(list);
                 artsList.clear();
                 artsList.addAll(list);
                 if (recyclerView.getAdapter() == null)
                 {
                     recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
-//                    ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyAddEach();
                     recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
                 }
                 else
                 {
-//                    ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyRemoveEach();
-//                    ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyAddEach();
                     recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
-//                    recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
                 }
 
                 //update cover

@@ -1,9 +1,11 @@
 package ru.kuchanov.tproger;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import ru.kuchanov.tproger.activity.ActivityArticle;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.DipToPx;
 import ru.kuchanov.tproger.utils.MyUIL;
@@ -32,7 +35,6 @@ import ru.kuchanov.tproger.utils.html.HtmlToView;
 public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
     public static final String LOG = RecyclerAdapterArtsList.class.getSimpleName();
-    //    boolean showMaxInfo;
     private ArrayList<Article> artsList;
     private SharedPreferences pref;
     private Context ctx;
@@ -42,25 +44,11 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     {
         this.ctx = ctx;
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
-//        showMaxInfo = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
 
         imageLoader = MyUIL.get(ctx);
 
         artsList = dataset;
     }
-
-//    public void resetData(ArrayList<Article> dataToAdd)
-//    {
-//        artsList.clear();
-//        artsList = new ArrayList<>(dataToAdd);
-//    }
-
-//    public void addData(ArrayList<Article> dataToAdd)
-//    {
-//        int prevSize = artsList.size();
-//        artsList.addAll(dataToAdd);
-//        this.notifyItemRangeInserted(prevSize, artsList.size());
-//    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
@@ -96,7 +84,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     {
         float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
 
-        Article a = artsList.get(position);
+        final Article a = artsList.get(position);
         boolean showMaxInfo = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
         if (showMaxInfo)
         {
@@ -104,7 +92,17 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
 
             //TITLE
             maxHolder.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
-            maxHolder.title.setText(a.getTitle());
+            maxHolder.title.setText(Html.fromHtml(a.getTitle()));
+            maxHolder.title.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    Log.i(LOG, "title clicked: " + a.getUrl());
+                    Intent i = new Intent(ctx, ActivityArticle.class);
+                    ctx.startActivity(i);
+                }
+            });
 
             //Main image
             LinearLayout.LayoutParams paramsImg;

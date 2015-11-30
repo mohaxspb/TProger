@@ -18,5 +18,6 @@
     <string name="recreate_db">Пересоздать БД</string>
     <string name="db_delete_last_art_cat">Удалить последнюю ArtCat</string>
     <string name="db_delete_table_articles">Удалить таблицу Articles</string>
+    <string name="title_activity_activity_article">Статьи</string>
 
 </resources>

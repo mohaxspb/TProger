@@ -83,8 +83,8 @@
                     android:gravity="bottom|end"
                     android:minHeight="40dip"
                     app:layout_scrollFlags="scroll|enterAlways"
-                    app:tabIndicatorHeight="3dp"
                     app:tabGravity="center"
+                    app:tabIndicatorHeight="3dp"
                     app:tabMode="scrollable"/>
 
             </android.support.design.widget.CollapsingToolbarLayout>

@@ -24,11 +24,16 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".activity.ActivityArticle"
+            android:label="@string/title_activity_activity_article">
+        </activity>
+
         <activity
             android:name=".activity.ActivitySettings"
             android:label="@string/title_activity_activity_settings">
         </activity>
-
         <service
             android:name=".robospice.HtmlSpiceService"
             android:enabled="true"
