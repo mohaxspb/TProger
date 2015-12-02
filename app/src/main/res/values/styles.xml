@@ -60,6 +60,7 @@
         <item name="clearIcon">@drawable/ic_clear_grey600_48dp</item>
         <item name="createIcon">@drawable/ic_create_grey600_48dp</item>
         <item name="favoriteStarIcon">@drawable/ic_grade_grey600_48dp</item>
+        <item name="tabletIcon">@drawable/ic_tablet_android_grey_600_48dp</item>
 
         <!--<item name="readenIcon">@drawable/ic_drafts_grey600_48dp</item>-->
         <!--<item name="unreadenIcon">@drawable/ic_markunread_grey600_48dp</item>-->
@@ -126,6 +127,7 @@
         <item name="clearIcon">@drawable/ic_clear_white_48dp</item>
         <item name="createIcon">@drawable/ic_create_white_48dp</item>
         <item name="favoriteStarIcon">@drawable/ic_grade_white_48dp</item>
+        <item name="tabletIcon">@drawable/ic_tablet_android_white_48dp</item>
 
         <!--<item name="readenIcon">@drawable/ic_drafts_white_48dp</item>-->
         <!--<item name="unreadenIcon">@drawable/ic_markunread_white_48dp</item>-->

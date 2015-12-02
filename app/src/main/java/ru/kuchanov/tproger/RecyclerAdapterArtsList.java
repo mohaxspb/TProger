@@ -3,6 +3,7 @@ package ru.kuchanov.tproger;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -80,7 +81,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position)
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position)
     {
         float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
 
@@ -98,8 +99,13 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                 @Override
                 public void onClick(View v)
                 {
+                    //TODO paste arts to intents extras
                     Log.i(LOG, "title clicked: " + a.getUrl());
                     Intent i = new Intent(ctx, ActivityArticle.class);
+                    Bundle b = new Bundle();
+                    b.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
+                    b.putInt(ActivityArticle.KEY_CURRENT_ARTICLE_POSITION_IN_LIST, position);
+                    i.putExtras(b);
                     ctx.startActivity(i);
                 }
             });

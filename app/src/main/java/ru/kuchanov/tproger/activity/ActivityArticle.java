@@ -55,13 +55,22 @@ import ru.kuchanov.tproger.utils.MyUIL;
 
 public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger, SharedPreferences.OnSharedPreferenceChangeListener
 {
+    public static final String KEY_CURRENT_ARTICLE_POSITION_IN_LIST = "KEY_CURRENT_ARTICLE_POSITION_IN_LIST";
     protected static final String NAV_ITEM_ID = "NAV_ITEM_ID";
     protected static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
     protected static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
-
     private final static String LOG = ActivityArticle.class.getSimpleName();
 
     protected final int[] coverImgsIds = {R.drawable.tproger_small, R.drawable.cremlin, R.drawable.petergof};
+    //views for tabletMode
+    protected Toolbar toolbarLeft;
+    protected CollapsingToolbarLayout collapsingToolbarLayoutLeft;
+    protected CoordinatorLayout coordinatorLayoutLeft;
+    protected ImageView coverLeft;
+    protected View cover2Left;
+    protected View cover2BorderLeft;
+    protected AppBarLayout appBarLeft;
+    //main views
     protected Toolbar toolbar;
     protected CollapsingToolbarLayout collapsingToolbarLayout;
     protected NavigationView navigationView;
@@ -70,22 +79,29 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
     protected boolean drawerOpened;
     protected ViewPager pager;
     protected CoordinatorLayout coordinatorLayout;
-
     protected int checkedDrawerItemId = R.id.tab_1;
     protected boolean isCollapsed = true;
+    protected ImageView cover;
     protected View cover2;
     protected View cover2Border;
     protected AppBarLayout appBar;
-//    protected TabLayout tabLayout;
     protected boolean fullyExpanded = true;
-    private ImageView cover;
+    /**
+     * list of articles to show in pager and recyclerView
+     */
+    private ArrayList<Article> artsList = new ArrayList<>();
+    private int currentPositionOfArticleInList = 0;
+    //
     private int verticalOffsetPrevious = 0;
     private Context ctx;
     private SharedPreferences pref;
     private ArrayList<Article> artsWithImage = new ArrayList<>();
     private int prevPosOfImage = -1;
+
     private Timer timer;
     private TimerTask timerTask;
+
+    private boolean isTabletMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -105,8 +121,12 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
         //call super after setTheme to set it 0_0
         super.onCreate(savedInstanceState);
 
+        isTabletMode = pref.getBoolean(getString(R.string.pref_design_key_tablet_mode), false);
+
+        //TODO make layout for phone
         setContentView(R.layout.activity_article);
 
+        restoreStateFromIntent(this.getIntent().getExtras());
         restoreState(savedInstanceState);
 
         initializeViews();
@@ -116,7 +136,15 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
 
 //        appBar.addOnOffsetChangedListener(new MyOnOffsetChangedListener(this));
 
-        setUpBackgroundAnimation();
+        if (isTabletMode)
+        {
+            setUpBackgroundAnimation(cover, cover2);
+            setUpBackgroundAnimation(coverLeft, cover2Left);
+        }
+        else
+        {
+            setUpBackgroundAnimation(cover, cover2);
+        }
 
         this.onArtsReceived(new EventArtsReceived(artsWithImage));
 
@@ -125,24 +153,40 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
 
     private void initializeViews()
     {
+        if (isTabletMode)
+        {
+            coverLeft = (ImageView) findViewById(R.id.cover_left);
+            cover2Left = findViewById(R.id.cover_2_inside_left);
+            cover2BorderLeft = findViewById(R.id.cover_2_border_left);
+
+            appBarLeft = (AppBarLayout) this.findViewById(R.id.app_bar_layout_left);
+
+            toolbarLeft = (Toolbar) findViewById(R.id.toolbar_left);
+            collapsingToolbarLayoutLeft = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_left);
+
+            coordinatorLayoutLeft = (CoordinatorLayout) this.findViewById(R.id.coordinator_left);
+        }
+
+
         cover = (ImageView) findViewById(R.id.cover);
         cover2 = findViewById(R.id.cover_2_inside);
         cover2Border = findViewById(R.id.cover_2_border);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
+
         appBar = (AppBarLayout) this.findViewById(R.id.app_bar_layout);
+
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-//        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-
-        pager = (ViewPager) this.findViewById(R.id.pager);
 
         coordinatorLayout = (CoordinatorLayout) this.findViewById(R.id.coordinator);
+
+        pager = (ViewPager) this.findViewById(R.id.pager);
     }
 
-
-    private void setUpBackgroundAnimation()
+    private void setUpBackgroundAnimation(View cover, View cover2)
     {
         cover.setAlpha(0f);
         cover.setScaleX(1.3f);
@@ -151,20 +195,14 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
 
         cover2.setAlpha(0);
 
-        this.startAnimation();
+        this.startAnimation(cover);
     }
 
     private void setUpPagerAndTabs()
     {
+        //TODO make adapter for articles;
         pager.setAdapter(new PagerAdapterMain(this.getSupportFragmentManager(), 3));
         pager.addOnPageChangeListener(new PagerAdapterOnPageChangeListener(this, this));
-
-//        tabLayout.addTab(tabLayout.newTab().setText("Tab 111111111111"));
-//        tabLayout.addTab(tabLayout.newTab().setText("Tab 222222222222"));
-//        tabLayout.addTab(tabLayout.newTab().setText("Tab 333333333333"));
-//
-//        pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-//        tabLayout.setOnTabSelectedListener(new TabLayoutOnTabSelectedListener(this, pager));
     }
 
     protected void setUpNavigationDrawer()
@@ -284,7 +322,6 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
                     this.pref.edit().putBoolean(ctx.getString(R.string.pref_design_key_list_style), true).commit();
                 }
                 this.supportInvalidateOptionsMenu();
-//                this.recreate();
                 return true;
             case R.id.text_size_dialog:
                 FragmentDialogTextAppearance frag = FragmentDialogTextAppearance.newInstance();
@@ -321,15 +358,6 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
                 }
                 return true;
             case R.id.db_delete_table_articles:
-//                try
-//                {
-//                    ArrayList<Articles> articles = (ArrayList<Articles>) h.getDao(Articles.class).queryForAll();
-//                    h.getDao(Articles.class).delete(articles);
-//                }
-//                catch (SQLException e)
-//                {
-//                    e.printStackTrace();
-//                }
                 Category category = Category.getCategoryByUrl("", h);
                 ArticleCategory topArtCat = ArticleCategory.getTopArtCat(category.getId(), h);
                 ArticleCategory secondArtCat = ArticleCategory.getNextArtCat(h, topArtCat);
@@ -360,7 +388,10 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
         outState.putInt(NAV_ITEM_ID, this.checkedDrawerItemId);
         outState.putBoolean(KEY_IS_COLLAPSED, isCollapsed);
         outState.putInt(KEY_PREV_COVER_SOURCE, this.prevPosOfImage);
-        outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsWithImage);
+        outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE, artsWithImage);
+
+        outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
+        outState.putInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, currentPositionOfArticleInList);
     }
 
     private void restoreState(Bundle state)
@@ -370,7 +401,19 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
             checkedDrawerItemId = state.getInt(NAV_ITEM_ID, R.id.tab_1);
             isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
             prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
-            artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
+            artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE);
+
+            artsList = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
+            currentPositionOfArticleInList = state.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
+        }
+    }
+
+    private void restoreStateFromIntent(Bundle stateFromIntent)
+    {
+        if (stateFromIntent != null)
+        {
+            artsList = stateFromIntent.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
+            currentPositionOfArticleInList = stateFromIntent.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
         }
     }
 
@@ -613,7 +656,7 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
         });
     }
 
-    public void startAnimation()
+    public void startAnimation(final View cover)
     {
         cover.setVisibility(View.VISIBLE);
 
@@ -701,11 +744,6 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
         this.fullyExpanded = fullyExpanded;
 //        Log.i(LOG, "fullyExpanded: " + fullyExpanded);
     }
-
-//    public TabLayout getTabLayout()
-//    {
-//        return tabLayout;
-//    }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
