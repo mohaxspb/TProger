@@ -11,7 +11,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -25,38 +25,32 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import com.squareup.otto.Subscribe;
 
 import java.lang.reflect.Method;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import ru.kuchanov.tproger.R;
+import ru.kuchanov.tproger.fragment.FragmentCategory;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
-import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
 import ru.kuchanov.tproger.navigation.ImageChanger;
-import ru.kuchanov.tproger.navigation.NavigationViewOnNavigationItemSelectedListener;
-import ru.kuchanov.tproger.navigation.PagerAdapterMain;
-import ru.kuchanov.tproger.navigation.PagerAdapterOnPageChangeListener;
+import ru.kuchanov.tproger.navigation.OnNavigationItemSelectedListenerArticleActivity;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
-import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
-import ru.kuchanov.tproger.robospice.db.ArticleCategory;
-import ru.kuchanov.tproger.robospice.db.Category;
-import ru.kuchanov.tproger.utils.DataBaseFileSaver;
 import ru.kuchanov.tproger.utils.MyRandomUtil;
 import ru.kuchanov.tproger.utils.MyUIL;
 
-public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger, SharedPreferences.OnSharedPreferenceChangeListener
+public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdateSelected,*/ ImageChanger, SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String KEY_CURRENT_ARTICLE_POSITION_IN_LIST = "KEY_CURRENT_ARTICLE_POSITION_IN_LIST";
-    protected static final String NAV_ITEM_ID = "NAV_ITEM_ID";
+//    protected static final String NAV_ITEM_ID = "NAV_ITEM_ID";
     protected static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
     protected static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
     private final static String LOG = ActivityArticle.class.getSimpleName();
@@ -70,6 +64,8 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
     protected View cover2Left;
     protected View cover2BorderLeft;
     protected AppBarLayout appBarLeft;
+    protected LinearLayout mainContainer;
+    protected FrameLayout leftContainer;
     //main views
     protected Toolbar toolbar;
     protected CollapsingToolbarLayout collapsingToolbarLayout;
@@ -79,7 +75,7 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
     protected boolean drawerOpened;
     protected ViewPager pager;
     protected CoordinatorLayout coordinatorLayout;
-    protected int checkedDrawerItemId = R.id.tab_1;
+//    protected int checkedDrawerItemId = R.id.tab_1;
     protected boolean isCollapsed = true;
     protected ImageView cover;
     protected View cover2;
@@ -140,6 +136,18 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
         {
             setUpBackgroundAnimation(cover, cover2);
             setUpBackgroundAnimation(coverLeft, cover2Left);
+
+            //Add category fragment
+            FragmentCategory fragmentCategory;
+            fragmentCategory = (FragmentCategory) getSupportFragmentManager().findFragmentById(R.id.container_left);
+            if (fragmentCategory == null)
+            {
+                fragmentCategory = FragmentCategory.newInstance("");
+
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.add(R.id.container_left, fragmentCategory);
+                fragmentTransaction.commit();
+            }
         }
         else
         {
@@ -149,6 +157,8 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
         this.onArtsReceived(new EventArtsReceived(artsWithImage));
 
         this.pref.registerOnSharedPreferenceChangeListener(this);
+
+
     }
 
     private void initializeViews()
@@ -165,6 +175,9 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
             collapsingToolbarLayoutLeft = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_left);
 
             coordinatorLayoutLeft = (CoordinatorLayout) this.findViewById(R.id.coordinator_left);
+
+            mainContainer = (LinearLayout) findViewById(R.id.container_main);
+            leftContainer = (FrameLayout) findViewById(R.id.container_left);
         }
 
 
@@ -177,7 +190,6 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
 
         appBar = (AppBarLayout) this.findViewById(R.id.app_bar_layout);
 
-
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
@@ -186,23 +198,11 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
         pager = (ViewPager) this.findViewById(R.id.pager);
     }
 
-    private void setUpBackgroundAnimation(View cover, View cover2)
-    {
-        cover.setAlpha(0f);
-        cover.setScaleX(1.3f);
-        cover.setScaleY(1.3f);
-        cover.animate().alpha(1).setDuration(600);
-
-        cover2.setAlpha(0);
-
-        this.startAnimation(cover);
-    }
-
     private void setUpPagerAndTabs()
     {
         //TODO make adapter for articles;
-        pager.setAdapter(new PagerAdapterMain(this.getSupportFragmentManager(), 3));
-        pager.addOnPageChangeListener(new PagerAdapterOnPageChangeListener(this, this));
+//        pager.setAdapter(new PagerAdapterMain(this.getSupportFragmentManager(), 3));
+//        pager.addOnPageChangeListener(new PagerAdapterOnPageChangeListener(this, this));
     }
 
     protected void setUpNavigationDrawer()
@@ -227,19 +227,19 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
                 public void onDrawerOpened(View drawerView)
                 {
                     drawerOpened = true;
-                    updateNavigationViewState(checkedDrawerItemId);
+//                    updateNavigationViewState(checkedDrawerItemId);
                 }
             };
             mDrawerToggle.setDrawerIndicatorEnabled(true);
 
             drawerLayout.setDrawerListener(mDrawerToggle);
         }
-        NavigationViewOnNavigationItemSelectedListener navList;
-        navList = new NavigationViewOnNavigationItemSelectedListener(this, drawerLayout, pager);
+        OnNavigationItemSelectedListenerArticleActivity navCL;
+        navCL = new OnNavigationItemSelectedListenerArticleActivity(ctx);
 
-        navigationView.setNavigationItemSelectedListener(navList);
+        navigationView.setNavigationItemSelectedListener(navCL);
 
-        updateNavigationViewState(this.checkedDrawerItemId);
+//        updateNavigationViewState(this.checkedDrawerItemId);
     }
 
     @Override
@@ -267,7 +267,7 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
         navigationView.getMenu().findItem(R.id.tab_1).setChecked(false);
         navigationView.getMenu().findItem(R.id.tab_2).setChecked(false);
         navigationView.getMenu().findItem(R.id.tab_3).setChecked(false);
-        navigationView.setCheckedItem(checkedDrawerItemId);
+//        navigationView.setCheckedItem(checkedDrawerItemId);
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -276,7 +276,7 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
     public boolean onCreateOptionsMenu(Menu menu)
     {
 //        Log.d(LOG, "onCreateOptionsMenu called");
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_article, menu);
         return true;
     }
 
@@ -285,12 +285,9 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
     {
         Log.d(LOG, "onOptionsItemSelected");
 
-        MyRoboSpiceDatabaseHelper h = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
-
         int id = item.getItemId();
 
         boolean nightModeIsOn = this.pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false);
-        boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
 
         switch (id)
         {
@@ -299,7 +296,7 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
                 this.startActivity(intent);
                 return true;
             case android.R.id.home:
-                this.drawerLayout.openDrawer(GravityCompat.START);
+                onBackPressed();
                 return true;
             case R.id.night_mode_switcher:
                 if (nightModeIsOn)
@@ -312,69 +309,9 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
                 }
                 this.recreate();
                 return true;
-            case R.id.list_style_switcher:
-                if (isGridManager)
-                {
-                    this.pref.edit().putBoolean(ctx.getString(R.string.pref_design_key_list_style), false).commit();
-                }
-                else
-                {
-                    this.pref.edit().putBoolean(ctx.getString(R.string.pref_design_key_list_style), true).commit();
-                }
-                this.supportInvalidateOptionsMenu();
-                return true;
             case R.id.text_size_dialog:
                 FragmentDialogTextAppearance frag = FragmentDialogTextAppearance.newInstance();
                 frag.show(getFragmentManager(), "TextAppearance");
-                return true;
-            case R.id.db_export:
-                String DBWritingResult = DataBaseFileSaver.copyDatabase(ctx, MyRoboSpiceDatabaseHelper.DB_NAME);
-                Toast.makeText(ctx, DBWritingResult, Toast.LENGTH_LONG).show();
-                return true;
-            case R.id.db_recreate:
-                h.recreateDB();
-                this.recreate();
-                return true;
-            case R.id.db_delete_last_art_cat:
-                Log.i(LOG, "deleting last art from DB");
-                ArticleCategory artCatToDelete = ArticleCategory.getArtCatsWithoutNextArtId(h, Category.getCategoryIdByUrl("", h)).get(0);
-                try
-                {
-                    ArticleCategory prevArtCat = ArticleCategory.getPrevArtCat(h, artCatToDelete);
-                    prevArtCat.setNextArticleId(-1);
-                    h.getDaoArtCat().createOrUpdate(prevArtCat);
-
-                    //also delete article obj
-                    Article a = Article.getArticleById(h, artCatToDelete.getArticleId());
-                    Article.printInLog(a);
-                    int updatedRows = h.getDaoArticle().delete(a);
-                    Log.i(LOG, "updatedRows: " + updatedRows);
-
-                    h.getDaoArtCat().delete(artCatToDelete);
-                }
-                catch (SQLException e)
-                {
-                    e.printStackTrace();
-                }
-                return true;
-            case R.id.db_delete_table_articles:
-                Category category = Category.getCategoryByUrl("", h);
-                ArticleCategory topArtCat = ArticleCategory.getTopArtCat(category.getId(), h);
-                ArticleCategory secondArtCat = ArticleCategory.getNextArtCat(h, topArtCat);
-
-                secondArtCat.setTopInCategory(true);
-                secondArtCat.setPreviousArticleId(-1);
-
-                try
-                {
-                    h.getDaoArtCat().delete(topArtCat);
-                    h.getDaoArtCat().createOrUpdate(secondArtCat);
-                }
-                catch (SQLException e)
-                {
-                    e.printStackTrace();
-                }
-
                 return true;
         }
 
@@ -385,7 +322,7 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
     protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        outState.putInt(NAV_ITEM_ID, this.checkedDrawerItemId);
+//        outState.putInt(NAV_ITEM_ID, this.checkedDrawerItemId);
         outState.putBoolean(KEY_IS_COLLAPSED, isCollapsed);
         outState.putInt(KEY_PREV_COVER_SOURCE, this.prevPosOfImage);
         outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE, artsWithImage);
@@ -398,7 +335,7 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
     {
         if (state != null)
         {
-            checkedDrawerItemId = state.getInt(NAV_ITEM_ID, R.id.tab_1);
+//            checkedDrawerItemId = state.getInt(NAV_ITEM_ID, R.id.tab_1);
             isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
             prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
             artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE);
@@ -417,12 +354,12 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
         }
     }
 
-    @Override
-    public void updateNavigationViewState(int checkedDrawerItemId)
-    {
-        this.checkedDrawerItemId = checkedDrawerItemId;
-        supportInvalidateOptionsMenu();
-    }
+//    @Override
+//    public void updateNavigationViewState(int checkedDrawerItemId)
+//    {
+//        this.checkedDrawerItemId = checkedDrawerItemId;
+//        supportInvalidateOptionsMenu();
+//    }
 
     //workaround from http://stackoverflow.com/a/30337653/3212712
     @Override
@@ -449,13 +386,6 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
             if (nightModeIsOn)
             {
                 themeMenuItem.setChecked(true);
-            }
-
-            boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
-            MenuItem listStyleMenuItem = menu.findItem(R.id.list_style_switcher);
-            if (isGridManager)
-            {
-                listStyleMenuItem.setChecked(true);
             }
         }
         return super.onPrepareOptionsPanel(view, menu);
@@ -537,6 +467,7 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
     @Override
     protected void onStart()
     {
+        Log.i(LOG, "onStart called!");
         super.onStart();
         BusProvider.getInstance().register(this);
     }
@@ -544,8 +475,16 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
     @Override
     protected void onStop()
     {
+        Log.i(LOG, "onStop called!");
         super.onStop();
         BusProvider.getInstance().unregister(this);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        Log.i(LOG, "onResume called!");
+        super.onResume();
     }
 
     @Subscribe
@@ -553,7 +492,16 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
     {
         Log.i(LOG, "EventArtsReceived: " + String.valueOf(event.getArts().size()));
 
+        //fill list of arts in activity;
+        this.artsList.clear();
+        this.artsList.addAll(event.getArts());
+
+        //fill artsWithImage list
         artsWithImage = new ArrayList<>();
+        //we need to create new instance of list, because if we clera old,
+        //we'll get 0 size list in onAnimationEnd...
+        //And i dont now why((((
+//        artsWithImage.clear();
         for (Article a : event.getArts())
         {
             if (a.getImageUrl() != null)
@@ -562,45 +510,72 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
             }
         }
 
-        //prevent changing images if we are not on artsListFragment in main pager
-        if (pager.getCurrentItem() != 0)
+        if (timer != null && timerTask != null)
         {
-            if (timer != null && timerTask != null)
-            {
-                timerTask.cancel();
-                timer.cancel();
-            }
+            timerTask.cancel();
+            timer.cancel();
+        }
+
+        //prevent changing images if we are not in tabletMode
+        if (!this.isTabletMode || artsWithImage.size() == 0)
+        {
             return;
         }
 
-        if (artsWithImage.size() != 0)
+        timer = new Timer();
+        timerTask = new TimerTask()
         {
-            if (timer != null && timerTask != null)
+            @Override
+            public void run()
             {
-                timerTask.cancel();
-                timer.cancel();
-            }
-            timer = new Timer();
-            timerTask = new TimerTask()
-            {
-                @Override
-                public void run()
+                runOnUiThread(new Runnable()
                 {
-                    runOnUiThread(new Runnable()
+                    @Override
+                    public void run()
                     {
-                        @Override
-                        public void run()
-                        {
-                            updateImageFromArts(artsWithImage);
-                        }
-                    });
-                }
-            };
-            timer.schedule(timerTask, 0, 5000);
-        }
+                        updateImageFromArts(artsWithImage, coverLeft, cover2Left);
+                    }
+                });
+            }
+        };
+        timer.schedule(timerTask, 0, 5000);
+
+//        if (artsWithImage.size() != 0)
+//        {
+//        if (timer != null && timerTask != null)
+//        {
+//            timerTask.cancel();
+//            timer.cancel();
+//        }
+//        timer = new Timer();
+//        timerTask = new TimerTask()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                runOnUiThread(new Runnable()
+//                {
+//                    @Override
+//                    public void run()
+//                    {
+//                        updateImageFromArts(artsWithImage, coverLeft, cover2Left);
+//                    }
+//                });
+//            }
+//        };
+//        timer.schedule(timerTask, 0, 5000);
+//        }
+//        else
+//        {
+//            if (timer != null && timerTask != null)
+//            {
+//                timerTask.cancel();
+//                timer.cancel();
+//            }
+//        }
     }
 
-    public void updateImageFromArts(final ArrayList<Article> artsWithImage)
+    public void updateImageFromArts(final ArrayList<Article> artsWithImage, final ImageView cover, final View cover2)
     {
 //        Log.i(LOG, "updateImage with position in pager: "+positionInPager);
         final int positionInList;
@@ -624,7 +599,7 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
         cover2.animate().cancel();
 
         //prevent showing transition coloring if cover isn't showing
-        if (this.cover.getAlpha() == 0)
+        if (cover.getAlpha() == 0)
         {
             MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
             return;
@@ -640,7 +615,10 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
             @Override
             public void onAnimationEnd(Animator animation)
             {
+//                if (artsWithImage.size() != 0)
+//                {
                 MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
+//                }
                 cover2.animate().alpha(0).setDuration(800);
             }
 
@@ -654,6 +632,18 @@ public class ActivityArticle extends AppCompatActivity implements DrawerUpdateSe
             {
             }
         });
+    }
+
+    private void setUpBackgroundAnimation(View cover, View cover2)
+    {
+        cover.setAlpha(0f);
+        cover.setScaleX(1.3f);
+        cover.setScaleY(1.3f);
+        cover.animate().alpha(1).setDuration(600);
+
+        cover2.setAlpha(0);
+
+        this.startAnimation(cover);
     }
 
     public void startAnimation(final View cover)

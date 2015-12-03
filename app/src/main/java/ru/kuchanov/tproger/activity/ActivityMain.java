@@ -509,6 +509,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     @Override
     protected void onStart()
     {
+        Log.i(LOG, "onStart called!");
         super.onStart();
         BusProvider.getInstance().register(this);
     }
@@ -516,6 +517,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     @Override
     protected void onStop()
     {
+        Log.i(LOG, "onStop called!");
         super.onStop();
         BusProvider.getInstance().unregister(this);
     }
@@ -626,6 +628,13 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             {
             }
         });
+    }
+
+    @Override
+    protected void onResume()
+    {
+        Log.i(LOG, "onResume called!");
+        super.onResume();
     }
 
     public void startAnimation()

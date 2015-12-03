@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="ru.kuchanov.tproger"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    package="ru.kuchanov.tproger"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -17,32 +18,34 @@
 
         <activity
             android:name=".activity.ActivityMain"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
         <activity
             android:name=".activity.ActivityArticle"
-            android:label="@string/title_activity_activity_article">
+            android:label="@string/title_activity_activity_article"
+            android:launchMode="singleTask">
         </activity>
 
         <activity
             android:name=".activity.ActivitySettings"
             android:label="@string/title_activity_activity_settings">
         </activity>
+
         <service
             android:name=".robospice.HtmlSpiceService"
-            android:enabled="true"
-            android:exported="true">
+            android:enabled="true">
+            <!--android:exported="true">-->
         </service>
         <service
             android:name=".robospice.HtmlSpiceServiceOffline"
-            android:enabled="true"
-            android:exported="true">
+            android:enabled="true">
+            <!--android:exported="true">-->
         </service>
     </application>
 

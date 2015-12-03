@@ -204,7 +204,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     @Override
     public void onStart()
     {
-//        Log.i(LOG, "onStart called");
+        Log.i(LOG, "onStart called from activity: " + getActivity().getClass().getSimpleName());
         super.onStart();
 
         if (!spiceManager.isStarted())
@@ -227,7 +227,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     @Override
     public void onStop()
     {
-//        Log.i(LOG, "onStop called");
+        Log.i(LOG, "onStop called from activity: " + getActivity().getClass().getSimpleName());
         super.onStop();
 
         if (spiceManager.isStarted())
