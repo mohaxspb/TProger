@@ -29,12 +29,18 @@ public class OnNavigationItemSelectedListenerArticleActivity implements Navigati
         {
             case R.id.tab_1:
                 intent.setClass(ctx, ActivityMain.class);
+                intent.putExtra(ActivityMain.NAV_ITEM_ID, R.id.tab_1);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 break;
             case R.id.tab_2:
                 intent.setClass(ctx, ActivityMain.class);
+                intent.putExtra(ActivityMain.NAV_ITEM_ID, R.id.tab_2);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 break;
             case R.id.tab_3:
                 intent.setClass(ctx, ActivityMain.class);
+                intent.putExtra(ActivityMain.NAV_ITEM_ID, R.id.tab_3);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 break;
         }
 

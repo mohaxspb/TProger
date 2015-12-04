@@ -50,7 +50,7 @@ import ru.kuchanov.tproger.utils.MyUIL;
 public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdateSelected,*/ ImageChanger, SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String KEY_CURRENT_ARTICLE_POSITION_IN_LIST = "KEY_CURRENT_ARTICLE_POSITION_IN_LIST";
-//    protected static final String NAV_ITEM_ID = "NAV_ITEM_ID";
+    //    protected static final String NAV_ITEM_ID = "NAV_ITEM_ID";
     protected static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
     protected static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
     private final static String LOG = ActivityArticle.class.getSimpleName();
@@ -75,7 +75,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     protected boolean drawerOpened;
     protected ViewPager pager;
     protected CoordinatorLayout coordinatorLayout;
-//    protected int checkedDrawerItemId = R.id.tab_1;
+    //    protected int checkedDrawerItemId = R.id.tab_1;
     protected boolean isCollapsed = true;
     protected ImageView cover;
     protected View cover2;
@@ -331,6 +331,13 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         outState.putInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, currentPositionOfArticleInList);
     }
 
+    @Override
+    public void onBackPressed()
+    {
+        Log.i(LOG, "onBackPressed");
+        super.onBackPressed();
+    }
+
     private void restoreState(Bundle state)
     {
         if (state != null)
@@ -343,6 +350,10 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
             artsList = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
             currentPositionOfArticleInList = state.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
         }
+        else
+        {
+            Log.e(LOG, "state is null while restoring it from bundle");
+        }
     }
 
     private void restoreStateFromIntent(Bundle stateFromIntent)
@@ -353,13 +364,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
             currentPositionOfArticleInList = stateFromIntent.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
         }
     }
-
-//    @Override
-//    public void updateNavigationViewState(int checkedDrawerItemId)
-//    {
-//        this.checkedDrawerItemId = checkedDrawerItemId;
-//        supportInvalidateOptionsMenu();
-//    }
 
     //workaround from http://stackoverflow.com/a/30337653/3212712
     @Override
@@ -539,40 +543,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
             }
         };
         timer.schedule(timerTask, 0, 5000);
-
-//        if (artsWithImage.size() != 0)
-//        {
-//        if (timer != null && timerTask != null)
-//        {
-//            timerTask.cancel();
-//            timer.cancel();
-//        }
-//        timer = new Timer();
-//        timerTask = new TimerTask()
-//        {
-//            @Override
-//            public void run()
-//            {
-//                runOnUiThread(new Runnable()
-//                {
-//                    @Override
-//                    public void run()
-//                    {
-//                        updateImageFromArts(artsWithImage, coverLeft, cover2Left);
-//                    }
-//                });
-//            }
-//        };
-//        timer.schedule(timerTask, 0, 5000);
-//        }
-//        else
-//        {
-//            if (timer != null && timerTask != null)
-//            {
-//                timerTask.cancel();
-//                timer.cancel();
-//            }
-//        }
     }
 
     public void updateImageFromArts(final ArrayList<Article> artsWithImage, final ImageView cover, final View cover2)

@@ -26,11 +26,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
-import ru.kuchanov.tproger.AppSinglton;
 import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapterArtsList;
 import ru.kuchanov.tproger.RecyclerViewOnScrollListener;
+import ru.kuchanov.tproger.SingltonRoboSpice;
+import ru.kuchanov.tproger.activity.ActivityArticle;
+import ru.kuchanov.tproger.activity.ActivityMain;
 import ru.kuchanov.tproger.custom.view.CustomSwipeRefreshLayout;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
@@ -60,8 +62,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     public static final String KEY_IS_LOADING = "isLoading";
     public static final String KEY_IS_LOADING_FROM_TOP = "isLoadingFromTop";
 
-    protected MySpiceManager spiceManager = AppSinglton.getInstance().getSpiceManager();
-    protected MySpiceManager spiceManagerOffline = AppSinglton.getInstance().getSpiceManagerOffline();
+    protected MySpiceManager spiceManager;// = SingltonRoboSpice.getInstance().getSpiceManager();
+    protected MySpiceManager spiceManagerOffline;// = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
     protected CustomSwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
     private String categoryUrl;
@@ -206,6 +208,21 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     {
         Log.i(LOG, "onStart called from activity: " + getActivity().getClass().getSimpleName());
         super.onStart();
+
+        if (act instanceof ActivityArticle)
+        {
+            spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
+            spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
+        }
+        else if (act instanceof ActivityMain)
+        {
+            spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
+            spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
+        }
+        else
+        {
+            throw new NullPointerException("need to add service for this activity: " + act.getClass().getSimpleName());
+        }
 
         if (!spiceManager.isStarted())
         {

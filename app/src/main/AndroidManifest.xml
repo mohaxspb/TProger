@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
+    xmlns:tools="http://schemas.android.com/tools"
     package="ru.kuchanov.tproger"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -17,7 +18,7 @@
         android:versionName="0.0.42">
 
         <activity
-            android:name=".activity.ActivityMain"
+            android:name="ru.kuchanov.tproger.activity.ActivityMain"
             android:label="@string/app_name"
             android:launchMode="singleTask">
             <intent-filter>
@@ -29,24 +30,31 @@
         <activity
             android:name=".activity.ActivityArticle"
             android:label="@string/title_activity_activity_article"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:parentActivityName="ru.kuchanov.tproger.activity.ActivityMain"
+            tools:ignore="UnusedAttribute">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ru.kuchanov.tproger.activity.ActivityMain" />
         </activity>
 
         <activity
             android:name=".activity.ActivitySettings"
-            android:label="@string/title_activity_activity_settings">
-        </activity>
+            android:label="@string/title_activity_activity_settings"/>
 
         <service
             android:name=".robospice.HtmlSpiceService"
-            android:enabled="true">
-            <!--android:exported="true">-->
-        </service>
+            android:enabled="true"/>
         <service
             android:name=".robospice.HtmlSpiceServiceOffline"
-            android:enabled="true">
-            <!--android:exported="true">-->
-        </service>
+            android:enabled="true"/>
+        <service
+            android:name=".robospice.HtmlSpiceServiceArticle"
+            android:enabled="true"/>
+        <service
+            android:name=".robospice.HtmlSpiceServiceOfflineArticle"
+            android:enabled="true"/>
     </application>
 
 </manifest>

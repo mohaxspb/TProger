@@ -12,6 +12,7 @@ import com.octo.android.robospice.persistence.ormlite.InDatabaseObjectPersisterF
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.Articles;
 
@@ -45,13 +46,11 @@ public class HtmlSpiceServiceOffline extends SpiceService
     {
         CacheManager cacheManager = new CacheManager();
 
-        List<Class<?>> classCollection = new ArrayList<Class<?>>();
+        List<Class<?>> classCollection = new ArrayList<>();
 
         // add persisted classes to class collection
         classCollection.add(Article.class);
         classCollection.add(Articles.class);
-//        classCollection.add(ArticleCategory.class);
-//        classCollection.add(Category.class);
 
         // init
         MyRoboSpiceDatabaseHelper databaseHelper = new MyRoboSpiceDatabaseHelper(application, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
@@ -64,6 +63,6 @@ public class HtmlSpiceServiceOffline extends SpiceService
     @Override
     public int getThreadCount()
     {
-        return 3;
+        return this.getResources().getInteger(R.integer.roboSpiceThreadCount);
     }
 }

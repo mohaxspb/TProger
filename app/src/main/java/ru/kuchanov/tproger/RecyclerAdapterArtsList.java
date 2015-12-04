@@ -94,19 +94,20 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             //TITLE
             maxHolder.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
             maxHolder.title.setText(Html.fromHtml(a.getTitle()));
-            maxHolder.title.setOnClickListener(new View.OnClickListener()
+
+            maxHolder.topPanel.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
                     //TODO paste arts to intents extras
                     Log.i(LOG, "title clicked: " + a.getUrl());
-                    Intent i = new Intent(ctx, ActivityArticle.class);
+                    Intent intent = new Intent(ctx, ActivityArticle.class);
                     Bundle b = new Bundle();
                     b.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
                     b.putInt(ActivityArticle.KEY_CURRENT_ARTICLE_POSITION_IN_LIST, position);
-                    i.putExtras(b);
-                    ctx.startActivity(i);
+                    intent.putExtras(b);
+                    ctx.startActivity(intent);
                 }
             });
 
@@ -279,7 +280,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         public View previewCover;
         public LinearLayout bottomPanel;
 
-        public LinearLayout mainLin;
+        public LinearLayout topPanel;
 
         public ViewHolderMaximum(View v)
         {
@@ -293,7 +294,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             previewCover = v.findViewById(R.id.preview_cover);
             bottomPanel = (LinearLayout) v.findViewById(R.id.bottom_panel);
 
-            mainLin = (LinearLayout) v.findViewById(R.id.art_card_main_lin);
+            topPanel = (LinearLayout) v.findViewById(R.id.art_card_top_lin);
         }
     }
 }

@@ -60,7 +60,7 @@ import ru.kuchanov.tproger.utils.MyUIL;
 
 public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger, SharedPreferences.OnSharedPreferenceChangeListener
 {
-    protected static final String NAV_ITEM_ID = "NAV_ITEM_ID";
+    public  static final String NAV_ITEM_ID = "NAV_ITEM_ID";
     protected static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
     protected static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
 
@@ -386,6 +386,10 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
             prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
             artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
+        }
+        else
+        {
+            Log.e(LOG, "state is null while restoring it from bundle");
         }
     }
 
