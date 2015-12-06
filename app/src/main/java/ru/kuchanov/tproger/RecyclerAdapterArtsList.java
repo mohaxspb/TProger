@@ -106,6 +106,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                     Bundle b = new Bundle();
                     b.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
                     b.putInt(ActivityArticle.KEY_CURRENT_ARTICLE_POSITION_IN_LIST, position);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     intent.putExtras(b);
                     ctx.startActivity(intent);
                 }

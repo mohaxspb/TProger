@@ -45,8 +45,8 @@ import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
 import ru.kuchanov.tproger.navigation.ImageChanger;
 import ru.kuchanov.tproger.navigation.MyOnOffsetChangedListener;
 import ru.kuchanov.tproger.navigation.NavigationViewOnNavigationItemSelectedListener;
+import ru.kuchanov.tproger.navigation.OnPageChangeListenerMain;
 import ru.kuchanov.tproger.navigation.PagerAdapterMain;
-import ru.kuchanov.tproger.navigation.PagerAdapterOnPageChangeListener;
 import ru.kuchanov.tproger.navigation.TabLayoutOnTabSelectedListener;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
@@ -60,7 +60,7 @@ import ru.kuchanov.tproger.utils.MyUIL;
 
 public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger, SharedPreferences.OnSharedPreferenceChangeListener
 {
-    public  static final String NAV_ITEM_ID = "NAV_ITEM_ID";
+    public static final String NAV_ITEM_ID = "NAV_ITEM_ID";
     protected static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
     protected static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
 
@@ -83,6 +83,9 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     protected AppBarLayout appBar;
     protected TabLayout tabLayout;
     protected boolean fullyExpanded = true;
+    //listeners for navView and pager
+    OnPageChangeListenerMain onPageChangeListenerMain;
+    NavigationViewOnNavigationItemSelectedListener navigationViewOnNavigationItemSelectedListener;
     private ImageView cover;
     private int verticalOffsetPrevious = 0;
     private Context ctx;
@@ -113,8 +116,20 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         setContentView(R.layout.activity_main);
 
         restoreState(savedInstanceState);
+        restoreFromIntent();
 
         initializeViews();
+
+        setUpNavigationDrawer();
+        setUpPagerAndTabs();
+
+        appBar.addOnOffsetChangedListener(new MyOnOffsetChangedListener(this));
+
+        setUpBackgroundAnimation();
+
+        this.onArtsReceived(new EventArtsReceived(artsWithImage));
+
+        this.pref.registerOnSharedPreferenceChangeListener(this);
 
         //TODO test
         ColorMatrix matrix = new ColorMatrix();
@@ -123,18 +138,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
         cover.setColorFilter(filter);
         ////////////////
-
-        setUpNavigationDrawer();
-        setUpPagerAndTabs();
-
-//        appBar.setExpanded(isCollapsed, true);
-        appBar.addOnOffsetChangedListener(new MyOnOffsetChangedListener(this));
-
-        setUpBackgroundAnimation();
-
-        this.onArtsReceived(new EventArtsReceived(artsWithImage));
-
-        this.pref.registerOnSharedPreferenceChangeListener(this);
     }
 
     private void initializeViews()
@@ -169,19 +172,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         this.startAnimation();
     }
 
-    private void setUpPagerAndTabs()
-    {
-        pager.setAdapter(new PagerAdapterMain(this.getSupportFragmentManager(), 3));
-        pager.addOnPageChangeListener(new PagerAdapterOnPageChangeListener(this, this));
-
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 111111111111"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 222222222222"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 333333333333"));
-
-        pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.setOnTabSelectedListener(new TabLayoutOnTabSelectedListener(this, pager));
-    }
-
     protected void setUpNavigationDrawer()
     {
         setSupportActionBar(toolbar);
@@ -211,13 +201,33 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
             drawerLayout.setDrawerListener(mDrawerToggle);
         }
-        NavigationViewOnNavigationItemSelectedListener navList;
-        navList = new NavigationViewOnNavigationItemSelectedListener(this, drawerLayout, pager);
+//        NavigationViewOnNavigationItemSelectedListener navViewOnSelectListener;
 
-        navigationView.setNavigationItemSelectedListener(navList);
+        navigationViewOnNavigationItemSelectedListener = new NavigationViewOnNavigationItemSelectedListener(this, drawerLayout, pager);
+
+        navigationView.setNavigationItemSelectedListener(navigationViewOnNavigationItemSelectedListener);
 
         updateNavigationViewState(this.checkedDrawerItemId);
     }
+
+    private void setUpPagerAndTabs()
+    {
+        pager.setAdapter(new PagerAdapterMain(this.getSupportFragmentManager(), 3));
+
+        onPageChangeListenerMain = new OnPageChangeListenerMain(this, this);
+
+        pager.addOnPageChangeListener(onPageChangeListenerMain);
+
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 111111111111"));
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 222222222222"));
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 333333333333"));
+
+        pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new TabLayoutOnTabSelectedListener(this, pager));
+
+        navigationViewOnNavigationItemSelectedListener.onNavigationItemSelected(navigationView.getMenu().findItem(checkedDrawerItemId));
+    }
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState)
@@ -231,6 +241,14 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+//        Log.d(LOG, "onCreateOptionsMenu called");
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 
     /* Called whenever we call supportInvalidateOptionsMenu() */
@@ -247,14 +265,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         navigationView.setCheckedItem(checkedDrawerItemId);
 
         return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-//        Log.d(LOG, "onCreateOptionsMenu called");
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
     }
 
     @Override
@@ -368,39 +378,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState)
-    {
-        super.onSaveInstanceState(outState);
-        outState.putInt(NAV_ITEM_ID, this.checkedDrawerItemId);
-        outState.putBoolean(KEY_IS_COLLAPSED, isCollapsed);
-        outState.putInt(KEY_PREV_COVER_SOURCE, this.prevPosOfImage);
-        outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsWithImage);
-    }
-
-    private void restoreState(Bundle state)
-    {
-        if (state != null)
-        {
-            checkedDrawerItemId = state.getInt(NAV_ITEM_ID, R.id.tab_1);
-            isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
-            prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
-            artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
-        }
-        else
-        {
-            Log.e(LOG, "state is null while restoring it from bundle");
-        }
-    }
-
-    @Override
-    public void updateNavigationViewState(int checkedDrawerItemId)
-    {
-        this.checkedDrawerItemId = checkedDrawerItemId;
-        supportInvalidateOptionsMenu();
-    }
-
-    //workaround from http://stackoverflow.com/a/30337653/3212712
+    //workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
     @Override
     protected boolean onPrepareOptionsPanel(View view, Menu menu)
     {
@@ -435,6 +413,45 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             }
         }
         return super.onPrepareOptionsPanel(view, menu);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putInt(NAV_ITEM_ID, this.checkedDrawerItemId);
+        outState.putBoolean(KEY_IS_COLLAPSED, isCollapsed);
+        outState.putInt(KEY_PREV_COVER_SOURCE, this.prevPosOfImage);
+        outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsWithImage);
+    }
+
+    private void restoreState(Bundle state)
+    {
+        if (state != null)
+        {
+            checkedDrawerItemId = state.getInt(NAV_ITEM_ID, R.id.tab_1);
+            isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
+            prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
+            artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
+        }
+        else
+        {
+            Log.e(LOG, "state is null while restoring it from savedInstanceState");
+        }
+    }
+
+    private void restoreFromIntent()
+    {
+        Intent curIntent = getIntent();
+
+        this.checkedDrawerItemId = curIntent.getIntExtra(NAV_ITEM_ID, R.id.tab_1);
+    }
+
+    @Override
+    public void updateNavigationViewState(int checkedDrawerItemId)
+    {
+        this.checkedDrawerItemId = checkedDrawerItemId;
+        supportInvalidateOptionsMenu();
     }
 
     @Override
@@ -525,6 +542,21 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         super.onStop();
         BusProvider.getInstance().unregister(this);
     }
+
+//    @Override
+//    protected void onRestart()
+//    {
+//        Log.i(LOG, "onRestart called!");
+//        super.onRestart();
+//        BusProvider.getInstance().register(this);
+//    }
+//
+//    @Override
+//    protected void onPause()
+//    {
+//        Log.i(LOG, "onPause called!");
+//        super.onPause();
+//    }
 
     @Subscribe
     public void onArtsReceived(final EventArtsReceived event)

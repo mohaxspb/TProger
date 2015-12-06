@@ -50,7 +50,6 @@ import ru.kuchanov.tproger.utils.MyUIL;
 public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdateSelected,*/ ImageChanger, SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String KEY_CURRENT_ARTICLE_POSITION_IN_LIST = "KEY_CURRENT_ARTICLE_POSITION_IN_LIST";
-    //    protected static final String NAV_ITEM_ID = "NAV_ITEM_ID";
     protected static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
     protected static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
     private final static String LOG = ActivityArticle.class.getSimpleName();
@@ -202,7 +201,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     {
         //TODO make adapter for articles;
 //        pager.setAdapter(new PagerAdapterMain(this.getSupportFragmentManager(), 3));
-//        pager.addOnPageChangeListener(new PagerAdapterOnPageChangeListener(this, this));
+//        pager.addOnPageChangeListener(new OnPageChangeListenerMain(this, this));
     }
 
     protected void setUpNavigationDrawer()
@@ -270,6 +269,36 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
 //        navigationView.setCheckedItem(checkedDrawerItemId);
 
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    //workaround from http://stackoverflow.com/a/30337653/3212712
+    @Override
+    protected boolean onPrepareOptionsPanel(View view, Menu menu)
+    {
+        if (menu != null)
+        {
+            if (menu.getClass().getSimpleName().equals("MenuBuilder"))
+            {
+                try
+                {
+                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
+                    m.setAccessible(true);
+                    m.invoke(menu, true);
+                }
+                catch (Exception e)
+                {
+                    Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
+                }
+            }
+
+            boolean nightModeIsOn = this.pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false);
+            MenuItem themeMenuItem = menu.findItem(R.id.night_mode_switcher);
+            if (nightModeIsOn)
+            {
+                themeMenuItem.setChecked(true);
+            }
+        }
+        return super.onPrepareOptionsPanel(view, menu);
     }
 
     @Override
@@ -365,36 +394,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         }
     }
 
-    //workaround from http://stackoverflow.com/a/30337653/3212712
-    @Override
-    protected boolean onPrepareOptionsPanel(View view, Menu menu)
-    {
-        if (menu != null)
-        {
-            if (menu.getClass().getSimpleName().equals("MenuBuilder"))
-            {
-                try
-                {
-                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
-                    m.setAccessible(true);
-                    m.invoke(menu, true);
-                }
-                catch (Exception e)
-                {
-                    Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
-                }
-            }
-
-            boolean nightModeIsOn = this.pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false);
-            MenuItem themeMenuItem = menu.findItem(R.id.night_mode_switcher);
-            if (nightModeIsOn)
-            {
-                themeMenuItem.setChecked(true);
-            }
-        }
-        return super.onPrepareOptionsPanel(view, menu);
-    }
-
     @Override
     public void updateImage(final int positionInPager)
     {
@@ -469,6 +468,28 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     }
 
     @Override
+    protected void onPause()
+    {
+        Log.i(LOG, "onPause called!");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop()
+    {
+        Log.i(LOG, "onStop called with hash: "+this.hashCode());
+        super.onStop();
+    }
+
+    @Override
+    protected void onRestart()
+    {
+        Log.i(LOG, "onRestart called!");
+        super.onRestart();
+    }
+
+
+    @Override
     protected void onStart()
     {
         Log.i(LOG, "onStart called!");
@@ -477,17 +498,10 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     }
 
     @Override
-    protected void onStop()
-    {
-        Log.i(LOG, "onStop called!");
-        super.onStop();
-        BusProvider.getInstance().unregister(this);
-    }
-
-    @Override
     protected void onResume()
     {
-        Log.i(LOG, "onResume called!");
+//        Log.i(LOG, "onResume called!");
+        Log.i(LOG, "onResume called with hash: "+this.hashCode());
         super.onResume();
     }
 

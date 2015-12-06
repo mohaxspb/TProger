@@ -1,26 +1,28 @@
 package ru.kuchanov.tproger.navigation;
 
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 
 import ru.kuchanov.tproger.R;
 
-public class PagerAdapterOnPageChangeListener implements ViewPager.OnPageChangeListener
+public class OnPageChangeListenerMain implements ViewPager.OnPageChangeListener
 {
-    //private final static String LOG = PagerAdapterOnPageChangeListener.class.getSimpleName();
+    private final static String LOG = OnPageChangeListenerMain.class.getSimpleName();
 
     DrawerUpdateSelected drawerUpdateSelected;
     ImageChanger imageChanger;
 
 
-    public PagerAdapterOnPageChangeListener(DrawerUpdateSelected drawerUpdateSelected, ImageChanger imageChanger)
+    public OnPageChangeListenerMain(DrawerUpdateSelected drawerUpdateSelected, ImageChanger imageChanger)
     {
         this.drawerUpdateSelected = drawerUpdateSelected;
-        this.imageChanger=imageChanger;
+        this.imageChanger = imageChanger;
     }
 
     @Override
     public void onPageSelected(int position)
     {
+        Log.i(LOG, "onPageSelected with position: " + position);
         int checkedDrawerItemId = R.id.tab_1;
         switch (position)
         {

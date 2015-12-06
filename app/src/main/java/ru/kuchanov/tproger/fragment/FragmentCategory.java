@@ -224,6 +224,24 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             throw new NullPointerException("need to add service for this activity: " + act.getClass().getSimpleName());
         }
 
+        //remove spiceServiceSatrt to on resume
+    }
+
+    @Override
+    public void onStop()
+    {
+//        Log.i(LOG, "onStop called from activity: " + getActivity().getClass().getSimpleName());
+        super.onStop();
+
+        //remove spiceServiceSatrt to onPause
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+
         if (!spiceManager.isStarted())
         {
             spiceManager.start(ctx);
@@ -242,10 +260,10 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     }
 
     @Override
-    public void onStop()
+    public void onPause()
     {
-        Log.i(LOG, "onStop called from activity: " + getActivity().getClass().getSimpleName());
-        super.onStop();
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
 
         if (spiceManager.isStarted())
         {
@@ -255,62 +273,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         {
             spiceManagerOffline.shouldStop();
         }
-    }
-
-    private void performRequest(int page, boolean forceRefresh, boolean resetCategoryInDB)
-    {
-//        Log.i(LOG, "performRequest with page: " + page + " and forceRefresh: " + String.valueOf(forceRefresh));
-        Log.i(LOG, "performRequest with page: " + page + " and forceRefresh: " + forceRefresh);
-
-        if (page == 1)
-        {
-            isLoadingFromTop = true;
-            this.setLoading(true);
-            //if !forceRefresh we must load arts from DB
-            if (!forceRefresh)
-            {
-                RoboSpiceRequestCategoriesArtsOffline requestFromDB = new RoboSpiceRequestCategoriesArtsOffline(ctx, categoryUrl);
-                spiceManagerOffline.execute(requestFromDB, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
-            }
-            else
-            {
-                RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, categoryUrl);
-                if (resetCategoryInDB)
-                {
-                    request.setResetCategoryInDB();
-                }
-                spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
-            }
-        }
-        else
-        {
-            isLoadingFromTop = false;
-            this.setLoading(true);
-            if (!forceRefresh)
-            {
-                RoboSpiceRequestCategoriesArtsFromBottomOffline request = new RoboSpiceRequestCategoriesArtsFromBottomOffline(ctx, categoryUrl, page);
-                spiceManagerOffline.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
-            }
-            else
-            {
-                RoboSpiceRequestCategoriesArtsFromBottom request = new RoboSpiceRequestCategoriesArtsFromBottom(ctx, categoryUrl, page);
-                spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
-            }
-        }
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        BusProvider.getInstance().register(this);
-    }
-
-    @Override
-    public void onPause()
-    {
-        super.onPause();
-        BusProvider.getInstance().unregister(this);
     }
 
     @Subscribe
@@ -432,6 +394,47 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         });
     }
 
+    private void performRequest(int page, boolean forceRefresh, boolean resetCategoryInDB)
+    {
+//        Log.i(LOG, "performRequest with page: " + page + " and forceRefresh: " + forceRefresh);
+
+        if (page == 1)
+        {
+            isLoadingFromTop = true;
+            this.setLoading(true);
+            //if !forceRefresh we must load arts from DB
+            if (!forceRefresh)
+            {
+                RoboSpiceRequestCategoriesArtsOffline requestFromDB = new RoboSpiceRequestCategoriesArtsOffline(ctx, categoryUrl);
+                spiceManagerOffline.execute(requestFromDB, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+            }
+            else
+            {
+                RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, categoryUrl);
+                if (resetCategoryInDB)
+                {
+                    request.setResetCategoryInDB();
+                }
+                spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+            }
+        }
+        else
+        {
+            isLoadingFromTop = false;
+            this.setLoading(true);
+            if (!forceRefresh)
+            {
+                RoboSpiceRequestCategoriesArtsFromBottomOffline request = new RoboSpiceRequestCategoriesArtsFromBottomOffline(ctx, categoryUrl, page);
+                spiceManagerOffline.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+            }
+            else
+            {
+                RoboSpiceRequestCategoriesArtsFromBottom request = new RoboSpiceRequestCategoriesArtsFromBottom(ctx, categoryUrl, page);
+                spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+            }
+        }
+    }
+
     //inner class of your spiced Activity
     private class ListFollowersRequestListener implements PendingRequestListener<Articles>
     {
@@ -470,7 +473,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         @Override
         public void onRequestSuccess(Articles articles)
         {
-            Log.i(LOG, "onRequestSuccess");
+//            Log.i(LOG, "onRequestSuccess");
             if (!isAdded())
             {
                 Log.e(LOG, "frag not added");
