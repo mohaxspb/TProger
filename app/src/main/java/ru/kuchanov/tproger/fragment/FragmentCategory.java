@@ -209,6 +209,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         Log.i(LOG, "onStart called from activity: " + getActivity().getClass().getSimpleName());
         super.onStart();
 
+        BusProvider.getInstance().register(this);
+
         if (act instanceof ActivityArticle)
         {
             spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
@@ -224,7 +226,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             throw new NullPointerException("need to add service for this activity: " + act.getClass().getSimpleName());
         }
 
-        //remove spiceServiceSatrt to on resume
+        //remove spiceServiceStart to on resume
     }
 
     @Override
@@ -232,15 +234,18 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     {
 //        Log.i(LOG, "onStop called from activity: " + getActivity().getClass().getSimpleName());
         super.onStop();
+        //remove spiceServiceStart to onPause
 
-        //remove spiceServiceSatrt to onPause
+        //should unregister in onStop to avoid some issues while pausing activity/fragment
+        //see http://stackoverflow.com/a/19737191/3212712
+        BusProvider.getInstance().unregister(this);
     }
 
     @Override
     public void onResume()
     {
+        Log.i(LOG, "onResume called from activity: " + getActivity().getClass().getSimpleName());
         super.onResume();
-        BusProvider.getInstance().register(this);
 
         if (!spiceManager.isStarted())
         {
@@ -262,8 +267,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     @Override
     public void onPause()
     {
+        Log.i(LOG, "onPause called from activity: " + getActivity().getClass().getSimpleName());
         super.onPause();
-        BusProvider.getInstance().unregister(this);
 
         if (spiceManager.isStarted())
         {

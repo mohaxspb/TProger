@@ -34,7 +34,6 @@ import android.widget.Toast;
 import com.squareup.otto.Subscribe;
 
 import java.lang.reflect.Method;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -289,27 +288,12 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 this.drawerLayout.openDrawer(GravityCompat.START);
                 return true;
             case R.id.night_mode_switcher:
-                if (nightModeIsOn)
-                {
-                    this.pref.edit().putBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false).commit();
-                }
-                else
-                {
-                    this.pref.edit().putBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, true).commit();
-                }
+                this.pref.edit().putBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, !nightModeIsOn).commit();
                 this.recreate();
                 return true;
             case R.id.list_style_switcher:
-                if (isGridManager)
-                {
-                    this.pref.edit().putBoolean(ctx.getString(R.string.pref_design_key_list_style), false).commit();
-                }
-                else
-                {
-                    this.pref.edit().putBoolean(ctx.getString(R.string.pref_design_key_list_style), true).commit();
-                }
+                this.pref.edit().putBoolean(ctx.getString(R.string.pref_design_key_list_style), !isGridManager).commit();
                 this.supportInvalidateOptionsMenu();
-//                this.recreate();
                 return true;
             case R.id.text_size_dialog:
                 FragmentDialogTextAppearance frag = FragmentDialogTextAppearance.newInstance();
@@ -324,54 +308,11 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 this.recreate();
                 return true;
             case R.id.db_delete_last_art_cat:
-                Log.i(LOG, "deleting last art from DB");
-                ArticleCategory artCatToDelete = ArticleCategory.getArtCatsWithoutNextArtId(h, Category.getCategoryIdByUrl("", h)).get(0);
-                try
-                {
-                    ArticleCategory prevArtCat = ArticleCategory.getPrevArtCat(h, artCatToDelete);
-                    prevArtCat.setNextArticleId(-1);
-                    h.getDaoArtCat().createOrUpdate(prevArtCat);
-
-                    //also delete article obj
-                    Article a = Article.getArticleById(h, artCatToDelete.getArticleId());
-                    Article.printInLog(a);
-                    int updatedRows = h.getDaoArticle().delete(a);
-                    Log.i(LOG, "updatedRows: " + updatedRows);
-
-                    h.getDaoArtCat().delete(artCatToDelete);
-                }
-                catch (SQLException e)
-                {
-                    e.printStackTrace();
-                }
+                int quontOfDeletedArtCats = ArticleCategory.deleteAllLastArtCatInCategory(h, "");
+                Log.i(LOG, "quontOfDeletedArtCats: " + quontOfDeletedArtCats);
                 return true;
             case R.id.db_delete_table_articles:
-//                try
-//                {
-//                    ArrayList<Articles> articles = (ArrayList<Articles>) h.getDao(Articles.class).queryForAll();
-//                    h.getDao(Articles.class).delete(articles);
-//                }
-//                catch (SQLException e)
-//                {
-//                    e.printStackTrace();
-//                }
-                Category category = Category.getCategoryByUrl("", h);
-                ArticleCategory topArtCat = ArticleCategory.getTopArtCat(category.getId(), h);
-                ArticleCategory secondArtCat = ArticleCategory.getNextArtCat(h, topArtCat);
-
-                secondArtCat.setTopInCategory(true);
-                secondArtCat.setPreviousArticleId(-1);
-
-                try
-                {
-                    h.getDaoArtCat().delete(topArtCat);
-                    h.getDaoArtCat().createOrUpdate(secondArtCat);
-                }
-                catch (SQLException e)
-                {
-                    e.printStackTrace();
-                }
-
+                Category.deleteFirstInCatAndUpdateSecond(h, "");
                 return true;
         }
 
@@ -540,23 +481,25 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     {
         Log.i(LOG, "onStop called!");
         super.onStop();
+        //should unregister in onStop to avoid some issues while pausing activity/fragment
+        //see http://stackoverflow.com/a/19737191/3212712
         BusProvider.getInstance().unregister(this);
     }
 
-//    @Override
-//    protected void onRestart()
-//    {
-//        Log.i(LOG, "onRestart called!");
-//        super.onRestart();
-//        BusProvider.getInstance().register(this);
-//    }
-//
-//    @Override
-//    protected void onPause()
-//    {
-//        Log.i(LOG, "onPause called!");
-//        super.onPause();
-//    }
+    @Override
+    protected void onRestart()
+    {
+        Log.i(LOG, "onRestart called!");
+        super.onRestart();
+    }
+
+    @Override
+    protected void onPause()
+    {
+        Log.i(LOG, "onPause called!");
+        super.onPause();
+
+    }
 
     @Subscribe
     public void onArtsReceived(final EventArtsReceived event)

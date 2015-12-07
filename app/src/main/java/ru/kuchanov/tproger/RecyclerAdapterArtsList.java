@@ -27,6 +27,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import ru.kuchanov.tproger.activity.ActivityArticle;
+import ru.kuchanov.tproger.activity.ActivityMain;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.DipToPx;
 import ru.kuchanov.tproger.utils.MyUIL;
@@ -100,15 +101,24 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                 @Override
                 public void onClick(View v)
                 {
-                    //TODO paste arts to intents extras
+                    //TODO need to switch by host activity and start Article activity or select art in ViewPager
                     Log.i(LOG, "title clicked: " + a.getUrl());
-                    Intent intent = new Intent(ctx, ActivityArticle.class);
-                    Bundle b = new Bundle();
-                    b.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
-                    b.putInt(ActivityArticle.KEY_CURRENT_ARTICLE_POSITION_IN_LIST, position);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                    intent.putExtras(b);
-                    ctx.startActivity(intent);
+                    if (ctx instanceof ActivityMain)
+                    {
+                        Log.i(LOG, "clicked from Main activity");
+                        Intent intent = new Intent(ctx, ActivityArticle.class);
+                        //paste arts and currently selected to intents extras
+                        Bundle b = new Bundle();
+                        b.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
+                        b.putInt(ActivityArticle.KEY_CURRENT_ARTICLE_POSITION_IN_LIST, position);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        intent.putExtras(b);
+                        ctx.startActivity(intent);
+                    }
+                    else
+                    {
+                        Log.i(LOG, "clicked from activity: " + ctx.getClass().getSimpleName());
+                    }
                 }
             });
 

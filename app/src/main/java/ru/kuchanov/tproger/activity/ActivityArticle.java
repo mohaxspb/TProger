@@ -156,8 +156,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         this.onArtsReceived(new EventArtsReceived(artsWithImage));
 
         this.pref.registerOnSharedPreferenceChangeListener(this);
-
-
     }
 
     private void initializeViews()
@@ -271,7 +269,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         return super.onPrepareOptionsMenu(menu);
     }
 
-    //workaround from http://stackoverflow.com/a/30337653/3212712
+    //workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
     @Override
     protected boolean onPrepareOptionsPanel(View view, Menu menu)
     {
@@ -328,14 +326,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
                 onBackPressed();
                 return true;
             case R.id.night_mode_switcher:
-                if (nightModeIsOn)
-                {
-                    this.pref.edit().putBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false).commit();
-                }
-                else
-                {
-                    this.pref.edit().putBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, true).commit();
-                }
+                this.pref.edit().putBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, !nightModeIsOn).commit();
                 this.recreate();
                 return true;
             case R.id.text_size_dialog:
@@ -472,6 +463,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     {
         Log.i(LOG, "onPause called!");
         super.onPause();
+
     }
 
     @Override
@@ -479,6 +471,9 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     {
         Log.i(LOG, "onStop called with hash: "+this.hashCode());
         super.onStop();
+        //should unregister in onStop to avoid some issues while pausing activity/fragment
+        //see http://stackoverflow.com/a/19737191/3212712
+        BusProvider.getInstance().unregister(this);
     }
 
     @Override

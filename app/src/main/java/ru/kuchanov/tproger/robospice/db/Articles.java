@@ -4,7 +4,11 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+
+import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 
 /**
  * Created by Юрий on 16.10.2015 18:45.
@@ -30,13 +34,25 @@ public class Articles
      * (0) - no new
      * (1-9) exact quont of new arts
      * (10) - 10 or more new arts;
-     *
+     * <p/>
      * or
      * -2 if is not setted
-     *
      */
     @DatabaseField
     private int numOfNewArts = -2;
+
+    public static void deleteAllEntries(MyRoboSpiceDatabaseHelper h)
+    {
+        try
+        {
+            ArrayList<Articles> articles = (ArrayList<Articles>) h.getDao(Articles.class).queryForAll();
+            h.getDao(Articles.class).delete(articles);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     public int getId()
     {
@@ -59,7 +75,6 @@ public class Articles
 
         return result;
     }
-
 
     public void setResult(Collection<Article> result)
     {

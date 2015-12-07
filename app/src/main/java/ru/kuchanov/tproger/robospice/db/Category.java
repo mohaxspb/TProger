@@ -93,6 +93,31 @@ public class Category
         return millsFromLastRefresh > millsInRefreshPeriod;
     }
 
+    /**
+     * For test purposes. Calling it we can test reaction on loading from web and getting new arts;
+     * Method searches through artCatTable for isTop for given category, deletes it and updates
+     * next artCat to be isTop;
+     */
+    public static void deleteFirstInCatAndUpdateSecond(MyRoboSpiceDatabaseHelper h, String categoryUrl)
+    {
+        Category category = Category.getCategoryByUrl(categoryUrl, h);
+        ArticleCategory topArtCat = ArticleCategory.getTopArtCat(category.getId(), h);
+        ArticleCategory secondArtCat = ArticleCategory.getNextArtCat(h, topArtCat);
+
+        secondArtCat.setTopInCategory(true);
+        secondArtCat.setPreviousArticleId(-1);
+
+        try
+        {
+            h.getDaoArtCat().delete(topArtCat);
+            h.getDaoArtCat().createOrUpdate(secondArtCat);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public int getId()
     {
         return id;

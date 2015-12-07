@@ -1,5 +1,7 @@
 package ru.kuchanov.tproger.robospice.db;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -580,6 +582,42 @@ public class ArticleCategory
         }
 
         return nextArtCat;
+    }
+
+    /**
+     * Searches list of ArtCatTable entries for ones, that have no nextArtCat and deletes it;
+     *
+     * @return quont of deleted arts;
+     */
+    public static int deleteAllLastArtCatInCategory(MyRoboSpiceDatabaseHelper h, String categoryUrl)
+    {
+        int quontOfDeletedArtCats = 0;
+        Log.i(LOG, "deleting last arts from DB");
+        ArrayList<ArticleCategory> artCatListToDelete = ArticleCategory.getArtCatsWithoutNextArtId(h, Category.getCategoryIdByUrl(categoryUrl, h));
+        for (ArticleCategory artCatToDelete : artCatListToDelete)
+        {
+            try
+            {
+                ArticleCategory prevArtCat = ArticleCategory.getPrevArtCat(h, artCatToDelete);
+                prevArtCat.setNextArticleId(-1);
+                h.getDaoArtCat().createOrUpdate(prevArtCat);
+
+                //also delete article obj
+                Article a = Article.getArticleById(h, artCatToDelete.getArticleId());
+                Article.printInLog(a);
+                int updatedRows = h.getDaoArticle().delete(a);
+                Log.i(LOG, "updatedRows: " + updatedRows);
+
+                h.getDaoArtCat().delete(artCatToDelete);
+                quontOfDeletedArtCats++;
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+                quontOfDeletedArtCats--;
+            }
+        }
+        return quontOfDeletedArtCats;
     }
 
     public int getArticleId()
