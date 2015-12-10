@@ -39,6 +39,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ru.kuchanov.tproger.R;
+import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
 import ru.kuchanov.tproger.navigation.ImageChanger;
@@ -50,6 +51,7 @@ import ru.kuchanov.tproger.navigation.TabLayoutOnTabSelectedListener;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Category;
@@ -93,6 +95,11 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     private int prevPosOfImage = -1;
     private Timer timer;
     private TimerTask timerTask;
+
+    ///////////
+    protected MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
+    protected MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -474,6 +481,15 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         Log.i(LOG, "onStart called!");
         super.onStart();
         BusProvider.getInstance().register(this);
+
+        if (!spiceManager.isStarted())
+        {
+            spiceManager.start(ctx);
+        }
+        if (!spiceManagerOffline.isStarted())
+        {
+            spiceManagerOffline.start(ctx);
+        }
     }
 
     @Override
@@ -499,6 +515,14 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         Log.i(LOG, "onPause called!");
         super.onPause();
 
+        if (spiceManager.isStarted())
+        {
+            spiceManager.shouldStop();
+        }
+        if (spiceManagerOffline.isStarted())
+        {
+            spiceManagerOffline.shouldStop();
+        }
     }
 
     @Subscribe

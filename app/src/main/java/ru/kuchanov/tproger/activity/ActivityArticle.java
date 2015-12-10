@@ -37,12 +37,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ru.kuchanov.tproger.R;
+import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.fragment.FragmentCategory;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.ImageChanger;
 import ru.kuchanov.tproger.navigation.OnNavigationItemSelectedListenerArticleActivity;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
+import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.MyRandomUtil;
 import ru.kuchanov.tproger.utils.MyUIL;
@@ -97,6 +99,10 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     private TimerTask timerTask;
 
     private boolean isTabletMode;
+
+    ///////////
+    protected MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
+    protected MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -464,6 +470,14 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         Log.i(LOG, "onPause called!");
         super.onPause();
 
+        if (spiceManager.isStarted())
+        {
+            spiceManager.shouldStop();
+        }
+        if (spiceManagerOffline.isStarted())
+        {
+            spiceManagerOffline.shouldStop();
+        }
     }
 
     @Override
@@ -490,6 +504,15 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         Log.i(LOG, "onStart called!");
         super.onStart();
         BusProvider.getInstance().register(this);
+
+        if (!spiceManager.isStarted())
+        {
+            spiceManager.start(ctx);
+        }
+        if (!spiceManagerOffline.isStarted())
+        {
+            spiceManagerOffline.start(ctx);
+        }
     }
 
     @Override

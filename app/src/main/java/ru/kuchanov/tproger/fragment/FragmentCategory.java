@@ -247,15 +247,15 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         Log.i(LOG, "onResume called from activity: " + getActivity().getClass().getSimpleName());
         super.onResume();
 
-        if (!spiceManager.isStarted())
-        {
-            spiceManager.start(ctx);
-        }
+//        if (!spiceManager.isStarted())
+//        {
+//            spiceManager.start(ctx);
+//        }
         spiceManager.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
-        if (!spiceManagerOffline.isStarted())
-        {
-            spiceManagerOffline.start(ctx);
-        }
+//        if (!spiceManagerOffline.isStarted())
+//        {
+//            spiceManagerOffline.start(ctx);
+//        }
         spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
         //make request for it
         if (artsList.size() == 0)
@@ -270,14 +270,14 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         Log.i(LOG, "onPause called from activity: " + getActivity().getClass().getSimpleName());
         super.onPause();
 
-        if (spiceManager.isStarted())
-        {
-            spiceManager.shouldStop();
-        }
-        if (spiceManagerOffline.isStarted())
-        {
-            spiceManagerOffline.shouldStop();
-        }
+//        if (spiceManager.isStarted())
+//        {
+//            spiceManager.shouldStop();
+//        }
+//        if (spiceManagerOffline.isStarted())
+//        {
+//            spiceManagerOffline.shouldStop();
+//        }
     }
 
     @Subscribe
