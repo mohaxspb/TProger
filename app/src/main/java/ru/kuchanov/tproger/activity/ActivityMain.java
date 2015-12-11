@@ -1,6 +1,5 @@
 package ru.kuchanov.tproger.activity;
 
-import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -82,7 +81,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
     protected int checkedDrawerItemId = R.id.tab_1;
     protected boolean isCollapsed = true;
-    protected View cover2;
     protected View cover2Border;
     protected AppBarLayout appBar;
     protected TabLayout tabLayout;
@@ -93,14 +91,18 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     //listeners for navView and pager
     OnPageChangeListenerMain onPageChangeListenerMain;
     NavigationViewOnNavigationItemSelectedListener navigationViewOnNavigationItemSelectedListener;
+    //    protected View cover2;
+    private View myView;
     private ImageView cover;
     private int verticalOffsetPrevious = 0;
     private Context ctx;
     private SharedPreferences pref;
+    ///animations
     private ArrayList<Article> artsWithImage = new ArrayList<>();
     private int prevPosOfImage = -1;
     private Timer timer;
     private TimerTask timerTask;
+    private SupportAnimator animator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -150,8 +152,9 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     private void initializeViews()
     {
         cover = (ImageView) findViewById(R.id.cover);
-        cover2 = findViewById(R.id.cover_2_inside);
+//        cover2 = findViewById(R.id.cover_2_inside);
 //        cover2 = findViewById(R.id.cover_2);
+        myView = findViewById(R.id.cover_to_fill);
         cover2Border = findViewById(R.id.cover_2_border);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -174,7 +177,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         cover.setScaleY(1.3f);
         cover.animate().alpha(1).setDuration(600);
 
-        cover2.setAlpha(0);
+//        cover2.setAlpha(0);
+        myView.setVisibility(View.INVISIBLE);
 
         this.startAnimation();
     }
@@ -408,10 +412,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     {
 //        Log.i(LOG, "updateImage with position in pager: "+positionInPager);
 
-        cover2.setAlpha(0);
-        cover2.setScaleX(1);
-        cover2.setScaleY(1);
-        cover2.animate().cancel();
+        myView.setVisibility(View.INVISIBLE);
 
         //that is normal. Use it if other attempts fails;
 //        appBar.setExpanded(isCollapsed, true);
@@ -450,30 +451,39 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             return;
         }
 
-        cover2.animate().alpha(1).scaleX(15).scaleY(15).setDuration(600).setListener(new Animator.AnimatorListener()
+        //TODO add supporing preSet images showing
+        if (animator != null && animator.isRunning())
         {
-            @Override
-            public void onAnimationStart(Animator animation)
-            {
-            }
+            animator.cancel();
+            animator = null;
+            return;
+        }
+        animateReveal(0);
 
-            @Override
-            public void onAnimationEnd(Animator animation)
-            {
-                cover.setImageResource(coverImgsIds[positionInPager]);
-                cover2.animate().alpha(0).setDuration(600);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation)
-            {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation)
-            {
-            }
-        });
+//        cover2.animate().alpha(1).scaleX(15).scaleY(15).setDuration(600).setListener(new Animator.AnimatorListener()
+//        {
+//            @Override
+//            public void onAnimationStart(Animator animation)
+//            {
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animation)
+//            {
+//                cover.setImageResource(coverImgsIds[positionInPager]);
+//                cover2.animate().alpha(0).setDuration(600);
+//            }
+//
+//            @Override
+//            public void onAnimationCancel(Animator animation)
+//            {
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animator animation)
+//            {
+//            }
+//        });
     }
 
     @Override
@@ -626,10 +636,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         }
         prevPosOfImage = positionInList;
 
-        cover2.setAlpha(0);
-        cover2.setScaleX(1);
-        cover2.setScaleY(1);
-        cover2.animate().cancel();
+        myView.setVisibility(View.INVISIBLE);
 
         //prevent showing transition coloring if cover isn't showing
         if (this.cover.getAlpha() == 0)
@@ -638,34 +645,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             return;
         }
 
-        cover2.setAlpha(1);
-        animateReavel(positionInList);
-
-//
-//        cover2.animate().alpha(1).scaleX(15).scaleY(15).setDuration(800).setListener(new Animator.AnimatorListener()
-//        {
-//            @Override
-//            public void onAnimationStart(Animator animation)
-//            {
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animator animation)
-//            {
-//                MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
-//                cover2.animate().alpha(0).setDuration(800);
-//            }
-//
-//            @Override
-//            public void onAnimationCancel(Animator animation)
-//            {
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animator animation)
-//            {
-//            }
-//        });
+        animateReveal(positionInList);
     }
 
 
@@ -772,54 +752,73 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         }
     }
 
-    private void animateReavel(final int positionInList)
+    private void animateReveal(final int positionInList)
     {
-        final View myView = findViewById(R.id.cover_to_fill);
-
-        // get the center for the clipping circle
-        final int cx = (myView.getLeft() + myView.getRight()) / 2;
-        final int cy = (myView.getTop() + myView.getBottom()) / 2;
-
-        // get the final radius for the clipping circle
-        final int dx = Math.max(cx, myView.getWidth() - cx);
-        final int dy = Math.max(cy, myView.getHeight() - cy);
-        final float finalRadius = (float) Math.hypot(dx, dy);
-
-        final SupportAnimator animator = ViewAnimationUtils.createCircularReveal(myView, cx, cy, 0, finalRadius);
-        animator.setInterpolator(new AccelerateDecelerateInterpolator());
-        animator.setDuration(1000);
-        animator.addListener(new SupportAnimator.SimpleAnimatorListener()
+        if (animator == null)
         {
-            @Override
-            public void onAnimationStart()
-            {
-                super.onAnimationStart();
-                myView.setVisibility(View.VISIBLE);
-            }
+            // get the center for the clipping circle
+            final int cx = (myView.getLeft() + myView.getRight()) / 2;
+            final int cy = (myView.getTop() + myView.getBottom()) / 2;
 
-            @Override
-            public void onAnimationEnd()
-            {
-                Log.i(LOG, "onAnimationEnd: first");
-                super.onAnimationEnd();
-                MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
+            // get the final radius for the clipping circle
+            final int dx = Math.max(cx, myView.getWidth() - cx);
+            final int dy = Math.max(cy, myView.getHeight() - cy);
+            final float finalRadius = (float) Math.hypot(dx, dy);
 
-                final SupportAnimator animatorReversed = animator.reverse();
-                animatorReversed.addListener(new SupportAnimator.SimpleAnimatorListener()
+            animator = ViewAnimationUtils.createCircularReveal(myView, cx, cy, 0, finalRadius);
+            animator.setInterpolator(new AccelerateDecelerateInterpolator());
+            animator.setDuration(1000);
+            animator.addListener(new SupportAnimator.SimpleAnimatorListener()
+            {
+                @Override
+                public void onAnimationStart()
                 {
-                    @Override
-                    public void onAnimationEnd()
+                    super.onAnimationStart();
+                    myView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd()
+                {
+                    super.onAnimationEnd();
+                    if (animator == null)
                     {
-                        Log.i(LOG, "onAnimationEnd: last");
-                        super.onAnimationEnd();
-                        myView.setVisibility(View.INVISIBLE);
+                        return;
                     }
-                });
-                animatorReversed.setInterpolator(new AccelerateDecelerateInterpolator());
-                animatorReversed.setDuration(500);
-                animatorReversed.start();
+//                Log.i(LOG, "onAnimationEnd: first");
+
+
+                    MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
+
+                    animator = animator.reverse();
+                    animator.addListener(new SupportAnimator.SimpleAnimatorListener()
+                    {
+                        @Override
+                        public void onAnimationEnd()
+                        {
+                            super.onAnimationEnd();
+//                        Log.i(LOG, "onAnimationEnd: last");
+
+                            myView.setVisibility(View.INVISIBLE);
+                            animator = null;
+                        }
+                    });
+                    animator.setInterpolator(new AccelerateDecelerateInterpolator());
+                    animator.setDuration(500);
+                    animator.start();
+                }
+            });
+            animator.start();
+        }
+        else
+        {
+            if (animator.isRunning())
+            {
+                animator.cancel();
+                animator = null;
+//            animateReveal(positionInList);
+//            updateImage(pager.getCurrentItem());
             }
-        });
-        animator.start();
+        }
     }
 }

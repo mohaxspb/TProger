@@ -58,11 +58,11 @@
                 android:layout_height="290dp"
                 android:background="?colorAccent">
             </FrameLayout>
-            <android.support.design.widget.FloatingActionButton
+            <!--<android.support.design.widget.FloatingActionButton
                 android:id="@+id/cover_2_inside"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|center_vertical"/>
+                android:layout_gravity="center_horizontal|center_vertical"/>-->
         </io.codetail.widget.RevealFrameLayout>
 
         <View
