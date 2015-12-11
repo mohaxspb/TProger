@@ -518,9 +518,18 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     @Override
     protected void onResume()
     {
-//        Log.i(LOG, "onResume called!");
-        Log.i(LOG, "onResume called with hash: "+this.hashCode());
+        Log.i(LOG, "onResume called!");
+//        Log.i(LOG, "onResume called with hash: "+this.hashCode());
         super.onResume();
+
+        if (!spiceManager.isStarted())
+        {
+            spiceManager.start(ctx);
+        }
+        if (!spiceManagerOffline.isStarted())
+        {
+            spiceManagerOffline.start(ctx);
+        }
     }
 
     @Subscribe

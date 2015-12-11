@@ -22,7 +22,29 @@
             android:src="@drawable/tproger_small"
             tools:ignore="contentDescription"/>
 
-        <LinearLayout
+        <!-- <LinearLayout
+             android:id="@+id/cover_2"
+             android:layout_width="match_parent"
+             android:layout_height="1000dp"
+             android:layout_marginTop="-24dp"
+             android:background="@android:color/transparent"
+             android:orientation="vertical">
+
+             <FrameLayout
+                 android:id="@+id/cover_to_fill"
+                 android:layout_width="match_parent"
+                 android:layout_height="290dp"
+                 android:background="@android:color/transparent">
+
+                 <android.support.design.widget.FloatingActionButton
+                     android:id="@+id/cover_2_inside"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_gravity="center_horizontal|center_vertical"/>
+           </FrameLayout>
+         </LinearLayout>-->
+
+        <io.codetail.widget.RevealFrameLayout
             android:id="@+id/cover_2"
             android:layout_width="match_parent"
             android:layout_height="1000dp"
@@ -31,17 +53,17 @@
             android:orientation="vertical">
 
             <FrameLayout
+                android:id="@+id/cover_to_fill"
                 android:layout_width="match_parent"
                 android:layout_height="290dp"
-                android:background="@android:color/transparent">
-
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/cover_2_inside"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal|center_vertical"/>
+                android:background="?colorAccent">
             </FrameLayout>
-        </LinearLayout>
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/cover_2_inside"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center_vertical"/>
+        </io.codetail.widget.RevealFrameLayout>
 
         <View
             android:id="@+id/cover_2_border"

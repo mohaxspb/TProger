@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -38,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.codetail.animation.SupportAnimator;
+import io.codetail.animation.ViewAnimationUtils;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
@@ -84,6 +87,9 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     protected AppBarLayout appBar;
     protected TabLayout tabLayout;
     protected boolean fullyExpanded = true;
+    ///////////
+    protected MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
+    protected MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
     //listeners for navView and pager
     OnPageChangeListenerMain onPageChangeListenerMain;
     NavigationViewOnNavigationItemSelectedListener navigationViewOnNavigationItemSelectedListener;
@@ -95,11 +101,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     private int prevPosOfImage = -1;
     private Timer timer;
     private TimerTask timerTask;
-
-    ///////////
-    protected MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
-    protected MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -412,7 +413,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         cover2.setScaleY(1);
         cover2.animate().cancel();
 
-        //TODO that is normal. Use it if other attempts fails;
+        //that is normal. Use it if other attempts fails;
 //        appBar.setExpanded(isCollapsed, true);
 
         if (!isCollapsed)
@@ -493,6 +494,22 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     }
 
     @Override
+    protected void onResume()
+    {
+        Log.i(LOG, "onResume called!");
+        super.onResume();
+
+        if (!spiceManager.isStarted())
+        {
+            spiceManager.start(ctx);
+        }
+        if (!spiceManagerOffline.isStarted())
+        {
+            spiceManagerOffline.start(ctx);
+        }
+    }
+
+    @Override
     protected void onStop()
     {
         Log.i(LOG, "onStop called!");
@@ -500,6 +517,16 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         //should unregister in onStop to avoid some issues while pausing activity/fragment
         //see http://stackoverflow.com/a/19737191/3212712
         BusProvider.getInstance().unregister(this);
+
+        //stop and cancel all timers that manages animations
+        if (timer != null && timerTask != null)
+        {
+            timerTask.cancel();
+            timer.cancel();
+
+            timer = null;
+            timerTask = null;
+        }
     }
 
     @Override
@@ -507,6 +534,10 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     {
         Log.i(LOG, "onRestart called!");
         super.onRestart();
+
+        //check if timer is null (it's null after onStop)
+        //and restart it by calling onArtsReceiver to recreate it
+        this.onArtsReceived(new EventArtsReceived(this.artsWithImage));
     }
 
     @Override
@@ -607,38 +638,36 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             return;
         }
 
-        cover2.animate().alpha(1).scaleX(15).scaleY(15).setDuration(800).setListener(new Animator.AnimatorListener()
-        {
-            @Override
-            public void onAnimationStart(Animator animation)
-            {
-            }
+        cover2.setAlpha(1);
+        animateReavel(positionInList);
 
-            @Override
-            public void onAnimationEnd(Animator animation)
-            {
-                MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
-                cover2.animate().alpha(0).setDuration(800);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation)
-            {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation)
-            {
-            }
-        });
+//
+//        cover2.animate().alpha(1).scaleX(15).scaleY(15).setDuration(800).setListener(new Animator.AnimatorListener()
+//        {
+//            @Override
+//            public void onAnimationStart(Animator animation)
+//            {
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animation)
+//            {
+//                MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
+//                cover2.animate().alpha(0).setDuration(800);
+//            }
+//
+//            @Override
+//            public void onAnimationCancel(Animator animation)
+//            {
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animator animation)
+//            {
+//            }
+//        });
     }
 
-    @Override
-    protected void onResume()
-    {
-        Log.i(LOG, "onResume called!");
-        super.onResume();
-    }
 
     public void startAnimation()
     {
@@ -741,5 +770,56 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         {
             this.recreate();
         }
+    }
+
+    private void animateReavel(final int positionInList)
+    {
+        final View myView = findViewById(R.id.cover_to_fill);
+
+        // get the center for the clipping circle
+        final int cx = (myView.getLeft() + myView.getRight()) / 2;
+        final int cy = (myView.getTop() + myView.getBottom()) / 2;
+
+        // get the final radius for the clipping circle
+        final int dx = Math.max(cx, myView.getWidth() - cx);
+        final int dy = Math.max(cy, myView.getHeight() - cy);
+        final float finalRadius = (float) Math.hypot(dx, dy);
+
+        final SupportAnimator animator = ViewAnimationUtils.createCircularReveal(myView, cx, cy, 0, finalRadius);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.setDuration(1000);
+        animator.addListener(new SupportAnimator.SimpleAnimatorListener()
+        {
+            @Override
+            public void onAnimationStart()
+            {
+                super.onAnimationStart();
+                myView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd()
+            {
+                Log.i(LOG, "onAnimationEnd: first");
+                super.onAnimationEnd();
+                MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
+
+                final SupportAnimator animatorReversed = animator.reverse();
+                animatorReversed.addListener(new SupportAnimator.SimpleAnimatorListener()
+                {
+                    @Override
+                    public void onAnimationEnd()
+                    {
+                        Log.i(LOG, "onAnimationEnd: last");
+                        super.onAnimationEnd();
+                        myView.setVisibility(View.INVISIBLE);
+                    }
+                });
+                animatorReversed.setInterpolator(new AccelerateDecelerateInterpolator());
+                animatorReversed.setDuration(500);
+                animatorReversed.start();
+            }
+        });
+        animator.start();
     }
 }
