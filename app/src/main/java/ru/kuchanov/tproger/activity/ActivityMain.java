@@ -452,38 +452,176 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         }
 
         //TODO add supporing preSet images showing
-        if (animator != null && animator.isRunning())
+//        if (animator != null && animator.isRunning())
+//        {
+//            animator.cancel();
+////            animator = null;
+////            return;
+//        }
+        animateReveal(0);
+    }
+
+    private void animateReveal(final int positionInList)
+    {
+        if(animator!=null)
         {
             animator.cancel();
             animator = null;
-            return;
         }
-        animateReveal(0);
 
-//        cover2.animate().alpha(1).scaleX(15).scaleY(15).setDuration(600).setListener(new Animator.AnimatorListener()
+        // get the center for the clipping circle
+        final int cx = (myView.getLeft() + myView.getRight()) / 2;
+        final int cy = (myView.getTop() + myView.getBottom()) / 2;
+
+        // get the final radius for the clipping circle
+        final int dx = Math.max(cx, myView.getWidth() - cx);
+        final int dy = Math.max(cy, myView.getHeight() - cy);
+        final float finalRadius = (float) Math.hypot(dx, dy);
+
+        animator = ViewAnimationUtils.createCircularReveal(myView, cx, cy, 0, finalRadius);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.setDuration(1000);
+        animator.addListener(new SupportAnimator.SimpleAnimatorListener()
+        {
+            @Override
+            public void onAnimationStart()
+            {
+                super.onAnimationStart();
+                myView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationCancel()
+            {
+                super.onAnimationCancel();
+                MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
+
+                myView.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd()
+            {
+                super.onAnimationEnd();
+                MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
+                if (animator == null)
+                {
+//                    myView.setVisibility(View.INVISIBLE);
+                    return;
+                }
+//                Log.i(LOG, "onAnimationEnd: first");
+
+
+                animator = animator.reverse();
+                if (animator == null)
+                {
+//                    myView.setVisibility(View.INVISIBLE);
+                    return;
+                }
+                animator.addListener(new SupportAnimator.SimpleAnimatorListener()
+                {
+                    @Override
+                    public void onAnimationStart()
+                    {
+                        super.onAnimationStart();
+                        myView.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationEnd()
+                    {
+                        super.onAnimationEnd();
+//                        Log.i(LOG, "onAnimationEnd: last");
+
+                        myView.setVisibility(View.INVISIBLE);
+//                        animator = null;
+                    }
+                });
+                animator.setInterpolator(new AccelerateDecelerateInterpolator());
+                animator.setDuration(500);
+                animator.start();
+            }
+        });
+        animator.start();
+
+//        if (animator == null)
 //        {
-//            @Override
-//            public void onAnimationStart(Animator animation)
-//            {
-//            }
+//            // get the center for the clipping circle
+//            final int cx = (myView.getLeft() + myView.getRight()) / 2;
+//            final int cy = (myView.getTop() + myView.getBottom()) / 2;
 //
-//            @Override
-//            public void onAnimationEnd(Animator animation)
-//            {
-//                cover.setImageResource(coverImgsIds[positionInPager]);
-//                cover2.animate().alpha(0).setDuration(600);
-//            }
+//            // get the final radius for the clipping circle
+//            final int dx = Math.max(cx, myView.getWidth() - cx);
+//            final int dy = Math.max(cy, myView.getHeight() - cy);
+//            final float finalRadius = (float) Math.hypot(dx, dy);
 //
-//            @Override
-//            public void onAnimationCancel(Animator animation)
+//            animator = ViewAnimationUtils.createCircularReveal(myView, cx, cy, 0, finalRadius);
+//            animator.setInterpolator(new AccelerateDecelerateInterpolator());
+//            animator.setDuration(1000);
+//            animator.addListener(new SupportAnimator.SimpleAnimatorListener()
 //            {
-//            }
+//                @Override
+//                public void onAnimationStart()
+//                {
+//                    super.onAnimationStart();
+//                    myView.setVisibility(View.VISIBLE);
+//                }
 //
-//            @Override
-//            public void onAnimationRepeat(Animator animation)
+//                @Override
+//                public void onAnimationEnd()
+//                {
+//                    super.onAnimationEnd();
+//                    if (animator == null)
+//                    {
+//                        return;
+//                    }
+////                Log.i(LOG, "onAnimationEnd: first");
+//
+//
+//                    MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
+//
+//                    animator = animator.reverse();
+//                    animator.addListener(new SupportAnimator.SimpleAnimatorListener()
+//                    {
+//                        @Override
+//                        public void onAnimationStart()
+//                        {
+//                            super.onAnimationStart();
+//                            myView.setVisibility(View.VISIBLE);
+//                        }
+//
+//                        @Override
+//                        public void onAnimationEnd()
+//                        {
+//                            super.onAnimationEnd();
+////                        Log.i(LOG, "onAnimationEnd: last");
+//
+//                            myView.setVisibility(View.INVISIBLE);
+//                            animator = null;
+//                        }
+//                    });
+//                    animator.setInterpolator(new AccelerateDecelerateInterpolator());
+//                    animator.setDuration(500);
+//                    animator.start();
+//                }
+//            });
+//            animator.start();
+//        }
+//        else
+//        {
+//            if (animator.isRunning())
 //            {
+//                animator.cancel();
+//                animator = null;
+//                myView.setVisibility(View.INVISIBLE);
+////            animateReveal(positionInList);
+////            updateImage(pager.getCurrentItem());
 //            }
-//        });
+//            else
+//            {
+//                animator.start();
+//            }
+//        }
     }
 
     @Override
@@ -752,73 +890,5 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         }
     }
 
-    private void animateReveal(final int positionInList)
-    {
-        if (animator == null)
-        {
-            // get the center for the clipping circle
-            final int cx = (myView.getLeft() + myView.getRight()) / 2;
-            final int cy = (myView.getTop() + myView.getBottom()) / 2;
 
-            // get the final radius for the clipping circle
-            final int dx = Math.max(cx, myView.getWidth() - cx);
-            final int dy = Math.max(cy, myView.getHeight() - cy);
-            final float finalRadius = (float) Math.hypot(dx, dy);
-
-            animator = ViewAnimationUtils.createCircularReveal(myView, cx, cy, 0, finalRadius);
-            animator.setInterpolator(new AccelerateDecelerateInterpolator());
-            animator.setDuration(1000);
-            animator.addListener(new SupportAnimator.SimpleAnimatorListener()
-            {
-                @Override
-                public void onAnimationStart()
-                {
-                    super.onAnimationStart();
-                    myView.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void onAnimationEnd()
-                {
-                    super.onAnimationEnd();
-                    if (animator == null)
-                    {
-                        return;
-                    }
-//                Log.i(LOG, "onAnimationEnd: first");
-
-
-                    MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
-
-                    animator = animator.reverse();
-                    animator.addListener(new SupportAnimator.SimpleAnimatorListener()
-                    {
-                        @Override
-                        public void onAnimationEnd()
-                        {
-                            super.onAnimationEnd();
-//                        Log.i(LOG, "onAnimationEnd: last");
-
-                            myView.setVisibility(View.INVISIBLE);
-                            animator = null;
-                        }
-                    });
-                    animator.setInterpolator(new AccelerateDecelerateInterpolator());
-                    animator.setDuration(500);
-                    animator.start();
-                }
-            });
-            animator.start();
-        }
-        else
-        {
-            if (animator.isRunning())
-            {
-                animator.cancel();
-                animator = null;
-//            animateReveal(positionInList);
-//            updateImage(pager.getCurrentItem());
-            }
-        }
-    }
 }
