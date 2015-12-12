@@ -65,8 +65,6 @@ dependencies {
     repositories {
         maven { url "https://jitpack.io" }
     }
-    //reveal animation
-    compile 'com.github.ozodrukh:CircularReveal:1.1.1'
     //UIL
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
 }

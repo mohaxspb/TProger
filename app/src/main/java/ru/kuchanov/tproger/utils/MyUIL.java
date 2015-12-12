@@ -27,7 +27,7 @@ public class MyUIL
 
         DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .displayer(new RoundedBitmapDisplayer(10))
-                .showImageOnLoading(R.drawable.ic_refresh_grey600_48dp)
+//                .showImageOnLoading(R.drawable.ic_refresh_grey600_48dp)
                 .showImageForEmptyUri(R.drawable.ic_crop_original_grey600_48dp)
                 .showImageOnFail(R.drawable.ic_crop_original_grey600_48dp)
                 .cacheInMemory(true)
