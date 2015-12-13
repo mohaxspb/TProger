@@ -13,6 +13,7 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
+        <!--It's a top image, over the viewPager-->
         <ImageView
             android:id="@+id/cover"
             android:layout_width="match_parent"
@@ -21,14 +22,14 @@
             android:scaleType="centerCrop"
             android:src="@drawable/tproger_small"
             tools:ignore="contentDescription"/>
-
+        <!--and it's view that changes alpha while switching pagers pages-->
         <View
-            android:layout_marginTop="-25dp"
             android:id="@+id/cover_to_fill"
             android:layout_width="match_parent"
             android:layout_height="290dp"
+            android:layout_marginTop="-25dp"
             android:background="?colorAccent"/>
-
+        <!--this view prevents floating top ImageView from showing under cover_to_fill view-->
         <View
             android:id="@+id/cover_2_border"
             android:layout_width="match_parent"
@@ -75,7 +76,6 @@
 
             </android.support.design.widget.CollapsingToolbarLayout>
         </android.support.design.widget.AppBarLayout>
-
 
         <android.support.design.widget.FloatingActionButton
             android:layout_width="wrap_content"

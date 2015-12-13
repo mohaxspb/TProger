@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
@@ -55,6 +53,7 @@ import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.utils.DataBaseFileSaver;
+import ru.kuchanov.tproger.utils.MyColorFilter;
 import ru.kuchanov.tproger.utils.MyRandomUtil;
 import ru.kuchanov.tproger.utils.MyUIL;
 import ru.kuchanov.tproger.utils.anim.ChangeImageWithAlpha;
@@ -90,7 +89,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     OnPageChangeListenerMain onPageChangeListenerMain;
     NavigationViewOnNavigationItemSelectedListener navigationViewOnNavigationItemSelectedListener;
     //    protected View cover2;
-    private View myView;
+    private View coverThatChangesAlpha;
     private ImageView cover;
     private int verticalOffsetPrevious = 0;
     private Context ctx;
@@ -141,35 +140,28 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
         this.pref.registerOnSharedPreferenceChangeListener(this);
 
-        //TODO test
-        ColorMatrix matrix = new ColorMatrix();
-        matrix.setSaturation(0);
+        MyColorFilter.applyColorFromAttr(ctx, cover, R.attr.colorAccent);
 
-        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
-        cover.setColorFilter(filter);
-        ////////////////
         cr = new ChangeImageWithAlpha();
-        cr.setValues(this.ctx/*, animator*/, myView, cover, artsWithImage);
+        cr.setValues(ctx, coverThatChangesAlpha, cover, artsWithImage);
     }
 
     private void initializeViews()
     {
         cover = (ImageView) findViewById(R.id.cover);
-//        cover2 = findViewById(R.id.cover_2_inside);
-//        cover2 = findViewById(R.id.cover_2);
-        myView = findViewById(R.id.cover_to_fill);
+        coverThatChangesAlpha = findViewById(R.id.cover_to_fill);
         cover2Border = findViewById(R.id.cover_2_border);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
-        appBar = (AppBarLayout) this.findViewById(R.id.app_bar_layout);
+        appBar = (AppBarLayout) findViewById(R.id.app_bar_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
-        pager = (ViewPager) this.findViewById(R.id.pager);
+        pager = (ViewPager) findViewById(R.id.pager);
 
-        coordinatorLayout = (CoordinatorLayout) this.findViewById(R.id.coordinator);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
     }
 
 
@@ -180,8 +172,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         cover.setScaleY(1.3f);
         cover.animate().alpha(1).setDuration(600);
 
-//        cover2.setAlpha(0);
-        myView.setVisibility(View.INVISIBLE);
+        coverThatChangesAlpha.setVisibility(View.INVISIBLE);
 
         this.startAnimation();
     }
@@ -415,7 +406,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     {
 //        Log.i(LOG, "updateImage with position in pager: "+positionInPager);
 
-//        myView.setVisibility(View.INVISIBLE);
+//        coverThatChangesAlpha.setVisibility(View.INVISIBLE);
 
         //that is normal. Use it if other attempts fails;
 //        appBar.setExpanded(isCollapsed, true);
@@ -464,7 +455,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 //        }
 
 //        ChangeImageWithAlpha cr = new ChangeImageWithAlpha();
-//        cr.setValues(this.ctx, animator, myView, cover, artsWithImage, 0);
+//        cr.setValues(this.ctx, animator, coverThatChangesAlpha, cover, artsWithImage, 0);
 //        cr.animateReveal(0);
         cr.animate(0);
     }
@@ -606,7 +597,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             if (cr == null)
             {
                 cr = new ChangeImageWithAlpha();
-                cr.setValues(ctx, myView, cover, artsWithImage);
+                cr.setValues(ctx, coverThatChangesAlpha, cover, artsWithImage);
             }
             else
             {
@@ -633,7 +624,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         }
         prevPosOfImage = positionInList;
 
-        myView.setVisibility(View.INVISIBLE);
+        coverThatChangesAlpha.setVisibility(View.INVISIBLE);
 
         //prevent showing transition coloring if cover isn't showing
         if (this.cover.getAlpha() == 0)

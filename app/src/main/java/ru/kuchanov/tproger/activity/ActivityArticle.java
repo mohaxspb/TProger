@@ -125,7 +125,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         isTabletMode = pref.getBoolean(getString(R.string.pref_design_key_tablet_mode), false);
 
         //TODO make layout for phone
-        setContentView(R.layout.activity_article);
+        setContentView(R.layout.activity_article_tablet);
 
         restoreStateFromIntent(this.getIntent().getExtras());
         restoreState(savedInstanceState);
