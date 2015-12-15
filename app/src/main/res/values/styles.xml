@@ -64,6 +64,9 @@
 
         <!--<item name="readenIcon">@drawable/ic_drafts_grey600_48dp</item>-->
         <!--<item name="unreadenIcon">@drawable/ic_markunread_grey600_48dp</item>-->
+        <!--covers-->
+        <item name="cover_top_to_bottom">@drawable/cover_top_to_bottom_light</item>
+        <item name="cover_bottom_to_top">@drawable/cover_bottom_to_top_light</item>
     </style>
 
     <style name="My.Theme.Light" parent="Base.Theme.Light">
@@ -131,6 +134,9 @@
 
         <!--<item name="readenIcon">@drawable/ic_drafts_white_48dp</item>-->
         <!--<item name="unreadenIcon">@drawable/ic_markunread_white_48dp</item>-->
+        <!--covers-->
+        <item name="cover_top_to_bottom">@drawable/cover_top_to_bottom_dark</item>
+        <item name="cover_bottom_to_top">@drawable/cover_bottom_to_top_dark</item>
     </style>
 
     <style name="My.Theme.Dark" parent="Base.Theme.Dark">

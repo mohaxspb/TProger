@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,7 +34,6 @@ import ru.kuchanov.tproger.RecyclerViewOnScrollListener;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;
 import ru.kuchanov.tproger.activity.ActivityMain;
-import ru.kuchanov.tproger.custom.view.CustomSwipeRefreshLayout;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.otto.EventCollapsed;
@@ -62,9 +62,9 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     public static final String KEY_IS_LOADING = "isLoading";
     public static final String KEY_IS_LOADING_FROM_TOP = "isLoadingFromTop";
 
-    protected MySpiceManager spiceManager;// = SingltonRoboSpice.getInstance().getSpiceManager();
-    protected MySpiceManager spiceManagerOffline;// = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
-    protected CustomSwipeRefreshLayout swipeRefreshLayout;
+    protected MySpiceManager spiceManager;
+    protected MySpiceManager spiceManagerOffline;
+    protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
     private String categoryUrl;
 
@@ -135,8 +135,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //        Log.i(LOG, "onCreateView called");
         View v = inflater.inflate(R.layout.fragment_category, container, false);
 
-        swipeRefreshLayout = (CustomSwipeRefreshLayout) v.findViewById(R.id.swipe_refresh);
-        swipeRefreshLayout.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener()
+        swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
         {
             @Override
             public void onRefresh()
@@ -149,7 +149,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler);
 
         boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
-        if (isGridManager)
+        boolean isOnArticleActivity = (ctx instanceof ActivityArticle);
+        if (isGridManager && !isOnArticleActivity)
         {
             recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
         }
@@ -247,15 +248,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //        Log.i(LOG, "onResume called from activity: " + getActivity().getClass().getSimpleName());
         super.onResume();
 
-//        if (!spiceManager.isStarted())
-//        {
-//            spiceManager.start(ctx);
-//        }
         spiceManager.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
-//        if (!spiceManagerOffline.isStarted())
-//        {
-//            spiceManagerOffline.start(ctx);
-//        }
         spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
         //make request for it
         if (artsList.size() == 0)
@@ -269,15 +262,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     {
 //        Log.i(LOG, "onPause called from activity: " + getActivity().getClass().getSimpleName());
         super.onPause();
-
-//        if (spiceManager.isStarted())
-//        {
-//            spiceManager.shouldStop();
-//        }
-//        if (spiceManagerOffline.isStarted())
-//        {
-//            spiceManagerOffline.shouldStop();
-//        }
     }
 
     @Subscribe
@@ -285,7 +269,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     {
 //        Log.i(LOG, "EventExpanded: " + String.valueOf(event.isExpanded()));
         swipeRefreshLayout.setEnabled(true);
-        swipeRefreshLayout.setLayoutMovementEnabled(true);
     }
 
     @Subscribe
@@ -293,7 +276,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     {
 //        Log.i(LOG, "EventCollapsed: " + String.valueOf(event.isCollapsed()));
         swipeRefreshLayout.setEnabled(false);
-        swipeRefreshLayout.setLayoutMovementEnabled(false);
     }
 
     @Override
@@ -307,8 +289,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         if (key.equals(this.getString(R.string.pref_design_key_list_style)))
         {
             boolean isGridManager = sharedPreferences.getBoolean(key, false);
-
-            if (isGridManager)
+            boolean isOnArticleActivity = (ctx instanceof ActivityArticle);
+            if (isGridManager && !isOnArticleActivity)
             {
                 recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
                 this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
@@ -327,7 +309,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
             this.numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(key, "2"));
 
-            if (isGridManager)
+            boolean isOnArticleActivity = (ctx instanceof ActivityArticle);
+            if (isGridManager && !isOnArticleActivity)
             {
                 recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
                 this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
@@ -362,7 +345,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         {
 //            Log.i(LOG, "isLoading is TRUE!!!");
             swipeRefreshLayout.setEnabled(true);
-            swipeRefreshLayout.setLayoutMovementEnabled(true);
+//            swipeRefreshLayout.setLayoutMovementEnabled(true);
             if (this.isLoadingFromTop)
             {
                 swipeRefreshLayout.setProgressViewEndTarget(false, actionBarSize);
@@ -527,6 +510,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             }
             else
             {
+                int prevSize = artsList.size();
                 artsList.clear();
                 artsList.addAll(list);
                 if (recyclerView.getAdapter() == null)
@@ -536,7 +520,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 }
                 else
                 {
-                    recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
+                    recyclerView.getAdapter().notifyItemRangeRemoved(0, prevSize);
                 }
 
                 //update cover

@@ -19,5 +19,6 @@
     <string name="db_delete_last_art_cat">Удалить последнюю ArtCat</string>
     <string name="db_delete_table_articles">Удалить таблицу Articles</string>
     <string name="title_activity_activity_article">Статьи</string>
+    <string name="db_delete_first_artcat_in_category">Удалить первую статью в категории</string>
 
 </resources>

@@ -61,4 +61,8 @@
     <!--<attr name="readenIcon" format="reference" />-->
     <!--<attr name="unreadenIcon" format="reference" />-->
 
+    <!--GRADIENT shapes image in xml drawable-->
+    <attr name="cover_top_to_bottom" format="reference"/>
+    <attr name="cover_bottom_to_top" format="reference"/>
+
 </resources>

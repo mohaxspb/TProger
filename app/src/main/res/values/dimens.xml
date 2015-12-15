@@ -11,4 +11,8 @@
     <dimen name="text_size_large">25sp</dimen>
     <dimen name="text_size_primary">21sp</dimen>
     <dimen name="text_size_secondary">17sp</dimen>
+
+    <!--toolbar and tavLayout heights-->
+    <dimen name="toolbar_big_height">88dp</dimen>
+    <dimen name="tab_layout_height">40dp</dimen>
 </resources>

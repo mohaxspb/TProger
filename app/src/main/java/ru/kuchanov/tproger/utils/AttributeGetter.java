@@ -21,6 +21,17 @@ public class AttributeGetter
         return colorId;
     }
 
+    public static int getDrawableId(Context ctx, int addressInRClass)
+    {
+        int drawableId;
+        int[] attrs = new int[]{addressInRClass};
+        TypedArray ta = ctx.obtainStyledAttributes(attrs);
+        drawableId = ta.getResourceId(0, 0);
+        ta.recycle();
+
+        return drawableId;
+    }
+
     public static int getHeight(Context ctx, int addressInRClass)
     {
         int height;

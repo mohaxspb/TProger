@@ -1,7 +1,5 @@
 package ru.kuchanov.tproger.utils.html;
 
-import android.util.Log;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -58,14 +56,14 @@ public class HtmlParsing
             {
                 //check if this article is already in DB and set it to list and goto next iteration;
                 list.add(artInDB);
-                Log.i(LOG, title + " is already in DB");
+//                Log.i(LOG, title + " is already in DB");
                 continue;
             }
-            else
-            {
-                //else continue this loop
-                Log.i(LOG, title + "is NOT in DB");
-            }
+//            else
+//            {
+//                //else continue this loop
+////                Log.i(LOG, title + "is NOT in DB");
+//            }
 
             Element postMeta = postTitleBox.getElementsByClass("post-meta").get(0);
             Element ul = postMeta.getElementsByTag("ul").get(0);

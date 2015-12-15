@@ -57,7 +57,7 @@
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="88dip"
+                    android:layout_height="@dimen/toolbar_big_height"
                     android:minHeight="?attr/actionBarSize"
                     app:layout_collapseMode="pin"
                     app:layout_scrollFlags="scroll|enterAlways"/>
@@ -65,10 +65,10 @@
                 <android.support.design.widget.TabLayout
                     android:id="@+id/tab_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="40dip"
+                    android:layout_height="@dimen/tab_layout_height"
                     android:layout_gravity="bottom|end"
                     android:gravity="bottom|end"
-                    android:minHeight="40dip"
+                    android:minHeight="@dimen/tab_layout_height"
                     app:layout_scrollFlags="scroll|enterAlways"
                     app:tabGravity="center"
                     app:tabIndicatorHeight="3dp"

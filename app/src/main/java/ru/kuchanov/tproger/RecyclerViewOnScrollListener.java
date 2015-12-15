@@ -8,6 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
+import ru.kuchanov.tproger.activity.ActivityArticle;
+
 /**
  * Created by Юрий on 19.10.2015 17:26.
  * For ExpListTest.
@@ -33,12 +35,13 @@ public abstract class RecyclerViewOnScrollListener extends OnScrollListener
     @Override
     public void onScrolled(RecyclerView recyclerView, int x, int y)
     {
-        Context ctx=recyclerView.getContext();
-        SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(ctx);
+        Context ctx = recyclerView.getContext();
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
 
-        boolean isGridManager=pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
+        boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
 
-        if(isGridManager)
+        boolean isOnArticleActivity = (ctx instanceof ActivityArticle);
+        if (isGridManager && !isOnArticleActivity)
         {
             int numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(ctx.getString(R.string.pref_design_key_col_num), "2"));
 

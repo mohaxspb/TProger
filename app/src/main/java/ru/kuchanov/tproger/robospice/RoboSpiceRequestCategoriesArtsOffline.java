@@ -1,7 +1,6 @@
 package ru.kuchanov.tproger.robospice;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.octo.android.robospice.request.SpiceRequest;
 
@@ -42,12 +41,10 @@ public class RoboSpiceRequestCategoriesArtsOffline extends SpiceRequest<Articles
     @Override
     public Articles loadDataFromNetwork() throws Exception
     {
-        Log.i(LOG, "loadDataFromNetwork() called");
-
+//        Log.i(LOG, "loadDataFromNetwork() called");
         ArrayList<Article> list;
 
         //get list from DB
-
         int categoryId = Category.getCategoryIdByUrl(this.category, databaseHelper);
 
         if (ArticleCategory.getTopArtCat(categoryId, databaseHelper) != null)

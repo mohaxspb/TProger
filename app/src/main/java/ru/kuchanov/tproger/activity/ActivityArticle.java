@@ -1,6 +1,5 @@
 package ru.kuchanov.tproger.activity;
 
-import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -46,8 +45,10 @@ import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
+import ru.kuchanov.tproger.utils.MyColorFilter;
 import ru.kuchanov.tproger.utils.MyRandomUtil;
 import ru.kuchanov.tproger.utils.MyUIL;
+import ru.kuchanov.tproger.utils.anim.ChangeImageWithAlpha;
 
 public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdateSelected,*/ ImageChanger, SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -58,7 +59,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
 
     protected final int[] coverImgsIds = {R.drawable.tproger_small, R.drawable.cremlin, R.drawable.petergof};
     //views for tabletMode
-    protected Toolbar toolbarLeft;
+//    protected Toolbar toolbarLeft;
     protected CollapsingToolbarLayout collapsingToolbarLayoutLeft;
     protected CoordinatorLayout coordinatorLayoutLeft;
     protected ImageView coverLeft;
@@ -76,13 +77,18 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     protected boolean drawerOpened;
     protected ViewPager pager;
     protected CoordinatorLayout coordinatorLayout;
-    //    protected int checkedDrawerItemId = R.id.tab_1;
     protected boolean isCollapsed = true;
     protected ImageView cover;
     protected View cover2;
     protected View cover2Border;
     protected AppBarLayout appBar;
     protected boolean fullyExpanded = true;
+    ///////////
+    protected MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
+    protected MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
+    /////////////
+//    ChangeImageWithAlpha changeImageWithAlpha;
+    ChangeImageWithAlpha changeImageWithAlphaLeft;
     /**
      * list of articles to show in pager and recyclerView
      */
@@ -94,15 +100,9 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     private SharedPreferences pref;
     private ArrayList<Article> artsWithImage = new ArrayList<>();
     private int prevPosOfImage = -1;
-
     private Timer timer;
     private TimerTask timerTask;
-
     private boolean isTabletMode;
-
-    ///////////
-    protected MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
-    protected MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -159,9 +159,18 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
             setUpBackgroundAnimation(cover, cover2);
         }
 
-        this.onArtsReceived(new EventArtsReceived(artsWithImage));
+        this.onArtsReceived(new EventArtsReceived(new ArrayList<>(artsWithImage)));
 
         this.pref.registerOnSharedPreferenceChangeListener(this);
+
+        /////////
+        MyColorFilter.applyColorFromAttr(ctx, coverLeft, R.attr.colorAccent);
+
+        if (isTabletMode)
+        {
+            changeImageWithAlphaLeft = new ChangeImageWithAlpha();
+            changeImageWithAlphaLeft.setValues(ctx, cover2Left, coverLeft, artsWithImage);
+        }
     }
 
     private void initializeViews()
@@ -169,12 +178,11 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         if (isTabletMode)
         {
             coverLeft = (ImageView) findViewById(R.id.cover_left);
-            cover2Left = findViewById(R.id.cover_2_inside_left);
+            cover2Left = findViewById(R.id.cover_to_fill_left);
             cover2BorderLeft = findViewById(R.id.cover_2_border_left);
 
             appBarLeft = (AppBarLayout) this.findViewById(R.id.app_bar_layout_left);
 
-            toolbarLeft = (Toolbar) findViewById(R.id.toolbar_left);
             collapsingToolbarLayoutLeft = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_left);
 
             coordinatorLayoutLeft = (CoordinatorLayout) this.findViewById(R.id.coordinator_left);
@@ -185,7 +193,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
 
 
         cover = (ImageView) findViewById(R.id.cover);
-        cover2 = findViewById(R.id.cover_2_inside);
+        cover2 = findViewById(R.id.cover_to_fill);
         cover2Border = findViewById(R.id.cover_2_border);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -233,7 +241,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
 //                    updateNavigationViewState(checkedDrawerItemId);
                 }
             };
-            mDrawerToggle.setDrawerIndicatorEnabled(true);
+//            mDrawerToggle.setDrawerIndicatorEnabled(true);
 
             drawerLayout.setDrawerListener(mDrawerToggle);
         }
@@ -241,8 +249,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         navCL = new OnNavigationItemSelectedListenerArticleActivity(ctx);
 
         navigationView.setNavigationItemSelectedListener(navCL);
-
-//        updateNavigationViewState(this.checkedDrawerItemId);
     }
 
     @Override
@@ -368,7 +374,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     {
         if (state != null)
         {
-//            checkedDrawerItemId = state.getInt(NAV_ITEM_ID, R.id.tab_1);
             isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
             prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
             artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE);
@@ -417,7 +422,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         }
 
         //prevent changing images if we are not on artsListFragment in main pager
-        if (pager.getCurrentItem() != 0)
+        if (positionInPager != 0)
         {
             if (timer != null && timerTask != null)
             {
@@ -427,7 +432,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         }
         else
         {
-            this.onArtsReceived(new EventArtsReceived(artsWithImage));
+            this.onArtsReceived(new EventArtsReceived(new ArrayList<>(artsWithImage)));
             return;
         }
 
@@ -437,31 +442,12 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
             cover.setImageResource(coverImgsIds[positionInPager]);
             return;
         }
-
-        cover2.animate().alpha(1).scaleX(15).scaleY(15).setDuration(600).setListener(new Animator.AnimatorListener()
+//        ChangeImageWithAlpha changeImageWithAlpha;
+//        ChangeImageWithAlpha changeImageWithAlphaLeft;
+        if (isTabletMode)
         {
-            @Override
-            public void onAnimationStart(Animator animation)
-            {
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation)
-            {
-                cover.setImageResource(coverImgsIds[positionInPager]);
-                cover2.animate().alpha(0).setDuration(600);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation)
-            {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation)
-            {
-            }
-        });
+            changeImageWithAlphaLeft.animate(0);
+        }
     }
 
     @Override
@@ -483,7 +469,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     @Override
     protected void onStop()
     {
-        Log.i(LOG, "onStop called with hash: "+this.hashCode());
+        Log.i(LOG, "onStop called with hash: " + this.hashCode());
         super.onStop();
         //should unregister in onStop to avoid some issues while pausing activity/fragment
         //see http://stackoverflow.com/a/19737191/3212712
@@ -495,6 +481,10 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     {
         Log.i(LOG, "onRestart called!");
         super.onRestart();
+
+        //check if timer is null (it's null after onStop)
+        //and restart it by calling onArtsReceiver to recreate it
+        this.onArtsReceived(new EventArtsReceived(this.artsWithImage));
     }
 
 
@@ -542,7 +532,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         this.artsList.addAll(event.getArts());
 
         //fill artsWithImage list
-        artsWithImage = new ArrayList<>();
+        artsWithImage.clear();
         //we need to create new instance of list, because if we clera old,
         //we'll get 0 size list in onAnimationEnd...
         //And i dont now why((((
@@ -584,6 +574,19 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
             }
         };
         timer.schedule(timerTask, 0, 5000);
+
+        if (isTabletMode)
+        {
+            if (changeImageWithAlphaLeft == null)
+            {
+                changeImageWithAlphaLeft = new ChangeImageWithAlpha();
+                changeImageWithAlphaLeft.setValues(ctx, cover2Left, coverLeft, artsWithImage);
+            }
+            else
+            {
+                changeImageWithAlphaLeft.updateArtsList(artsWithImage);
+            }
+        }
     }
 
     public void updateImageFromArts(final ArrayList<Article> artsWithImage, final ImageView cover, final View cover2)
@@ -616,33 +619,19 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
             return;
         }
 
-        cover2.animate().alpha(1).scaleX(15).scaleY(15).setDuration(800).setListener(new Animator.AnimatorListener()
+        cover2.setVisibility(View.INVISIBLE);
+
+        //prevent showing transition coloring if cover isn't showing
+        if (this.cover.getAlpha() == 0)
         {
-            @Override
-            public void onAnimationStart(Animator animation)
-            {
-            }
+            MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
+            return;
+        }
 
-            @Override
-            public void onAnimationEnd(Animator animation)
-            {
-//                if (artsWithImage.size() != 0)
-//                {
-                MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
-//                }
-                cover2.animate().alpha(0).setDuration(800);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation)
-            {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation)
-            {
-            }
-        });
+        if (isTabletMode)
+        {
+            changeImageWithAlphaLeft.animate(positionInList);
+        }
     }
 
     private void setUpBackgroundAnimation(View cover, View cover2)

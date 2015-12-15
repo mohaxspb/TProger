@@ -31,17 +31,15 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
     MyRoboSpiceDatabaseHelper databaseHelper;
     String url;
     String category;
-//    int page;
 
     boolean resetCategoryInDB = false;
 
-    public RoboSpiceRequestCategoriesArts(Context ctx, String category/*, int page*/)
+    public RoboSpiceRequestCategoriesArts(Context ctx, String category)
     {
         super(Articles.class);
 
         this.ctx = ctx;
         this.category = category;
-//        this.page = page;
 
 //        this.url = "http://tproger.ru/page/1/";
         this.url = Const.DOMAIN_MAIN + category + Const.SLASH + "page" + Const.SLASH + 1 + Const.SLASH;
@@ -58,16 +56,14 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
     @Override
     public Articles loadDataFromNetwork() throws Exception
     {
-        Log.i(LOG, "loadDataFromNetwork called");
+//        Log.i(LOG, "loadDataFromNetwork called");
 
-//        Category c = databaseHelper.getDaoCategory().
         Category cat = Category.getCategoryByUrl(this.category, databaseHelper);
         if (cat == null)
         {
             //TODO need to think can we create new one here
             throw new NullPointerException("no such category in DB!");
         }
-//        int categoryId = Category.getCategoryIdByUrl(this.category, databaseHelper);
 
         if (resetCategoryInDB)
         {

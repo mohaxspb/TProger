@@ -1,7 +1,6 @@
 package ru.kuchanov.tproger.robospice;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.octo.android.robospice.request.SpiceRequest;
 import com.squareup.okhttp.OkHttpClient;
@@ -48,7 +47,7 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
     @Override
     public Articles loadDataFromNetwork() throws Exception
     {
-        Log.i(LOG, "loadDataFromNetwork() called");
+//        Log.i(LOG, "loadDataFromNetwork() called");
 
         ArrayList<Article> list = new ArrayList<>();
 
@@ -100,14 +99,4 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
 
         return response.body().string();
     }
-
-    /**
-     * This method generates a unique cache key for this request. In this case
-     * our cache key depends just on the keyword.
-     *
-     */
-//    public String createCacheKey()
-//    {
-//        return "categoriesArtsList." + category + Const.SLASH + page;
-//    }
 }

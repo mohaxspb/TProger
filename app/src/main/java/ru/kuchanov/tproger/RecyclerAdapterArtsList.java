@@ -29,6 +29,7 @@ import java.util.TimeZone;
 import ru.kuchanov.tproger.activity.ActivityArticle;
 import ru.kuchanov.tproger.activity.ActivityMain;
 import ru.kuchanov.tproger.robospice.db.Article;
+import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DipToPx;
 import ru.kuchanov.tproger.utils.MyUIL;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
@@ -42,10 +43,15 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     private Context ctx;
     private ImageLoader imageLoader;
 
+    private boolean isTabletMode;
+    private boolean isOnArticleActivity;
+
     public RecyclerAdapterArtsList(Context ctx, ArrayList<Article> dataset)
     {
         this.ctx = ctx;
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        this.isTabletMode = pref.getBoolean(ctx.getResources().getString(R.string.pref_design_key_tablet_mode), false);
+        this.isOnArticleActivity = (ctx instanceof ActivityArticle);
 
         imageLoader = MyUIL.get(ctx);
 
@@ -58,6 +64,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         RecyclerView.ViewHolder vh;
 
         boolean showMaxInfo = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
+//        showMaxInfo = false;
         if (showMaxInfo)
         {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_max, parent, false);
@@ -88,6 +95,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
 
         final Article a = artsList.get(position);
         boolean showMaxInfo = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
+//        showMaxInfo = false;
         if (showMaxInfo)
         {
             final ViewHolderMaximum maxHolder = (ViewHolderMaximum) holder;
@@ -130,8 +138,13 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
 
                 float width = ctx.getResources().getDisplayMetrics().widthPixels;
 
+                if (isOnArticleActivity)
+                {
+                    width /= 3;
+                }
+
                 boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
-                if (isGridManager)
+                if (isGridManager && !isOnArticleActivity)
                 {
                     int numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(ctx.getString(R.string.pref_design_key_col_num), "2"));
                     width /= (float) numOfColsInGridLayoutManager;
@@ -200,7 +213,8 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                     maxHolder.preview.setLayoutParams(paramsPreview);
 
                     maxHolder.previewCover.setVisibility(View.VISIBLE);
-                    maxHolder.bottomPanel.setBackgroundResource(R.drawable.cover_bottom_to_top);
+                    final int drawableId = AttributeGetter.getDrawableId(ctx, R.attr.cover_bottom_to_top);
+                    maxHolder.bottomPanel.setBackgroundResource(drawableId);
                     final View.OnClickListener previewCoverCL = new View.OnClickListener()
                     {
                         @Override
@@ -214,7 +228,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                                 maxHolder.preview.setLayoutParams(paramsPreview);
 
                                 maxHolder.previewCover.setVisibility(View.VISIBLE);
-                                maxHolder.bottomPanel.setBackgroundResource(R.drawable.cover_bottom_to_top);
+                                maxHolder.bottomPanel.setBackgroundResource(drawableId);
                             }
                             else
                             {

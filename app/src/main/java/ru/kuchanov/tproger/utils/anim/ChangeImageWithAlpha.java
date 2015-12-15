@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 
 import ru.kuchanov.tproger.robospice.db.Article;
+import ru.kuchanov.tproger.utils.MyRandomUtil;
 import ru.kuchanov.tproger.utils.MyUIL;
 
 /**
@@ -48,14 +49,20 @@ public class ChangeImageWithAlpha
             @Override
             public void onAnimationEnd(Animator animation)
             {
-                MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
+                //TODO workaround for indexOfBoundsExeption
+                //check if pos>size and if so generate new random pos
+                int checkedPosition = positionInList;
+                if (checkedPosition >= artsWithImage.size())
+                {
+                    checkedPosition = MyRandomUtil.nextInt(0, artsWithImage.size());
+                }
+                MyUIL.getDefault(ctx).displayImage(artsWithImage.get(checkedPosition).getImageUrl(), cover);
                 myView.animate().alpha(0).setDuration(600).setListener(new Animator.AnimatorListener()
                 {
                     @Override
                     public void onAnimationStart(Animator animation)
                     {
 //                        myView.setVisibility(View.VISIBLE);
-
                     }
 
                     @Override

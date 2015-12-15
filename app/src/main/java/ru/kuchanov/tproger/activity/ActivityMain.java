@@ -206,8 +206,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
             drawerLayout.setDrawerListener(mDrawerToggle);
         }
-//        NavigationViewOnNavigationItemSelectedListener navViewOnSelectListener;
-
         navigationViewOnNavigationItemSelectedListener = new NavigationViewOnNavigationItemSelectedListener(this, drawerLayout, pager);
 
         navigationView.setNavigationItemSelectedListener(navigationViewOnNavigationItemSelectedListener);
@@ -317,7 +315,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 int quontOfDeletedArtCats = ArticleCategory.deleteAllLastArtCatInCategory(h, "");
                 Log.i(LOG, "quontOfDeletedArtCats: " + quontOfDeletedArtCats);
                 return true;
-            case R.id.db_delete_table_articles:
+            case R.id.db_delete_first_artcat_in_category:
                 Category.deleteFirstInCatAndUpdateSecond(h, "");
                 return true;
         }
@@ -406,8 +404,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     {
 //        Log.i(LOG, "updateImage with position in pager: "+positionInPager);
 
-//        coverThatChangesAlpha.setVisibility(View.INVISIBLE);
-
         //that is normal. Use it if other attempts fails;
 //        appBar.setExpanded(isCollapsed, true);
 
@@ -447,16 +443,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         }
 
         //TODO add supporing preSet images showing
-//        if (animator != null && animator.isRunning())
-//        {
-//            animator.cancel();
-////            animator = null;
-////            return;
-//        }
-
-//        ChangeImageWithAlpha cr = new ChangeImageWithAlpha();
-//        cr.setValues(this.ctx, animator, coverThatChangesAlpha, cover, artsWithImage, 0);
-//        cr.animateReveal(0);
         cr.animate(0);
     }
 
@@ -546,9 +532,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     {
         Log.i(LOG, "EventArtsReceived: " + String.valueOf(event.getArts().size()));
 
-        //TODO test
         artsWithImage.clear();
-//        artsWithImage = new ArrayList<>();
         for (Article a : event.getArts())
         {
             if (a.getImageUrl() != null)
@@ -593,7 +577,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             };
             timer.schedule(timerTask, 0, 5000);
 
-//            //TODO test
+
             if (cr == null)
             {
                 cr = new ChangeImageWithAlpha();
@@ -633,7 +617,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             return;
         }
 
-//        cr.animateReveal(positionInList);
         cr.animate(positionInList);
     }
 

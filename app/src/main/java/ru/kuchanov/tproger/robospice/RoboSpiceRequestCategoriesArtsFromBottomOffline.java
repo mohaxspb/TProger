@@ -1,7 +1,6 @@
 package ru.kuchanov.tproger.robospice;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.octo.android.robospice.request.SpiceRequest;
@@ -45,14 +44,13 @@ public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceReques
     @Override
     public Articles loadDataFromNetwork() throws Exception
     {
-        Log.i(LOG, "loadDataFromNetwork() called");
+//        Log.i(LOG, "loadDataFromNetwork() called");
 
         ArrayList<Article> list = new ArrayList<>();
 
         int categoryId = Category.getCategoryIdByUrl(this.category, databaseHelper);
 
         //try getting arts from DB
-
         Dao<ArticleCategory, Integer> daoArtCat = databaseHelper.getDao(ArticleCategory.class);
         Dao<Article, Integer> daoArt = databaseHelper.getDao(Article.class);
 

@@ -55,8 +55,8 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/db_delete_table_articles"
+        android:id="@+id/db_delete_first_artcat_in_category"
         android:orderInCategory="1200"
-        android:title="@string/db_delete_table_articles"
+        android:title="@string/db_delete_first_artcat_in_category"
         app:showAsAction="never"/>
 </menu>
