@@ -107,7 +107,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        Log.i(LOG, "onCreate");
+//        Log.i(LOG, "onCreate");
 
         this.ctx = this;
 
@@ -450,7 +450,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     @Override
     protected void onStart()
     {
-        Log.i(LOG, "onStart called!");
+//        Log.i(LOG, "onStart called!");
         super.onStart();
         BusProvider.getInstance().register(this);
 
@@ -467,7 +467,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     @Override
     protected void onResume()
     {
-        Log.i(LOG, "onResume called!");
+//        Log.i(LOG, "onResume called!");
         super.onResume();
 
         if (!spiceManager.isStarted())
@@ -483,7 +483,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     @Override
     protected void onStop()
     {
-        Log.i(LOG, "onStop called!");
+//        Log.i(LOG, "onStop called!");
         super.onStop();
         //should unregister in onStop to avoid some issues while pausing activity/fragment
         //see http://stackoverflow.com/a/19737191/3212712
@@ -503,7 +503,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     @Override
     protected void onRestart()
     {
-        Log.i(LOG, "onRestart called!");
+//        Log.i(LOG, "onRestart called!");
         super.onRestart();
 
         //check if timer is null (it's null after onStop)
@@ -514,7 +514,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     @Override
     protected void onPause()
     {
-        Log.i(LOG, "onPause called!");
+//        Log.i(LOG, "onPause called!");
         super.onPause();
 
         if (spiceManager.isStarted())
@@ -530,7 +530,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     @Subscribe
     public void onArtsReceived(final EventArtsReceived event)
     {
-        Log.i(LOG, "EventArtsReceived: " + String.valueOf(event.getArts().size()));
+//        Log.i(LOG, "EventArtsReceived: " + String.valueOf(event.getArts().size()));
 
         artsWithImage.clear();
         for (Article a : event.getArts())

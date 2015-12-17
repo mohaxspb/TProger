@@ -142,6 +142,11 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                 {
                     width /= 3;
                 }
+                else if (isTabletMode)
+                {
+                    //TODO here we mast change width as there will be a drawer in left part of screen
+                    width = width / 3 * 2;
+                }
 
                 boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
                 if (isGridManager && !isOnArticleActivity)

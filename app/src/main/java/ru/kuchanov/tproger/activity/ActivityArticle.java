@@ -107,7 +107,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        Log.i(LOG, "onCreate");
+//        Log.i(LOG, "onCreate");
 
         this.ctx = this;
 
@@ -122,7 +122,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         //call super after setTheme to set it 0_0
         super.onCreate(savedInstanceState);
 
-        isTabletMode = pref.getBoolean(getString(R.string.pref_design_key_tablet_mode), false);
+        isTabletMode = pref.getBoolean(getString(R.string.pref_design_key_tablet_mode), true);
 
         //TODO make layout for phone
         setContentView(R.layout.activity_article_tablet);
@@ -163,11 +163,13 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
 
         this.pref.registerOnSharedPreferenceChangeListener(this);
 
-        /////////
-        MyColorFilter.applyColorFromAttr(ctx, coverLeft, R.attr.colorAccent);
+
 
         if (isTabletMode)
         {
+            /////////
+            MyColorFilter.applyColorFromAttr(ctx, coverLeft, R.attr.colorAccent);
+
             changeImageWithAlphaLeft = new ChangeImageWithAlpha();
             changeImageWithAlphaLeft.setValues(ctx, cover2Left, coverLeft, artsWithImage);
         }
@@ -453,7 +455,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     @Override
     protected void onPause()
     {
-        Log.i(LOG, "onPause called!");
+//        Log.i(LOG, "onPause called!");
         super.onPause();
 
         if (spiceManager.isStarted())
@@ -469,7 +471,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     @Override
     protected void onStop()
     {
-        Log.i(LOG, "onStop called with hash: " + this.hashCode());
+//        Log.i(LOG, "onStop called with hash: " + this.hashCode());
         super.onStop();
         //should unregister in onStop to avoid some issues while pausing activity/fragment
         //see http://stackoverflow.com/a/19737191/3212712
@@ -479,7 +481,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     @Override
     protected void onRestart()
     {
-        Log.i(LOG, "onRestart called!");
+//        Log.i(LOG, "onRestart called!");
         super.onRestart();
 
         //check if timer is null (it's null after onStop)
@@ -491,7 +493,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     @Override
     protected void onStart()
     {
-        Log.i(LOG, "onStart called!");
+//        Log.i(LOG, "onStart called!");
         super.onStart();
         BusProvider.getInstance().register(this);
 
@@ -508,7 +510,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     @Override
     protected void onResume()
     {
-        Log.i(LOG, "onResume called!");
+//        Log.i(LOG, "onResume called!");
 //        Log.i(LOG, "onResume called with hash: "+this.hashCode());
         super.onResume();
 
@@ -525,7 +527,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     @Subscribe
     public void onArtsReceived(final EventArtsReceived event)
     {
-        Log.i(LOG, "EventArtsReceived: " + String.valueOf(event.getArts().size()));
+//        Log.i(LOG, "EventArtsReceived: " + String.valueOf(event.getArts().size()));
 
         //fill list of arts in activity;
         this.artsList.clear();
