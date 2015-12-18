@@ -11,6 +11,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -41,6 +42,7 @@ import ru.kuchanov.tproger.fragment.FragmentCategory;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.ImageChanger;
 import ru.kuchanov.tproger.navigation.OnNavigationItemSelectedListenerArticleActivity;
+import ru.kuchanov.tproger.navigation.PagerAdapterArticle;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
@@ -127,13 +129,19 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         //TODO make layout for phone
         setContentView(R.layout.activity_article_tablet);
 
-        restoreStateFromIntent(this.getIntent().getExtras());
-        restoreState(savedInstanceState);
+        if(savedInstanceState == null)
+        {
+            restoreStateFromIntent(this.getIntent().getExtras());
+        }
+        else
+        {
+            restoreState(savedInstanceState);
+        }
 
         initializeViews();
 
         setUpNavigationDrawer();
-        setUpPagerAndTabs();
+        setUpPager();
 
 //        appBar.addOnOffsetChangedListener(new MyOnOffsetChangedListener(this));
 
@@ -162,7 +170,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         this.onArtsReceived(new EventArtsReceived(new ArrayList<>(artsWithImage)));
 
         this.pref.registerOnSharedPreferenceChangeListener(this);
-
 
 
         if (isTabletMode)
@@ -211,10 +218,10 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         pager = (ViewPager) this.findViewById(R.id.pager);
     }
 
-    private void setUpPagerAndTabs()
+    private void setUpPager()
     {
         //TODO make adapter for articles;
-//        pager.setAdapter(new PagerAdapterMain(this.getSupportFragmentManager(), 3));
+        pager.setAdapter(new PagerAdapterArticle(this.getSupportFragmentManager(), this.artsList));
 //        pager.addOnPageChangeListener(new OnPageChangeListenerMain(this, this));
     }
 
@@ -226,7 +233,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         if (actionBar != null)
         {
             actionBar.setDisplayShowTitleEnabled(false);
-
             actionBar.setDisplayHomeAsUpEnabled(true);
 
             mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.hello_world, R.string.hello_world)
@@ -243,7 +249,8 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
 //                    updateNavigationViewState(checkedDrawerItemId);
                 }
             };
-//            mDrawerToggle.setDrawerIndicatorEnabled(true);
+            //show arrow instead of hamburger
+            mDrawerToggle.setDrawerIndicatorEnabled(false);
 
             drawerLayout.setDrawerListener(mDrawerToggle);
         }
@@ -369,24 +376,31 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     public void onBackPressed()
     {
         Log.i(LOG, "onBackPressed");
-        super.onBackPressed();
+        if (drawerOpened)
+        {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
+        else
+        {
+            super.onBackPressed();
+        }
     }
 
     private void restoreState(Bundle state)
     {
-        if (state != null)
-        {
+//        if (state != null)
+//        {
             isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
             prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
             artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE);
 
             artsList = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
             currentPositionOfArticleInList = state.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
-        }
-        else
-        {
-            Log.e(LOG, "state is null while restoring it from bundle");
-        }
+//        }
+//        else
+//        {
+//            Log.e(LOG, "state is null while restoring it from bundle");
+//        }
     }
 
     private void restoreStateFromIntent(Bundle stateFromIntent)

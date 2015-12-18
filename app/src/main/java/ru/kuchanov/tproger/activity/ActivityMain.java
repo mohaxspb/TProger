@@ -442,6 +442,16 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
             return;
         }
 
+        if (cr == null)
+        {
+            cr = new ChangeImageWithAlpha();
+            cr.setValues(ctx, coverThatChangesAlpha, cover, artsWithImage);
+        }
+        else
+        {
+            cr.updateArtsList(artsWithImage);
+        }
+
         //TODO add supporing preSet images showing
         cr.animate(0);
     }

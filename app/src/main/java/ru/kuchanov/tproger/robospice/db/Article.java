@@ -25,6 +25,7 @@ public class Article implements Parcelable
 {
     public static final String LOG = Article.class.getSimpleName();
 
+    public static final String KEY_ARTICLE = "KEY_ARTICLE";
     public static final String KEY_ARTICLES_LIST = "KEY_ARTICLES_LIST";
     public static final String KEY_ARTICLES_LIST_WITH_IMAGE = "KEY_ARTICLES_LIST_WITH_IMAGE";
 

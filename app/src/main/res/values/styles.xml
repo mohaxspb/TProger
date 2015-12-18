@@ -67,7 +67,30 @@
         <!--covers-->
         <item name="cover_top_to_bottom">@drawable/cover_top_to_bottom_light</item>
         <item name="cover_bottom_to_top">@drawable/cover_bottom_to_top_light</item>
+
+
+        <!--<item name="actionBarTheme">@style/MyApp.ActionBarTheme.Light</item>-->
+        <!-- The animated arrow style -->
+        <!--<item name="drawerArrowStyle">@style/DrawerArrowStyle</item>-->
+
+        <!-- color for widget theming, eg EditText. Doesn't effect ActionBar. -->
+        <!--
+        <item name="colorControlNormal">@color/material_red_500</item>
+        -->
+
     </style>
+
+    <!-- Style for the navigation drawer icon -->
+    <!--<style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@color/material_red_500</item>
+    </style>
+
+    <style name="MyApp.ActionBarTheme.Light" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        &lt;!&ndash; THIS is where you can color the arrow! &ndash;&gt;
+        &lt;!&ndash;<item name="colorControlNormal">@color/my_material_grey_800</item>&ndash;&gt;
+        <item name="colorControlNormal">@color/material_red_500</item>
+    </style>-->
 
     <style name="My.Theme.Light" parent="Base.Theme.Light">
         <!--nothing to extend-->
@@ -137,7 +160,14 @@
         <!--covers-->
         <item name="cover_top_to_bottom">@drawable/cover_top_to_bottom_dark</item>
         <item name="cover_bottom_to_top">@drawable/cover_bottom_to_top_dark</item>
+
+       <!-- <item name="actionBarTheme">@style/MyApp.ActionBarTheme.Dark</item>-->
     </style>
+
+    <!--<style name="MyApp.ActionBarTheme.Dark" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        &lt;!&ndash; THIS is where you can color the arrow! &ndash;&gt;
+        <item name="colorControlNormal">@color/material_grey_400</item>
+    </style>-->
 
     <style name="My.Theme.Dark" parent="Base.Theme.Dark">
         <!--nothing to extend-->
