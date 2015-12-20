@@ -163,6 +163,8 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
 
                 maxHolder.img.setLayoutParams(paramsImg);
 
+                maxHolder.img.animate().translationYBy(100).alpha(0).setDuration(1000);
+
                 imageLoader.displayImage(a.getImageUrl(), maxHolder.img);
             }
             else

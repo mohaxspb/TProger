@@ -23,7 +23,7 @@ import ru.kuchanov.tproger.robospice.db.Article;
  */
 public class HtmlParsing
 {
-    static final String LOG = HtmlParsing.class.getSimpleName();
+    private static final String LOG = HtmlParsing.class.getSimpleName();
 
     public static ArrayList<Article> parseForArticlesList(String html, MyRoboSpiceDatabaseHelper h) throws Exception
     {
@@ -65,7 +65,7 @@ public class HtmlParsing
 ////                Log.i(LOG, title + "is NOT in DB");
 //            }
 
-            Element postMeta = postTitleBox.getElementsByClass("post-meta").get(0);
+            Element postMeta = postTitleBox.getElementsByClass("post-meta").first();
             Element ul = postMeta.getElementsByTag("ul").get(0);
             Element li = ul.getElementsByTag("li").get(0);
             Element time = li.getElementsByTag("time").get(0);
@@ -146,5 +146,85 @@ public class HtmlParsing
 //        Log.i(LOG, "doc.children(): " + doc.body().children());
 
         return doc.body().children();
+    }
+
+    public static Article parseArticle(MyRoboSpiceDatabaseHelper h, String html, String url) throws Exception
+    {
+        //so at least we'll have url in assed article.
+        //And, if it was in DB we also have all data (id, preview etc)
+
+        Document doc = Jsoup.parse(html);
+
+        Element pageTitle = doc.getElementsByTag("title").first();
+        if (pageTitle.html().contains("Страница не найдена"))
+        {
+            throw new Exception(Const.ERROR_404_WHILE_PARSING_PAGE);
+        }
+
+        Element postTitleBox = doc.getElementsByClass("post-title").first();
+
+        Element h1 = postTitleBox.getElementsByTag("h1").first();
+        String title = h1.text();
+
+        Element postMeta = postTitleBox.getElementsByClass("post-meta").first();
+        Element ul = postMeta.getElementsByTag("ul").get(0);
+        Element li = ul.getElementsByTag("li").get(0);
+        Element time = li.getElementsByTag("time").get(0);
+        String timeStr = time.attr("datetime");
+//            <time class="entry-date updated" datetime="2015-10-17T15:24:47+00:00">17 октября 2015 в 15:24</time>xxxx
+        Date pubDate = new Date(0);
+        try
+        {
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ", Locale.getDefault());
+            pubDate = df.parse(timeStr);
+//                Log.i(LOG, "date:" + pubDate);//prints date in current locale
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy 'в' HH:mm", Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+//                Log.i(LOG, sdf.format(pubDate));//prints date in the format sdf
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+
+        Element tagMain = li.getElementsByTag("a").get(0);
+        String tagMainUrl = tagMain.attr("href");
+        String tagMainTitle = tagMain.text();
+
+        //image
+        String imageUrl = null;
+        int imageWidth = 0;
+        int imageHeight = 0;
+        Elements imageDiv = doc.getElementsByClass("entry-image");
+        if (imageDiv.size() != 0)
+        {
+            Elements img = imageDiv.get(0).getElementsByTag("img");
+            if (img.size() != 0)
+            {
+                imageUrl = img.get(0).attr("src");
+                imageWidth = Integer.parseInt(img.get(0).attr("width"));
+                imageHeight = Integer.parseInt(img.get(0).attr("height"));
+            }
+        }
+
+        //preview from meta tag
+        Element metaDescription = doc.getElementsByAttributeValue("name", "description").first();
+        String preview = metaDescription.attr("content");
+
+        Article parsedArticle = new Article();
+
+        parsedArticle.setUrl(url);
+        parsedArticle.setTitle(title);
+        parsedArticle.setTagMainTitle(tagMainTitle);
+        parsedArticle.setTagMainUrl(tagMainUrl);
+        parsedArticle.setPubDate(pubDate);
+        parsedArticle.setImageUrl(imageUrl);
+        parsedArticle.setImageHeight(imageHeight);
+        parsedArticle.setImageWidth(imageWidth);
+        parsedArticle.setPreview(preview);
+
+        Article.printInLog(parsedArticle);
+
+        return parsedArticle;
     }
 }

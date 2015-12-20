@@ -194,18 +194,18 @@ public class Article implements Parcelable
 
     public static void printInLog(Article a)
     {
-//        Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!!!");
+        Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!!!");
         Log.i(LOG, String.valueOf(a.getId()));
         Log.i(LOG, String.valueOf(a.getTitle()));
-//                Log.i(LOG,  String.valueOf(a.getUrl()));
-//                Log.i(LOG,  String.valueOf(a.getPubDate()));
-//                Log.i(LOG,  String.valueOf(a.getImageUrl()));
-//                Log.i(LOG,  String.valueOf(a.getImageHeight()));
-//                Log.i(LOG,  String.valueOf(a.getImageWidth()));
-//                Log.i(LOG,  String.valueOf(a.getTagMainTitle()));
-//                Log.i(LOG,  String.valueOf(a.getTagMainUrl()));
-//                Log.i(LOG,  String.valueOf(a.getPreview()));
-//        Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!!!");
+        Log.i(LOG, String.valueOf(a.getUrl()));
+        Log.i(LOG, String.valueOf(a.getPubDate()));
+        Log.i(LOG, String.valueOf(a.getImageUrl()));
+        Log.i(LOG, String.valueOf(a.getImageHeight()));
+        Log.i(LOG, String.valueOf(a.getImageWidth()));
+        Log.i(LOG, String.valueOf(a.getTagMainTitle()));
+        Log.i(LOG, String.valueOf(a.getTagMainUrl()));
+        Log.i(LOG, String.valueOf(a.getPreview()));
+        Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
 
     public static void printListInLog(ArrayList<Article> list)

@@ -40,13 +40,13 @@ import ru.kuchanov.tproger.otto.EventCollapsed;
 import ru.kuchanov.tproger.otto.EventExpanded;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
-import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArts;
-import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArtsFromBottom;
-import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArtsFromBottomOffline;
-import ru.kuchanov.tproger.robospice.RoboSpiceRequestCategoriesArtsOffline;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
+import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArts;
+import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArtsFromBottom;
+import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArtsFromBottomOffline;
+import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArtsOffline;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.ScreenProperties;
 
@@ -133,7 +133,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
 //        Log.i(LOG, "onCreateView called");
-        View v = inflater.inflate(R.layout.fragment_category, container, false);
+        View v = inflater.inflate(R.layout.fragment_recycler_in_swipe, container, false);
 
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()

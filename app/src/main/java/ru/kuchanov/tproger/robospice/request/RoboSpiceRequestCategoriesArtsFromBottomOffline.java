@@ -1,4 +1,4 @@
-package ru.kuchanov.tproger.robospice;
+package ru.kuchanov.tproger.robospice.request;
 
 import android.content.Context;
 
@@ -8,6 +8,7 @@ import com.octo.android.robospice.request.SpiceRequest;
 import java.util.ArrayList;
 
 import ru.kuchanov.tproger.Const;
+import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Articles;
