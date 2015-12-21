@@ -1,7 +1,5 @@
 package ru.kuchanov.tproger.navigation;
 
-import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
@@ -11,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import ru.kuchanov.tproger.R;
+import ru.kuchanov.tproger.utils.AttributeGetter;
 
 public class NavigationViewOnNavigationItemSelectedListener implements NavigationView.OnNavigationItemSelectedListener
 {
@@ -49,11 +48,11 @@ public class NavigationViewOnNavigationItemSelectedListener implements Navigatio
         }
         snackbar = Snackbar.make(pager, snackBarMsg, Snackbar.LENGTH_SHORT);
         View snackBarView = snackbar.getView();
-        int colorId;
-        int[] attrs = new int[]{android.R.attr.colorPrimaryDark};
-        TypedArray ta = this.pager.getContext().obtainStyledAttributes(attrs);
-        colorId = ta.getColor(0, Color.GRAY);
-        ta.recycle();
+        int colorId = AttributeGetter.getColor(pager.getContext(), R.attr.colorPrimaryDark);
+//        int[] attrs = new int[]{android.R.attr.colorPrimaryDark};
+//        TypedArray ta = this.pager.getContext().obtainStyledAttributes(attrs);
+//        colorId = ta.getColor(0, Color.GRAY);
+//        ta.recycle();
         snackBarView.setBackgroundColor(colorId);
         snackbar.show();
 

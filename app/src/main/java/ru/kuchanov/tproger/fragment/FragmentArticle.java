@@ -24,6 +24,7 @@ import com.squareup.otto.Subscribe;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.R;
+import ru.kuchanov.tproger.RecyclerAdapterArticle;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;
 import ru.kuchanov.tproger.activity.ActivityMain;
@@ -144,6 +145,10 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 
         //fill recycler with data of make request for it
         //TODO
+        if(article.getText()!=null)
+        {
+            recyclerView.setAdapter(new RecyclerAdapterArticle(ctx, article));
+        }
 //        if (artsList.size() != 0)
 //        {
 //            recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
@@ -162,8 +167,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 //        }
 
         this.setLoading(isLoading);
-
-
 
 //        v.setBackgroundResource(R.drawable.cremlin);
 
@@ -230,8 +233,8 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 //        Log.i(LOG, "onResume called from activity: " + getActivity().getClass().getSimpleName());
         super.onResume();
 
-        spiceManager.addListenerIfPending(Article.class, "unused", new ListFollowersRequestListener());
-        spiceManagerOffline.addListenerIfPending(Article.class, "unused", new ListFollowersRequestListener());
+        spiceManager.addListenerIfPending(Article.class, "unused", new ArticleRequestListener());
+        spiceManagerOffline.addListenerIfPending(Article.class, "unused", new ArticleRequestListener());
         //make request for it
         //TODO
 //        if (artsList.size() == 0)
@@ -239,7 +242,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 //            performRequest(false, false);
 //        }
 
-        performRequest(true);
+        performRequest(false);
     }
 
     @Override
@@ -312,17 +315,17 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         if (!forceRefresh)
         {
             RoboSpiceRequestArticleOffline requestFromDB = new RoboSpiceRequestArticleOffline(ctx, article);
-            spiceManagerOffline.execute(requestFromDB, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+            spiceManagerOffline.execute(requestFromDB, "unused", DurationInMillis.ALWAYS_EXPIRED, new ArticleRequestListener());
         }
         else
         {
             RoboSpiceRequestArticle request = new RoboSpiceRequestArticle(ctx, article);
-            spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+            spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ArticleRequestListener());
         }
     }
 
     //inner class of your spiced Activity
-    private class ListFollowersRequestListener implements PendingRequestListener<Article>
+    private class ArticleRequestListener implements PendingRequestListener<Article>
     {
         @Override
         public void onRequestFailure(SpiceException e)

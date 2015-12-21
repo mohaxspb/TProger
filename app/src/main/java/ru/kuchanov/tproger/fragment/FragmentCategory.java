@@ -21,7 +21,6 @@ import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.PendingRequestListener;
-import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,8 +35,6 @@ import ru.kuchanov.tproger.activity.ActivityArticle;
 import ru.kuchanov.tproger.activity.ActivityMain;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
-import ru.kuchanov.tproger.otto.EventCollapsed;
-import ru.kuchanov.tproger.otto.EventExpanded;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
@@ -132,7 +129,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-//        Log.i(LOG, "onCreateView called");
+        Log.i(LOG, "onCreateView called");
         View v = inflater.inflate(R.layout.fragment_recycler_in_swipe, container, false);
 
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh);
@@ -264,19 +261,19 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         super.onPause();
     }
 
-    @Subscribe
-    public void onExpanded(EventExpanded event)
-    {
-//        Log.i(LOG, "EventExpanded: " + String.valueOf(event.isExpanded()));
-        swipeRefreshLayout.setEnabled(true);
-    }
-
-    @Subscribe
-    public void onCollapsed(EventCollapsed event)
-    {
-//        Log.i(LOG, "EventCollapsed: " + String.valueOf(event.isCollapsed()));
-        swipeRefreshLayout.setEnabled(false);
-    }
+//    @Subscribe
+//    public void onExpanded(EventExpanded event)
+//    {
+////        Log.i(LOG, "EventExpanded: " + String.valueOf(event.isExpanded()));
+//        swipeRefreshLayout.setEnabled(true);
+//    }
+//
+//    @Subscribe
+//    public void onCollapsed(EventCollapsed event)
+//    {
+////        Log.i(LOG, "EventCollapsed: " + String.valueOf(event.isCollapsed()));
+//        swipeRefreshLayout.setEnabled(false);
+//    }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
@@ -384,7 +381,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
     private void performRequest(int page, boolean forceRefresh, boolean resetCategoryInDB)
     {
-//        Log.i(LOG, "performRequest with page: " + page + " and forceRefresh: " + forceRefresh);
+        Log.i(LOG, "performRequest with page: " + page + " and forceRefresh: " + forceRefresh);
 
         if (page == 1)
         {

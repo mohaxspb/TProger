@@ -7,9 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ru.kuchanov.tproger.activity.ActivityMain;
-import ru.kuchanov.tproger.otto.BusProvider;
-import ru.kuchanov.tproger.otto.EventCollapsed;
-import ru.kuchanov.tproger.otto.EventExpanded;
 import ru.kuchanov.tproger.utils.DipToPx;
 import ru.kuchanov.tproger.utils.ScreenProperties;
 
@@ -42,10 +39,10 @@ public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedLi
 //        Log.i(LOG, "activityMain.getCollapsingToolbarLayout().getHeight():  " + activityMain.getCollapsingToolbarLayout().getHeight());
         if (verticalOffset < 0)
         {
-            BusProvider.getInstance().post(new EventCollapsed());
+//            BusProvider.getInstance().post(new EventCollapsed());
             if (activityMain.getVerticalOffsetPrevious() == 0)
             {
-                BusProvider.getInstance().post(new EventCollapsed());
+//                BusProvider.getInstance().post(new EventCollapsed());
                 activityMain.setFullyExpanded(false);
             }
         }
@@ -53,7 +50,7 @@ public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedLi
         {
             if (activityMain.getVerticalOffsetPrevious() < 0)
             {
-                BusProvider.getInstance().post(new EventExpanded());
+//                BusProvider.getInstance().post(new EventExpanded());
                 activityMain.setFullyExpanded(true);
             }
         }

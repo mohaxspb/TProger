@@ -264,32 +264,44 @@ public class HtmlTextFormatting
 //        return newTagToReturn;
 //    }
 
+    /**
+     * @return true if elems in parsed html has inner tags with name "table"
+     */
     public static boolean hasUnsupportedTags(String html)
     {
         Document doc = Jsoup.parse(html);
 
-        if (doc.getElementsByTag("table").size() != 0)
-        {
-            return true;
-        }
-        return false;
+//        if (doc.getElementsByTag("table").size() != 0)
+//        {
+//            return true;
+//        }
+//        return false;
+        return doc.getElementsByTag("table").size() != 0;
     }
 
+    /**
+     * @return true if given el has inner tags with name "table"
+     */
     public static boolean hasInnerUnsupportedTags(Element el)
     {
-        if (el.getElementsByTag("table").size() != 0)
-        {
-            return true;
-        }
-        return false;
+//        if (el.getElementsByTag("table").size() != 0)
+//        {
+//            return true;
+//        }
+//        return false;
+        return el.getElementsByTag("table").size() != 0;
     }
 
+    /**
+     * @return true if given el's tag's name is "table"
+     */
     public static boolean isUnsupportedTag(Element el)
     {
-        if (el.tagName().equals("table"))
-        {
-            return true;
-        }
-        return false;
+//        if (el.tagName().equals("table"))
+//        {
+//            return true;
+//        }
+//        return false;
+        return el.tagName().equals("table");
     }
 }

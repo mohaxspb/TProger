@@ -38,6 +38,8 @@ import ru.kuchanov.tproger.utils.html.HtmlToView;
 public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
     public static final String LOG = RecyclerAdapterArtsList.class.getSimpleName();
+    private static final int SHOW_MAX_INFO = 1;
+    private static final int SHOW_MIN_INFO = 0;
     private ArrayList<Article> artsList;
     private SharedPreferences pref;
     private Context ctx;
@@ -62,20 +64,18 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
         RecyclerView.ViewHolder vh;
-
-        boolean showMaxInfo = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
-//        showMaxInfo = false;
-        if (showMaxInfo)
+        View v;
+        switch (viewType)
         {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_max, parent, false);
-            vh = new ViewHolderMaximum(v);
-            return vh;
-        }
-        else
-        {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_min, parent, false);
-            vh = new ViewHolderMinimum(v);
-            return vh;
+            case SHOW_MAX_INFO:
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_max, parent, false);
+                vh = new ViewHolderMaximum(v);
+                return vh;
+            default:
+            case SHOW_MIN_INFO:
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_min, parent, false);
+                vh = new ViewHolderMinimum(v);
+                return vh;
         }
     }
 
@@ -85,7 +85,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         // Just as an example, return 0 or 2 depending on position
         // Note that unlike in ListView adapters, types don't have to be contiguous
         boolean showMaxInfo = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
-        return (showMaxInfo) ? 1 : 0;
+        return (showMaxInfo) ? SHOW_MAX_INFO : SHOW_MIN_INFO;
     }
 
     @Override
@@ -104,31 +104,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             maxHolder.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
             maxHolder.title.setText(Html.fromHtml(a.getTitle()));
 
-            maxHolder.topPanel.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    //TODO need to switch by host activity and start Article activity or select art in ViewPager
-                    Log.i(LOG, "title clicked: " + a.getUrl());
-                    if (ctx instanceof ActivityMain)
-                    {
-                        Log.i(LOG, "clicked from Main activity");
-                        Intent intent = new Intent(ctx, ActivityArticle.class);
-                        //paste arts and currently selected to intents extras
-                        Bundle b = new Bundle();
-                        b.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
-                        b.putInt(ActivityArticle.KEY_CURRENT_ARTICLE_POSITION_IN_LIST, position);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                        intent.putExtras(b);
-                        ctx.startActivity(intent);
-                    }
-                    else
-                    {
-                        Log.i(LOG, "clicked from activity: " + ctx.getClass().getSimpleName());
-                    }
-                }
-            });
+            maxHolder.topPanel.setOnClickListener(new ShowArticleCL(a, position));
 
             //Main image
             LinearLayout.LayoutParams paramsImg;
@@ -203,7 +179,6 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                 overflowParent.setOnClickListener(null);
             }
             //preview
-//            final LinearLayout.LayoutParams paramsPreview;
             final FrameLayout.LayoutParams paramsPreview;
             paramsPreview = (FrameLayout.LayoutParams) maxHolder.preview.getLayoutParams();
             boolean showPreview = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_preview_show), false);
@@ -280,6 +255,8 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         {
             ViewHolderMinimum minHolder = (ViewHolderMinimum) holder;
             minHolder.title.setText(a.getTitle());
+            //add onClick
+            minHolder.title.setOnClickListener(new ShowArticleCL(a, position));
         }
     }
 
@@ -327,6 +304,41 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             bottomPanel = (LinearLayout) v.findViewById(R.id.bottom_panel);
 
             topPanel = (LinearLayout) v.findViewById(R.id.art_card_top_lin);
+        }
+    }
+
+    class ShowArticleCL implements View.OnClickListener
+    {
+        Article a;
+        int position;
+
+        public ShowArticleCL(Article a, int position)
+        {
+            this.a = a;
+            this.position = position;
+        }
+
+        @Override
+        public void onClick(View v)
+        {
+            //TODO need to switch by host activity and start Article activity or select art in ViewPager
+            Log.i(LOG, "title clicked: " + a.getUrl());
+            if (ctx instanceof ActivityMain)
+            {
+                Log.i(LOG, "clicked from Main activity");
+                Intent intent = new Intent(ctx, ActivityArticle.class);
+                //paste arts and currently selected to intents extras
+                Bundle b = new Bundle();
+                b.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
+                b.putInt(ActivityArticle.KEY_CURRENT_ARTICLE_POSITION_IN_LIST, position);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                intent.putExtras(b);
+                ctx.startActivity(intent);
+            }
+            else
+            {
+                Log.i(LOG, "clicked from activity: " + ctx.getClass().getSimpleName());
+            }
         }
     }
 }
