@@ -225,6 +225,9 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         }
 
         //remove spiceServiceStart to on resume
+
+        spiceManager.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
+        spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
     }
 
     @Override
@@ -245,8 +248,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //        Log.i(LOG, "onResume called from activity: " + getActivity().getClass().getSimpleName());
         super.onResume();
 
-        spiceManager.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
-        spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
+//        spiceManager.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
+//        spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
         //make request for it
         if (artsList.size() == 0)
         {

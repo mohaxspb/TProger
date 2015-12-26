@@ -1,5 +1,7 @@
 package ru.kuchanov.tproger.utils.html;
 
+import android.util.Log;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -106,7 +108,7 @@ public class HtmlParsing
                 }
             }
             String preview;
-            Element previewDiv = article.getElementsByClass("entry-content").get(0);
+            Element previewDiv = article.getElementsByClass("entry-content").first();
             previewDiv.select("footer").remove();
             preview = previewDiv.html();
 
@@ -148,7 +150,7 @@ public class HtmlParsing
         return doc.body().children();
     }
 
-    public static Article parseArticle(MyRoboSpiceDatabaseHelper h, String html, String url) throws Exception
+    public static Article parseArticle(/*MyRoboSpiceDatabaseHelper h, */String html, String url) throws Exception
     {
         //so at least we'll have url in assed article.
         //And, if it was in DB we also have all data (id, preview etc)
@@ -211,6 +213,12 @@ public class HtmlParsing
         Element metaDescription = doc.getElementsByAttributeValue("name", "description").first();
         String preview = metaDescription.attr("content");
 
+        //article text
+        String text;
+        Element textDiv = doc.getElementsByClass("entry-content").first();
+        textDiv.select("footer").remove();
+        text = textDiv.html();
+
         Article parsedArticle = new Article();
 
         parsedArticle.setUrl(url);
@@ -222,8 +230,16 @@ public class HtmlParsing
         parsedArticle.setImageHeight(imageHeight);
         parsedArticle.setImageWidth(imageWidth);
         parsedArticle.setPreview(preview);
+        parsedArticle.setText(text);
 
         Article.printInLog(parsedArticle);
+
+        ArrayList<HtmlToView.TextType> textNodes = HtmlToView.getTextPartSummary(HtmlParsing.getElementListFromHtml(parsedArticle.getText()));
+        for (HtmlToView.TextType type : textNodes)
+        {
+            Log.i(LOG, type.toString());
+        }
+
 
         return parsedArticle;
     }

@@ -20,22 +20,17 @@ import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.PendingRequestListener;
-import com.squareup.otto.Subscribe;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapterArticle;
 import ru.kuchanov.tproger.SingltonRoboSpice;
-import ru.kuchanov.tproger.activity.ActivityArticle;
-import ru.kuchanov.tproger.activity.ActivityMain;
-import ru.kuchanov.tproger.otto.BusProvider;
-import ru.kuchanov.tproger.otto.EventCollapsed;
-import ru.kuchanov.tproger.otto.EventExpanded;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestArticle;
 import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestArticleOffline;
 import ru.kuchanov.tproger.utils.AttributeGetter;
+import ru.kuchanov.tproger.utils.SpacesItemDecoration;
 
 /**
  * Created by Юрий on 17.09.2015 17:20.
@@ -43,16 +38,14 @@ import ru.kuchanov.tproger.utils.AttributeGetter;
  */
 public class FragmentArticle extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener
 {
-    public static final String LOG = FragmentArticle.class.getSimpleName();
     public static final String KEY_IS_LOADING = "isLoading";
     public static final String KEY_ = "isLoading";
     public static final String KEY_ARTICLE_URL = "KEY_ARTICLE_URL";
-
+    public String LOG;// = FragmentArticle.class.getSimpleName();
     protected MySpiceManager spiceManager;
     protected MySpiceManager spiceManagerOffline;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
-    private String categoryUrl;
 
     private Article article;
     private AppCompatActivity act;
@@ -61,15 +54,15 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 
     private SharedPreferences pref;
 
-    public static FragmentArticle newInstance(String articleUrl)
-    {
-        FragmentArticle frag = new FragmentArticle();
-        Bundle b = new Bundle();
-        b.putString(KEY_ARTICLE_URL, articleUrl);
-        frag.setArguments(b);
-
-        return frag;
-    }
+//    public static FragmentArticle newInstance(String articleUrl)
+//    {
+//        FragmentArticle frag = new FragmentArticle();
+//        Bundle b = new Bundle();
+//        b.putString(KEY_ARTICLE_URL, articleUrl);
+//        frag.setArguments(b);
+//
+//        return frag;
+//    }
 
     public static FragmentArticle newInstance(Article article)
     {
@@ -97,6 +90,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 //        Log.i(LOG, "onCreate called");
         super.onCreate(savedInstanceState);
 
+
 //        MyRoboSpiceDatabaseHelper databaseHelper;
 //        databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
 //        this.category = Category.getCategoryByUrl(categoryUrl, databaseHelper);
@@ -112,6 +106,8 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
             this.article = args.getParcelable(Article.KEY_ARTICLE);
         }
 
+        LOG = FragmentArticle.class.getSimpleName() + " - " + article.getUrl();
+
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
         this.pref.registerOnSharedPreferenceChangeListener(this);
     }
@@ -123,6 +119,10 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         View v = inflater.inflate(R.layout.fragment_recycler_in_swipe, container, false);
 
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh);
+
+        int actionBarSize = AttributeGetter.getDimentionPixelSize(ctx, android.R.attr.actionBarSize);
+        swipeRefreshLayout.setProgressViewEndTarget(false, actionBarSize);
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
         {
             @Override
@@ -135,6 +135,8 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler);
 
+        recyclerView.addItemDecoration(new SpacesItemDecoration(0));
+
         recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
 
         recyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f)));
@@ -145,7 +147,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 
         //fill recycler with data of make request for it
         //TODO
-        if(article.getText()!=null)
+        if (article.getText() != null)
         {
             recyclerView.setAdapter(new RecyclerAdapterArticle(ctx, article));
         }
@@ -195,22 +197,22 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 //        Log.i(LOG, "onStart called from activity: " + getActivity().getClass().getSimpleName());
         super.onStart();
 
-        BusProvider.getInstance().register(this);
-
-        if (act instanceof ActivityArticle)
-        {
-            spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
-            spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
-        }
-        else if (act instanceof ActivityMain)
-        {
-            spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
-            spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
-        }
-        else
-        {
-            throw new NullPointerException("need to add service for this activity: " + act.getClass().getSimpleName());
-        }
+//        BusProvider.getInstance().register(this);
+//
+//        if (act instanceof ActivityArticle)
+//        {
+        spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
+        spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
+//        }
+//        else if (act instanceof ActivityMain)
+//        {
+//            spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
+//            spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
+//        }
+//        else
+//        {
+//            throw new NullPointerException("need to add service for this activity: " + act.getClass().getSimpleName());
+//        }
 
         //remove spiceServiceStart to on resume
     }
@@ -224,7 +226,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 
         //should unregister in onStop to avoid some issues while pausing activity/fragment
         //see http://stackoverflow.com/a/19737191/3212712
-        BusProvider.getInstance().unregister(this);
+//        BusProvider.getInstance().unregister(this);
     }
 
     @Override
@@ -252,19 +254,19 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         super.onPause();
     }
 
-    @Subscribe
-    public void onExpanded(EventExpanded event)
-    {
-//        Log.i(LOG, "EventExpanded: " + String.valueOf(event.isExpanded()));
-        swipeRefreshLayout.setEnabled(true);
-    }
-
-    @Subscribe
-    public void onCollapsed(EventCollapsed event)
-    {
-//        Log.i(LOG, "EventCollapsed: " + String.valueOf(event.isCollapsed()));
-        swipeRefreshLayout.setEnabled(false);
-    }
+//    @Subscribe
+//    public void onExpanded(EventExpanded event)
+//    {
+////        Log.i(LOG, "EventExpanded: " + String.valueOf(event.isExpanded()));
+//        swipeRefreshLayout.setEnabled(true);
+//    }
+//
+//    @Subscribe
+//    public void onCollapsed(EventCollapsed event)
+//    {
+////        Log.i(LOG, "EventCollapsed: " + String.valueOf(event.isCollapsed()));
+//        swipeRefreshLayout.setEnabled(false);
+//    }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
@@ -293,7 +295,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
             return;
         }
 
-        int actionBarSize = AttributeGetter.getDimentionPixelSize(ctx, android.R.attr.actionBarSize);
         if (isLoading)
         {
 //            Log.i(LOG, "isLoading is TRUE!!!");
@@ -312,15 +313,18 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 
         this.setLoading(true);
         //if !forceRefresh we must load arts from DB
+        //but previously we must check if given art  obj has text...
+        //It's not common situation must think about it TODO
+        forceRefresh = article.getText() == null;
         if (!forceRefresh)
         {
             RoboSpiceRequestArticleOffline requestFromDB = new RoboSpiceRequestArticleOffline(ctx, article);
-            spiceManagerOffline.execute(requestFromDB, "unused", DurationInMillis.ALWAYS_EXPIRED, new ArticleRequestListener());
+            spiceManagerOffline.execute(requestFromDB, LOG, DurationInMillis.ALWAYS_EXPIRED, new ArticleRequestListener());
         }
         else
         {
             RoboSpiceRequestArticle request = new RoboSpiceRequestArticle(ctx, article);
-            spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ArticleRequestListener());
+            spiceManager.execute(request, LOG, DurationInMillis.ALWAYS_EXPIRED, new ArticleRequestListener());
         }
     }
 
@@ -356,11 +360,11 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         public void onRequestSuccess(Article article)
         {
             Log.i(LOG, "onRequestSuccess");
-//            if (!isAdded())
-//            {
-//                Log.e(LOG, "frag not added");
-//                return;
-//            }
+            if (!isAdded())
+            {
+                Log.e(LOG, "frag not added");
+                return;
+            }
 //            if (articles == null || articles.getResult() == null)
 //            {
 //                //no data in cache?..
@@ -371,7 +375,10 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 //
 //            ArrayList<Article> list = new ArrayList<>(articles.getResult());
 //
-//            setLoading(false);
+            setLoading(false);
+
+            article = article;
+            recyclerView.setAdapter(new RecyclerAdapterArticle(ctx, article));
 //
 //            if (list.size() != Const.NUM_OF_ARTS_ON_PAGE && !articles.isContainsBottomArt())
 //            {

@@ -70,6 +70,8 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     protected AppBarLayout appBarLeft;
     protected LinearLayout mainContainer;
     protected FrameLayout leftContainer;
+
+    protected Toolbar toolbarRight;
     //main views
     protected Toolbar toolbar;
     protected CollapsingToolbarLayout collapsingToolbarLayout;
@@ -85,6 +87,8 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     protected View cover2Border;
     protected AppBarLayout appBar;
     protected boolean fullyExpanded = true;
+    ///////////
+
     ///////////
     protected MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
     protected MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
@@ -179,6 +183,10 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
 
             changeImageWithAlphaLeft = new ChangeImageWithAlpha();
             changeImageWithAlphaLeft.setValues(ctx, cover2Left, coverLeft, artsWithImage);
+
+            toolbarRight= (Toolbar) findViewById(R.id.toolbar_right);
+            toolbarRight.setSubtitle("testTest");
+
         }
     }
 

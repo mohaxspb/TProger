@@ -205,6 +205,7 @@ public class Article implements Parcelable
         Log.i(LOG, String.valueOf(a.getTagMainTitle()));
         Log.i(LOG, String.valueOf(a.getTagMainUrl()));
         Log.i(LOG, String.valueOf(a.getPreview()));
+        Log.i(LOG, a.getText());
         Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
 

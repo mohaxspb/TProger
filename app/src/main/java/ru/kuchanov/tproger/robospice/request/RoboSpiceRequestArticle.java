@@ -1,6 +1,7 @@
 package ru.kuchanov.tproger.robospice.request;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.octo.android.robospice.request.SpiceRequest;
 import com.squareup.okhttp.OkHttpClient;
@@ -40,7 +41,7 @@ public class RoboSpiceRequestArticle extends SpiceRequest<Article>
         String responseBody = makeRequest();
 
         //TODO
-        Article loadedArticle = HtmlParsing.parseArticle(databaseHelper, responseBody, article.getUrl());
+        Article loadedArticle = HtmlParsing.parseArticle(responseBody, article.getUrl());
         //write to DB
 //        Article artWritenToDB = Article.writeArtsList(list, databaseHelper);
 
@@ -50,6 +51,7 @@ public class RoboSpiceRequestArticle extends SpiceRequest<Article>
 
     private String makeRequest() throws Exception
     {
+        Log.i(LOG, "mekeRequest with url: "+article.getUrl());
         OkHttpClient client = new OkHttpClient();
 
         Request.Builder request = new Request.Builder();

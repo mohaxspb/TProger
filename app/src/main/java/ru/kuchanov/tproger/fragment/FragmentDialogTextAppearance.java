@@ -18,8 +18,8 @@ import ru.kuchanov.tproger.R;
 
 public class FragmentDialogTextAppearance extends DialogFragment
 {
-    final static String LOG = FragmentDialogTextAppearance.class.getSimpleName();
-    SharedPreferences pref;
+    private final static String LOG = FragmentDialogTextAppearance.class.getSimpleName();
+    private SharedPreferences pref;
     private Context ctx;
 
     public static FragmentDialogTextAppearance newInstance()
