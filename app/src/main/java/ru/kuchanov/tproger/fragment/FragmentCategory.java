@@ -179,8 +179,10 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 }
             });
         }
-
-        this.setLoading(isLoading);
+        else
+        {
+            this.setLoading(isLoading);
+        }
 
         return v;
     }
@@ -264,20 +266,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         super.onPause();
     }
 
-//    @Subscribe
-//    public void onExpanded(EventExpanded event)
-//    {
-////        Log.i(LOG, "EventExpanded: " + String.valueOf(event.isExpanded()));
-//        swipeRefreshLayout.setEnabled(true);
-//    }
-//
-//    @Subscribe
-//    public void onCollapsed(EventCollapsed event)
-//    {
-////        Log.i(LOG, "EventCollapsed: " + String.valueOf(event.isCollapsed()));
-//        swipeRefreshLayout.setEnabled(false);
-//    }
-
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
@@ -327,7 +315,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         }
     }
 
-    private void setLoading(boolean isLoading)
+    private void setLoading(final boolean isLoading)
     {
 //        Log.i(LOG, "isLoading: " + isLoading +
 //          " isLoadingFromTop: " + isLoadingFromTop +
@@ -344,7 +332,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         if (isLoading)
         {
 //            Log.i(LOG, "isLoading is TRUE!!!");
-            swipeRefreshLayout.setEnabled(true);
+//            swipeRefreshLayout.setEnabled(true);
 //            swipeRefreshLayout.setLayoutMovementEnabled(true);
             if (this.isLoadingFromTop)
             {
@@ -355,16 +343,24 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 int screenHeight = ScreenProperties.getHeight(act);
                 swipeRefreshLayout.setProgressViewEndTarget(false, screenHeight - actionBarSize * 2);
             }
-            swipeRefreshLayout.setRefreshing(true);
+//            swipeRefreshLayout.setRefreshing(true);
         }
         else
         {
-
-            //this.swipeRef.setProgressViewOffset(false, 0, actionBarSize);
             swipeRefreshLayout.setProgressViewEndTarget(false, actionBarSize);
-//            swipeRefreshLayout.setProgressViewEndTarget(false, 0);
-            swipeRefreshLayout.setRefreshing(false);
+//            swipeRefreshLayout.setRefreshing(false);
         }
+
+        //workaround from
+        //http://stackoverflow.com/a/26910973/3212712
+        swipeRefreshLayout.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                swipeRefreshLayout.setRefreshing(isLoading);
+            }
+        });
     }
 
     private void resetOnScroll()

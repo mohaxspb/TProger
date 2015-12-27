@@ -132,25 +132,16 @@
                         android:layout_height="@dimen/detail_backdrop_height"
                         android:minHeight="?attr/actionBarSize"
                         app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
-                        app:subtitle="testTest"
                         app:title="test"
                         app:titleEnabled="true">
-
 
                         <android.support.v7.widget.Toolbar
                             android:id="@+id/toolbar_right"
                             android:layout_width="match_parent"
                             android:layout_height="?attr/actionBarSize"
+                            android:title="test"
                             app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
-                        android:layout_gravity="bottom"
-                            app:layout_collapseMode="pin">
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Lorem Ipsum \n testets"
-                                android:textSize="@dimen/abc_text_size_subhead_material"/>
-                        </android.support.v7.widget.Toolbar>
+                            app:layout_collapseMode="pin"/>
                     </android.support.design.widget.CollapsingToolbarLayout>
                 </android.support.design.widget.AppBarLayout>
 

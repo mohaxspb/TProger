@@ -183,10 +183,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
 
             changeImageWithAlphaLeft = new ChangeImageWithAlpha();
             changeImageWithAlphaLeft.setValues(ctx, cover2Left, coverLeft, artsWithImage);
-
-            toolbarRight= (Toolbar) findViewById(R.id.toolbar_right);
-            toolbarRight.setSubtitle("testTest");
-
         }
     }
 
@@ -206,6 +202,8 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
 
             mainContainer = (LinearLayout) findViewById(R.id.container_main);
             leftContainer = (FrameLayout) findViewById(R.id.container_left);
+
+            toolbarRight = (Toolbar) findViewById(R.id.toolbar_right);
         }
 
 
@@ -735,6 +733,11 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     public Toolbar getToolbar()
     {
         return toolbar;
+    }
+
+    public Toolbar getToolbarRight()
+    {
+        return toolbarRight;
     }
 
     public ViewPager getPager()

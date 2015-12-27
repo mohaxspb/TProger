@@ -28,7 +28,6 @@ import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestArticle;
-import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestArticleOffline;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.SpacesItemDecoration;
 
@@ -41,7 +40,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
     public static final String KEY_IS_LOADING = "isLoading";
     public static final String KEY_ = "isLoading";
     public static final String KEY_ARTICLE_URL = "KEY_ARTICLE_URL";
-    public String LOG;// = FragmentArticle.class.getSimpleName();
+    public String LOG;
     protected MySpiceManager spiceManager;
     protected MySpiceManager spiceManagerOffline;
     protected SwipeRefreshLayout swipeRefreshLayout;
@@ -53,16 +52,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
     private boolean isLoading = false;
 
     private SharedPreferences pref;
-
-//    public static FragmentArticle newInstance(String articleUrl)
-//    {
-//        FragmentArticle frag = new FragmentArticle();
-//        Bundle b = new Bundle();
-//        b.putString(KEY_ARTICLE_URL, articleUrl);
-//        frag.setArguments(b);
-//
-//        return frag;
-//    }
 
     public static FragmentArticle newInstance(Article article)
     {
@@ -128,8 +117,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
             @Override
             public void onRefresh()
             {
-                //TODO
-                performRequest(true);
+                performRequest();
             }
         });
 
@@ -151,26 +139,10 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         {
             recyclerView.setAdapter(new RecyclerAdapterArticle(ctx, article));
         }
-//        if (artsList.size() != 0)
+//        else
 //        {
-//            recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
-//
-//            recyclerView.clearOnScrollListeners();
-//            recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
-//            {
-//                @Override
-//                public void onLoadMore()
-//                {
-//                    Log.i(LOG, "OnLoadMore called!");
-//                    currentPageToLoad++;
-//                    performRequest(currentPageToLoad, false, false);
-//                }
-//            });
+//            this.setLoading(true);
 //        }
-
-        this.setLoading(isLoading);
-
-//        v.setBackgroundResource(R.drawable.cremlin);
 
         return v;
     }
@@ -184,12 +156,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         this.act = (AppCompatActivity) this.getActivity();
     }
 
-    @Override
-    public void onDetach()
-    {
-//        Log.i(LOG, "onDetach called");
-        super.onDetach();
-    }
 
     @Override
     public void onStart()
@@ -198,29 +164,15 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         super.onStart();
 
 //        BusProvider.getInstance().register(this);
-//
-//        if (act instanceof ActivityArticle)
-//        {
         spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
         spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
-//        }
-//        else if (act instanceof ActivityMain)
-//        {
-//            spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
-//            spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
-//        }
-//        else
-//        {
-//            throw new NullPointerException("need to add service for this activity: " + act.getClass().getSimpleName());
-//        }
-
         //remove spiceServiceStart to on resume
     }
 
     @Override
     public void onStop()
     {
-//        Log.i(LOG, "onStop called from activity: " + getActivity().getClass().getSimpleName());
+//        Log.i(LOG, "onStop called");
         super.onStop();
         //remove spiceServiceStart to onPause
 
@@ -232,19 +184,17 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
     @Override
     public void onResume()
     {
-//        Log.i(LOG, "onResume called from activity: " + getActivity().getClass().getSimpleName());
+//        Log.i(LOG, "onResume called");
         super.onResume();
 
         spiceManager.addListenerIfPending(Article.class, "unused", new ArticleRequestListener());
         spiceManagerOffline.addListenerIfPending(Article.class, "unused", new ArticleRequestListener());
         //make request for it
         //TODO
-//        if (artsList.size() == 0)
-//        {
-//            performRequest(false, false);
-//        }
-
-        performRequest(false);
+        if (article.getText() == null)
+        {
+            performRequest();
+        }
     }
 
     @Override
@@ -253,20 +203,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 //        Log.i(LOG, "onPause called from activity: " + getActivity().getClass().getSimpleName());
         super.onPause();
     }
-
-//    @Subscribe
-//    public void onExpanded(EventExpanded event)
-//    {
-////        Log.i(LOG, "EventExpanded: " + String.valueOf(event.isExpanded()));
-//        swipeRefreshLayout.setEnabled(true);
-//    }
-//
-//    @Subscribe
-//    public void onCollapsed(EventCollapsed event)
-//    {
-////        Log.i(LOG, "EventCollapsed: " + String.valueOf(event.isCollapsed()));
-//        swipeRefreshLayout.setEnabled(false);
-//    }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
@@ -283,49 +219,31 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         }
     }
 
-    private void setLoading(boolean isLoading)
+    private void setLoading(final boolean isLoading)
     {
-//        Log.i(LOG, "isLoading: " + isLoading +
-//          " swipeRefreshLayout.isRefreshing(): " + swipeRefreshLayout.isRefreshing());
+        Log.i(LOG, "isLoading: " + isLoading);
         this.isLoading = isLoading;
 
-        if (isLoading && swipeRefreshLayout.isRefreshing())
+        //workaround from
+        //http://stackoverflow.com/a/26910973/3212712
+        swipeRefreshLayout.post(new Runnable()
         {
-//            Log.i(LOG, "isLoading and  swipeRefreshLayout.isRefreshing() are both TRUE, so RETURN!!!");
-            return;
-        }
-
-        if (isLoading)
-        {
-//            Log.i(LOG, "isLoading is TRUE!!!");
-            swipeRefreshLayout.setEnabled(true);
-            swipeRefreshLayout.setRefreshing(true);
-        }
-        else
-        {
-            swipeRefreshLayout.setRefreshing(false);
-        }
+            @Override
+            public void run()
+            {
+                swipeRefreshLayout.setRefreshing(isLoading);
+            }
+        });
     }
 
-    private void performRequest(boolean forceRefresh)
+    private void performRequest()
     {
-        Log.i(LOG, "performRequest forceRefresh: " + forceRefresh);
+        Log.i(LOG, "performRequest");
 
         this.setLoading(true);
-        //if !forceRefresh we must load arts from DB
-        //but previously we must check if given art  obj has text...
-        //It's not common situation must think about it TODO
-        forceRefresh = article.getText() == null;
-        if (!forceRefresh)
-        {
-            RoboSpiceRequestArticleOffline requestFromDB = new RoboSpiceRequestArticleOffline(ctx, article);
-            spiceManagerOffline.execute(requestFromDB, LOG, DurationInMillis.ALWAYS_EXPIRED, new ArticleRequestListener());
-        }
-        else
-        {
-            RoboSpiceRequestArticle request = new RoboSpiceRequestArticle(ctx, article);
-            spiceManager.execute(request, LOG, DurationInMillis.ALWAYS_EXPIRED, new ArticleRequestListener());
-        }
+
+        RoboSpiceRequestArticle request = new RoboSpiceRequestArticle(ctx, article);
+        spiceManager.execute(request, LOG, DurationInMillis.ALWAYS_EXPIRED, new ArticleRequestListener());
     }
 
     //inner class of your spiced Activity
@@ -357,7 +275,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         }
 
         @Override
-        public void onRequestSuccess(Article article)
+        public void onRequestSuccess(Article loadedArticle)
         {
             Log.i(LOG, "onRequestSuccess");
             if (!isAdded())
@@ -365,64 +283,12 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
                 Log.e(LOG, "frag not added");
                 return;
             }
-//            if (articles == null || articles.getResult() == null)
-//            {
-//                //no data in cache?..
-//                Log.i(LOG, "no data in cache for page: " + currentPageToLoad);
-//                performRequest(currentPageToLoad, true, false);
-//                return;
-//            }
-//
-//            ArrayList<Article> list = new ArrayList<>(articles.getResult());
-//
             setLoading(false);
 
-            article = article;
-            recyclerView.setAdapter(new RecyclerAdapterArticle(ctx, article));
-//
-//            if (list.size() != Const.NUM_OF_ARTS_ON_PAGE && !articles.isContainsBottomArt())
-//            {
-//                //error in DB - need to reset category;
-//                Log.i(LOG, "error in DB - need to reset category;");
-//                recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
-//                artsList = new ArrayList<>();
-////                ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyRemoveEach();
-//
-////                ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(artsList);
-//                currentPageToLoad = 1;
-//                performRequest(currentPageToLoad, true, true);
-//
-//                return;
-//            }
-//
-//            Log.i(LOG, "RECEIVE " + list.size() + " arts for page: " + currentPageToLoad);
-//
-//            Collections.sort(list, new Article.PubDateComparator());
-//
-//            if (currentPageToLoad > 1)
-//            {
-//                int prevListSize = artsList.size();
-//                artsList.addAll(list);
-//                recyclerView.getAdapter().notifyItemRangeInserted(prevListSize, artsList.size());
-//
-//                //update cover
-//                BusProvider.getInstance().post(new EventArtsReceived(artsList));
-//            }
-//            else
-//            {
-//                int prevSize = artsList.size();
-//                artsList.clear();
-//                artsList.addAll(list);
-//                if (recyclerView.getAdapter() == null)
-//                {
-//                    recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
-//                    recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
-//                }
-//                else
-//                {
-//                    recyclerView.getAdapter().notifyItemRangeRemoved(0, prevSize);
-//                }
-//
+            article = loadedArticle;
+
+            recyclerView.setAdapter(new RecyclerAdapterArticle(ctx, loadedArticle));
+            //TODO
 //                //update cover
 //                BusProvider.getInstance().post(new EventArtsReceived(artsList));
 //            }

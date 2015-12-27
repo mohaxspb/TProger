@@ -35,7 +35,7 @@ public class RoboSpiceRequestArticle extends SpiceRequest<Article>
     @Override
     public Article loadDataFromNetwork() throws Exception
     {
-//        Log.i(LOG, "loadDataFromNetwork called");
+        Log.i(LOG, "loadDataFromNetwork called");
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
 
         String responseBody = makeRequest();
