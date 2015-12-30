@@ -67,7 +67,7 @@
         <!--covers-->
         <item name="cover_top_to_bottom">@drawable/cover_top_to_bottom_light</item>
         <item name="cover_bottom_to_top">@drawable/cover_bottom_to_top_light</item>
-
+        <item name="top_rounded_corners_background">@drawable/top_rounded_corners_light</item>
 
         <!--<item name="actionBarTheme">@style/MyApp.ActionBarTheme.Light</item>-->
         <!-- The animated arrow style -->
@@ -160,7 +160,7 @@
         <!--covers-->
         <item name="cover_top_to_bottom">@drawable/cover_top_to_bottom_dark</item>
         <item name="cover_bottom_to_top">@drawable/cover_bottom_to_top_dark</item>
-
+        <item name="top_rounded_corners_background">@drawable/top_rounded_corners_dark</item>
        <!-- <item name="actionBarTheme">@style/MyApp.ActionBarTheme.Dark</item>-->
     </style>
 

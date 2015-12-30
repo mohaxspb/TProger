@@ -65,4 +65,6 @@
     <attr name="cover_top_to_bottom" format="reference"/>
     <attr name="cover_bottom_to_top" format="reference"/>
 
+    <attr name="top_rounded_corners_background" format="reference"/>
+
 </resources>

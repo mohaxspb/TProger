@@ -4,16 +4,26 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import ru.kuchanov.tproger.robospice.db.Article;
+import ru.kuchanov.tproger.utils.AttributeGetter;
+import ru.kuchanov.tproger.utils.DipToPx;
 import ru.kuchanov.tproger.utils.MyUIL;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
 import ru.kuchanov.tproger.utils.html.HtmlToView;
@@ -31,6 +41,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
     int sizeOfArticleParts = 0;
     private ArrayList<HtmlToView.TextType> textTypes = new ArrayList<>();
+    private ArrayList<String> listOfParts = new ArrayList<>();
 
     private SharedPreferences pref;
     private Article article;
@@ -54,6 +65,8 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         sizeOfArticleParts += 1; //for tags
         sizeOfArticleParts += 1; //for toReadMore
         sizeOfArticleParts += textTypes.size(); //for artText
+
+        listOfParts = HtmlToView.getTextPartsList(HtmlParsing.getElementListFromHtml(article.getText()));
     }
 
     @Override
@@ -63,20 +76,30 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
         View itemLayoutView;
 
+        int windowBackgroundColor = AttributeGetter.getColor(ctx, android.R.attr.windowBackground);
+
         switch (viewType)
         {
             case TYPE_TITLE:
-                itemLayoutView = new TextView(ctx);
+                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_title, parent, false);
                 vh = new ViewHolderTitle(itemLayoutView);
-                //TODO
                 break;
             default:
             case TYPE_TEXT:
-                itemLayoutView = new TextView(ctx);
+                TextView textView = new TextView(ctx);
+                textView.setBackgroundColor(windowBackgroundColor);
+                int padding = (int) DipToPx.convert(3, ctx);
+                textView.setPadding(padding, 0, padding, 0);
+                textView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+                itemLayoutView = textView;
                 vh = new ViewHolderText(itemLayoutView);
                 break;
             case TYPE_WEB_VIEW:
-                itemLayoutView = new WebView(ctx);
+                WebView webView = new WebView(ctx);
+                webView.getSettings().setUseWideViewPort(true);
+                webView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+                webView.setBackgroundColor(windowBackgroundColor);
+                itemLayoutView = webView;
                 vh = new ViewHolderWebView(itemLayoutView);
                 break;
             case TYPE_TAGS:
@@ -145,20 +168,75 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
         float artTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size), 0.75f);
 
+        int textSizePrimary = AttributeGetter.getDimentionPixelSize(ctx, R.dimen.text_size_primary);
+        int textSizeSecondary = AttributeGetter.getDimentionPixelSize(ctx, R.dimen.text_size_secondary);
+
+        String currentHtml;
 
         switch (this.getItemViewType(position))
         {
             case TYPE_TITLE:
                 ViewHolderTitle holderTitle = (ViewHolderTitle) holder;
-                holderTitle.title.setText(article.getTitle());
+                //TITLE
+                holderTitle.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
+                holderTitle.title.setText(Html.fromHtml(article.getTitle()));
+                //date
+                SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy 'в' HH:mm", Locale.getDefault());
+                sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+//                Log.i(LOG, sdf.format(pubDate));//prints date in the format sdf
+                holderTitle.date.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizeSecondary);
+                holderTitle.date.setText(sdf.format(article.getPubDate()));
+
+                //image
+                LinearLayout.LayoutParams paramsImg;
+                if (article.getImageUrl() != null)
+                {
+                    paramsImg = (LinearLayout.LayoutParams) holderTitle.image.getLayoutParams();
+
+                    float width = ctx.getResources().getDisplayMetrics().widthPixels;
+
+                    if (isTabletMode)
+                    {
+                        //TODO here we mast change width as there will be a drawer in left part of screen
+                        width = width / 3 * 2;
+                    }
+                    //minusing paddings
+                    width -= DipToPx.convert(5 * 2, ctx);
+
+                    float scale = width / article.getImageWidth();
+                    float height = (scale) * article.getImageHeight();
+
+                    paramsImg.width = (int) width;
+                    paramsImg.height = (int) height;
+
+                    holderTitle.image.setLayoutParams(paramsImg);
+
+                    imageLoader.displayImage(article.getImageUrl(), holderTitle.image);
+                }
+                else
+                {
+                    holderTitle.image.setImageDrawable(null);
+                    paramsImg = (LinearLayout.LayoutParams) holderTitle.image.getLayoutParams();
+                    paramsImg.height = 0;
+                    holderTitle.image.setLayoutParams(paramsImg);
+                }
                 break;
             default:
             case TYPE_TEXT:
                 ViewHolderText holderText = (ViewHolderText) holder;
-                holderText.text.setText(article.getText());
+
+                //TODO
+                currentHtml = this.listOfParts.get(position - 1);
+                HtmlToView.setTextToTextView(holderText.text, currentHtml, ctx);
                 break;
             case TYPE_WEB_VIEW:
-
+                ViewHolderWebView holderWebView = (ViewHolderWebView) holder;
+                //TODO
+//                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holderWebView.webView.getLayoutParams();
+//                params.width = RecyclerView.LayoutParams.WRAP_CONTENT;
+//                holderWebView.webView.setLayoutParams(params);
+                currentHtml = this.listOfParts.get(position - 1);
+                holderWebView.webView.loadDataWithBaseURL(null, currentHtml, "text/html", "UTF-8", null);
                 break;
             case TYPE_TAGS:
 
@@ -181,13 +259,16 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     //TODO
     public static class ViewHolderTitle extends RecyclerView.ViewHolder
     {
+        public ImageView image;
         public TextView title;
+        public TextView date;
 
         public ViewHolderTitle(View v)
         {
             super(v);
-            title = (TextView) v;
-//            title = (TextView) v.findViewById(R.id.title);
+            image = (ImageView) v.findViewById(R.id.img);
+            date = (TextView) v.findViewById(R.id.date);
+            title = (TextView) v.findViewById(R.id.title);
         }
     }
 

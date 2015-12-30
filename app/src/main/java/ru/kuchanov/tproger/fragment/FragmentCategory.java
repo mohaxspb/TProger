@@ -480,11 +480,13 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             {
                 //error in DB - need to reset category;
                 Log.i(LOG, "error in DB - need to reset category;");
-                recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
-                artsList = new ArrayList<>();
-//                ((RecyclerAdapterArtsList) recyclerView.getAdapter()).notifyRemoveEach();
+                int prevSize = artsList.size();
 
-//                ((RecyclerAdapterArtsList) recyclerView.getAdapter()).addData(artsList);
+                if(recyclerView.getAdapter()!=null)
+                {
+                    recyclerView.getAdapter().notifyItemRangeRemoved(0, prevSize);
+                }
+                artsList = new ArrayList<>();
                 currentPageToLoad = 1;
                 performRequest(currentPageToLoad, true, true);
 

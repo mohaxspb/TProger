@@ -21,6 +21,8 @@ import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.PendingRequestListener;
 
+import java.util.ArrayList;
+
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapterArticle;
@@ -30,6 +32,8 @@ import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestArticle;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.SpacesItemDecoration;
+import ru.kuchanov.tproger.utils.html.HtmlParsing;
+import ru.kuchanov.tproger.utils.html.HtmlToView;
 
 /**
  * Created by Юрий on 17.09.2015 17:20.
@@ -39,7 +43,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 {
     public static final String KEY_IS_LOADING = "isLoading";
     public static final String KEY_ = "isLoading";
-    public static final String KEY_ARTICLE_URL = "KEY_ARTICLE_URL";
+    //    public static final String KEY_ARTICLE_URL = "KEY_ARTICLE_URL";
     public String LOG;
     protected MySpiceManager spiceManager;
     protected MySpiceManager spiceManagerOffline;
@@ -93,6 +97,13 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         {
             Bundle args = this.getArguments();
             this.article = args.getParcelable(Article.KEY_ARTICLE);
+
+            //TODO
+            //text+Table+text
+//            this.article.setUrl("http://tproger.ru/problems/max-multiplication-of-three-numbers/");
+            //text+table+text+images+table and so on.
+            this.article.setUrl("http://tproger.ru/articles/animated-gif-java/");
+
         }
 
         LOG = FragmentArticle.class.getSimpleName() + " - " + article.getUrl();
@@ -139,10 +150,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         {
             recyclerView.setAdapter(new RecyclerAdapterArticle(ctx, article));
         }
-//        else
-//        {
-//            this.setLoading(true);
-//        }
 
         return v;
     }
@@ -221,7 +228,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 
     private void setLoading(final boolean isLoading)
     {
-        Log.i(LOG, "isLoading: " + isLoading);
+//        Log.i(LOG, "isLoading: " + isLoading);
         this.isLoading = isLoading;
 
         //workaround from
@@ -292,6 +299,20 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 //                //update cover
 //                BusProvider.getInstance().post(new EventArtsReceived(artsList));
 //            }
+
+
+            //////////////////////
+            ArrayList<HtmlToView.TextType> types = HtmlToView.getTextPartSummary(HtmlParsing.getElementListFromHtml(article.getText()));
+            ArrayList<String> listOfParts = HtmlToView.getTextPartsList(HtmlParsing.getElementListFromHtml(article.getText()));
+
+            Log.i(LOG, "types size: " + types.size());
+            Log.i(LOG, "listOfParts size: " + listOfParts.size());
+//            Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!");
+//            for (String s : listOfParts)
+//            {
+//                Log.i(LOG, s.substring(0));
+//            }
+//            Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!");
         }
 
         @Override

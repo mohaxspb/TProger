@@ -48,6 +48,9 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     private boolean isTabletMode;
     private boolean isOnArticleActivity;
 
+    int textSizePrimary;
+    int textSizeSecondary;
+
     public RecyclerAdapterArtsList(Context ctx, ArrayList<Article> dataset)
     {
         this.ctx = ctx;
@@ -58,6 +61,9 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         imageLoader = MyUIL.get(ctx);
 
         artsList = dataset;
+
+        textSizePrimary = AttributeGetter.getDimentionPixelSize(ctx, R.dimen.text_size_primary);
+        textSizeSecondary = AttributeGetter.getDimentionPixelSize(ctx, R.dimen.text_size_secondary);
     }
 
     @Override
@@ -95,13 +101,13 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
 
         final Article a = artsList.get(position);
         boolean showMaxInfo = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_style), false);
-//        showMaxInfo = false;
+
         if (showMaxInfo)
         {
             final ViewHolderMaximum maxHolder = (ViewHolderMaximum) holder;
 
             //TITLE
-            maxHolder.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
+            maxHolder.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
             maxHolder.title.setText(Html.fromHtml(a.getTitle()));
 
             maxHolder.topPanel.setOnClickListener(new ShowArticleCL(a, position));
@@ -130,6 +136,8 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                     int numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(ctx.getString(R.string.pref_design_key_col_num), "2"));
                     width /= (float) numOfColsInGridLayoutManager;
                 }
+                //minusing paddings
+                width -= DipToPx.convert(5 * 2, ctx);
 
                 float scale = width / a.getImageWidth();
                 float height = (scale) * a.getImageHeight();
@@ -246,14 +254,14 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy 'в' HH:mm", Locale.getDefault());
             sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 //                Log.i(LOG, sdf.format(pubDate));//prints date in the format sdf
-            maxHolder.date.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_secondary));
+            maxHolder.date.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizeSecondary);
             maxHolder.date.setText(sdf.format(a.getPubDate()));
         }
         else
         {
             ViewHolderMinimum minHolder = (ViewHolderMinimum) holder;
-            minHolder.title.setText(a.getTitle());
-            //add onClick
+            minHolder.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
+            minHolder.title.setText(Html.fromHtml(a.getTitle()));
             minHolder.title.setOnClickListener(new ShowArticleCL(a, position));
         }
     }
