@@ -54,25 +54,37 @@ public class MyUIL
 
     }
 
-    public static ImageLoader getDefault(Context act)
+//    public static ImageLoader getDefault(Context act)
+//    {
+//        //UniversalImageLoader
+//        File cacheDir = new File(Environment.getExternalStorageDirectory(), "Odnako/Cache");
+//
+//        //switch to true if you want logging
+//        L.writeLogs(false);
+//
+//        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(act)
+//                .build();
+//
+//        ImageLoader imageLoader = ImageLoader.getInstance();
+//
+//        if (!imageLoader.isInited())
+//        {
+//            imageLoader.init(config);
+//        }
+//
+//        return imageLoader;
+//
+//    }
+
+    public static DisplayImageOptions getSimple()
     {
-        //UniversalImageLoader
-        File cacheDir = new File(Environment.getExternalStorageDirectory(), "Odnako/Cache");
-
-        //switch to true if you want logging
-        L.writeLogs(false);
-
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(act)
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .considerExifParams(true)
+                .bitmapConfig(Bitmap.Config.RGB_565)
                 .build();
 
-        ImageLoader imageLoader = ImageLoader.getInstance();
-
-        if (!imageLoader.isInited())
-        {
-            imageLoader.init(config);
-        }
-
-        return imageLoader;
-
+        return options;
     }
 }

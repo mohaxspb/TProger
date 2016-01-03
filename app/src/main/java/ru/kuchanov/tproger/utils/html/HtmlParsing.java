@@ -88,9 +88,9 @@ public class HtmlParsing
                 e.printStackTrace();
             }
 
-            Element tagMain = li.getElementsByTag("a").get(0);
-            String tagMainUrl = tagMain.attr("href");
-            String tagMainTitle = tagMain.text();
+//            Element tagMain = li.getElementsByTag("a").get(0);
+//            String tagMainUrl = tagMain.attr("href");
+//            String tagMainTitle = tagMain.text();
 
             //image
             String imageUrl = null;
@@ -125,8 +125,8 @@ public class HtmlParsing
             Article a = new Article();
             a.setUrl(url);
             a.setTitle(title);
-            a.setTagMainTitle(tagMainTitle);
-            a.setTagMainUrl(tagMainUrl);
+//            a.setTagMainTitle(tagMainTitle);
+//            a.setTagMainUrl(tagMainUrl);
             a.setPubDate(pubDate);
             a.setImageUrl(imageUrl);
             a.setImageHeight(imageHeight);

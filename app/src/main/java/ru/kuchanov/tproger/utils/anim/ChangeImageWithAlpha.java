@@ -5,6 +5,8 @@ import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+
 import java.util.ArrayList;
 
 import ru.kuchanov.tproger.R;
@@ -59,7 +61,7 @@ public class ChangeImageWithAlpha
                     {
                         checkedPosition = MyRandomUtil.nextInt(0, artsWithImage.size());
                     }
-                    MyUIL.getDefault(ctx).displayImage(artsWithImage.get(checkedPosition).getImageUrl(), cover);
+                    MyUIL.get(ctx).displayImage(artsWithImage.get(checkedPosition).getImageUrl(), cover, DisplayImageOptions.createSimple());
                 }
                 else
                 {

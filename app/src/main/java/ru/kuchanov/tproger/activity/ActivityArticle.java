@@ -29,6 +29,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.otto.Subscribe;
 
 import java.lang.reflect.Method;
@@ -110,12 +112,16 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     private TimerTask timerTask;
     private boolean isTabletMode;
 
+    ImageLoader imageLoader;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
 //        Log.i(LOG, "onCreate");
 
         this.ctx = this;
+
+        imageLoader = MyUIL.get(ctx);
 
         //get default settings to get all settings later
         PreferenceManager.setDefaultValues(this, R.xml.pref_design, true);
@@ -637,7 +643,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         //prevent showing transition coloring if cover isn't showing
         if (cover.getAlpha() == 0)
         {
-            MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
+            imageLoader.displayImage(artsWithImage.get(positionInList).getImageUrl(), cover, DisplayImageOptions.createSimple());
             return;
         }
 
@@ -646,7 +652,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         //prevent showing transition coloring if cover isn't showing
         if (this.cover.getAlpha() == 0)
         {
-            MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
+            imageLoader.displayImage(artsWithImage.get(positionInList).getImageUrl(), cover, DisplayImageOptions.createSimple());
             return;
         }
 

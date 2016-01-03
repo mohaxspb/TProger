@@ -28,6 +28,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.squareup.otto.Subscribe;
 
 import java.lang.reflect.Method;
@@ -623,7 +624,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         //prevent showing transition coloring if cover isn't showing
         if (this.cover.getAlpha() == 0)
         {
-            MyUIL.getDefault(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover);
+            MyUIL.get(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover, DisplayImageOptions.createSimple());
             return;
         }
 
