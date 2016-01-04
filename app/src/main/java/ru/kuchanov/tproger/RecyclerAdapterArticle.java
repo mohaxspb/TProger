@@ -2,11 +2,9 @@ package ru.kuchanov.tproger;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,18 +15,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import ru.kuchanov.tproger.custom.view.GifDecoderView;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DipToPx;
@@ -229,63 +221,8 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                     holderTitle.image.setLayoutParams(paramsImg);
                 }
                 //TODO test!
-                InputStream stream = null;
-                try
-                {
-//                    stream = ctx.getResources().openRawResource(R.raw.lena_optimized2);
-                    stream = new FileInputStream(new File("/storage/emulated/0/Download/lena_optimized2.gif"));
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-
-//                GifDecoderView gifDecoderView = new GifDecoderView(ctx, stream);
-
-
-
-                final String url = "http://cdn.tproger.ru/wp-content/uploads/2015/12/lena_optimized2.gif";
-
-
-
-                imageLoader.loadImage(url, MyUIL.getSimple(), new SimpleImageLoadingListener()
-                {
-                    @Override
-                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage)
-                    {
-                        super.onLoadingComplete(imageUri, view, loadedImage);
-                        Log.i(LOG, "onLoadingComplete");
-
-                        File file = imageLoader.getDiscCache().get(url);
-
-//                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//                        loadedImage.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
-//                        byte[] bitmapdata = bos.toByteArray();
-//                        ByteArrayInputStream bs = new ByteArrayInputStream(bitmapdata);
-//
-//                        GifDecoderView gifDecoderView = new GifDecoderView(ctx, bs);
-
-                        try
-                        {
-                            FileInputStream in = new FileInputStream(file);
-                            GifDecoderView gifDecoderView = new GifDecoderView(ctx, in);
-                            holderTitle.root.addView(gifDecoderView);
-                        }
-                        catch (FileNotFoundException e)
-                        {
-                            e.printStackTrace();
-                        }
-
-
-                    }
-                });
-
-
-
+//                final String url = "http://cdn.tproger.ru/wp-content/uploads/2015/12/lena_optimized2.gif";
 //                GifDecoderView gifDecoderView = new GifDecoderView(ctx, url);
-//                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(200, 200);
-//                gifDecoderView.setLayoutParams(params);
-//
 //                holderTitle.root.addView(gifDecoderView);
                 break;
             default:

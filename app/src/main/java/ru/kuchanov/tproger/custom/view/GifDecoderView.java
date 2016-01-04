@@ -7,12 +7,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import ru.kuchanov.tproger.utils.MyUIL;
@@ -41,13 +42,12 @@ public class GifDecoderView extends ImageView
     };
 
     private ImageLoader imageLoader;
-//    private InputStream stream;
 
-    public GifDecoderView(Context context, InputStream stream)
-    {
-        super(context);
-        playGif(stream);
-    }
+//    public GifDecoderView(Context context, InputStream stream)
+//    {
+//        super(context);
+//        playGif(stream);
+//    }
 
     public GifDecoderView(Context context, String url)
     {
@@ -55,23 +55,25 @@ public class GifDecoderView extends ImageView
 
         imageLoader = MyUIL.get(context);
 
-        imageLoader.loadImage(url, DisplayImageOptions.createSimple(), new SimpleImageLoadingListener()
+        imageLoader.loadImage(url, MyUIL.getSimple(), new SimpleImageLoadingListener()
         {
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage)
             {
                 super.onLoadingComplete(imageUri, view, loadedImage);
-                Log.i(LOG, "onLoadingComplete");
+                Log.i(LOG, "onLoadingComplete for URI: " + imageUri);
 
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                loadedImage.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
-                byte[] bitmapdata = bos.toByteArray();
-                ByteArrayInputStream bs = new ByteArrayInputStream(bitmapdata);
+                File file = DiskCacheUtils.findInCache(imageUri, imageLoader.getDiskCache());
 
-//                InputStreamReader reader = new InputStreamReader(bs);
-//                reader.read();
-
-                playGif(bs);
+                try
+                {
+                    FileInputStream in = new FileInputStream(file);
+                    playGif(in);
+                }
+                catch (FileNotFoundException e)
+                {
+                    e.printStackTrace();
+                }
             }
         });
     }

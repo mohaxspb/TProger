@@ -3,9 +3,7 @@ package ru.kuchanov.tproger.custom.view;
 import android.graphics.Bitmap;
 import android.util.Log;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Vector;
 
 /**
@@ -43,8 +41,6 @@ public class GifDecoder
     protected Bitmap image; // current frame
     protected Bitmap lastBitmap; // previous frame
     protected byte[] block = new byte[256]; // current data block
-    //TODO test for byteArrayInputStream
-    protected char[] blockChar = new char[256]; // current data block
 
     protected int blockSize = 0; // block size last graphic control extension info
     protected int dispose = 0; // 0=no action; 1=leave in place; 2=restore to bg; 3=restore to prev
@@ -59,10 +55,6 @@ public class GifDecoder
     protected byte[] pixels;
     protected Vector<GifFrame> frames; // frames read from current file
     protected int frameCount;
-
-    //try to read gif from ByteArrayInputStream
-    private boolean isByteArrayInputStream = false;
-    InputStreamReader reader;// = new InputStreamReader(bs);
 
     public int getDelay(int n)
     {
@@ -207,12 +199,6 @@ public class GifDecoder
         {
             in = is;
 
-            isByteArrayInputStream = in instanceof ByteArrayInputStream;
-            if(isByteArrayInputStream)
-            {
-                reader = new InputStreamReader(in);
-            }
-
             readHeader();
             if (!err())
             {
@@ -296,15 +282,7 @@ public class GifDecoder
                         }
                         bi = 0;
                     }
-                    if(isByteArrayInputStream)
-                    {
-                        datum += (((int) blockChar[bi]) & 0xff) << bits;
-                    }
-                    else
-                    {
-                        datum += (((int) block[bi]) & 0xff) << bits;
-                    }
-//                    datum += (((int) block[bi]) & 0xff) << bits;
+                    datum += (((int) block[bi]) & 0xff) << bits;
                     bits += 8;
                     bi++;
                     count--;
@@ -390,15 +368,7 @@ public class GifDecoder
         int curByte = 0;
         try
         {
-            if(isByteArrayInputStream)
-            {
-                curByte = reader.read();
-            }
-            else
-            {
-                curByte = in.read();
-            }
-//            curByte = in.read();
+            curByte = in.read();
         }
         catch (Exception e)
         {
@@ -418,15 +388,7 @@ public class GifDecoder
                 int count;// = 0;
                 while (n < blockSize)
                 {
-                    if(isByteArrayInputStream)
-                    {
-                        count = reader.read(blockChar, n, blockSize - n);
-                    }
-                    else
-                    {
-                        count = in.read(block, n, blockSize - n);
-                    }
-//                    count = in.read(block, n, blockSize - n);
+                    count = in.read(block, n, blockSize - n);
                     if (count == -1)
                     {
                         break;
@@ -451,19 +413,10 @@ public class GifDecoder
         int nbytes = 3 * ncolors;
         int[] tab = null;
         byte[] c = new byte[nbytes];
-        char[] cChar = new char[nbytes];
         int n = 0;
         try
         {
-            if(isByteArrayInputStream)
-            {
-                n = reader.read(cChar);
-            }
-            else
-            {
-                n = in.read(c);
-            }
-//            n = in.read(c);
+            n = in.read(c);
         }
         catch (Exception e)
         {
@@ -513,16 +466,7 @@ public class GifDecoder
                             String app = "";
                             for (int i = 0; i < 11; i++)
                             {
-                                if(isByteArrayInputStream)
-                                {
-//                                    datum += (((int) blockChar[bi]) & 0xff) << bits;
-                                    app += blockChar[i];
-                                }
-                                else
-                                {
-                                    app += (char) block[i];
-                                }
-//                                app += (char) block[i];
+                                app += (char) block[i];
                             }
                             if (app.equals("NETSCAPE2.0"))
                             {
@@ -664,35 +608,13 @@ public class GifDecoder
         do
         {
             readBlock();
-
-           if (isByteArrayInputStream)
-           {
-               if (blockChar[0] == 1)
-               {
-                   // loop count sub-block
-                   int b1 = ((int) blockChar[1]) & 0xff;
-                   int b2 = ((int) blockChar[2]) & 0xff;
-                   loopCount = (b2 << 8) | b1;
-               }
-           }
-            else
-           {
-               if (block[0] == 1)
-               {
-                   // loop count sub-block
-                   int b1 = ((int) block[1]) & 0xff;
-                   int b2 = ((int) block[2]) & 0xff;
-                   loopCount = (b2 << 8) | b1;
-               }
-           }
-
-//            if (block[0] == 1)
-//            {
-//                // loop count sub-block
-//                int b1 = ((int) block[1]) & 0xff;
-//                int b2 = ((int) block[2]) & 0xff;
-//                loopCount = (b2 << 8) | b1;
-//            }
+            if (block[0] == 1)
+            {
+                // loop count sub-block
+                int b1 = ((int) block[1]) & 0xff;
+                int b2 = ((int) block[2]) & 0xff;
+                loopCount = (b2 << 8) | b1;
+            }
         } while ((blockSize > 0) && !err());
     }
 
