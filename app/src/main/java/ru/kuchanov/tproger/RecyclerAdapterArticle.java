@@ -2,9 +2,13 @@ package ru.kuchanov.tproger;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Animatable;
+import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +18,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.drawee.interfaces.DraweeController;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.image.ImageInfo;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.text.SimpleDateFormat;
@@ -38,11 +47,11 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     private static final int TYPE_TAGS = 3;
     private static final int TYPE_TO_READ_MORE = 4;
     private static final int TYPE_COMMENTS = 5;
-
+    private static int paddingsInDp = 5;
     int sizeOfArticleParts = 0;
+    float recyclerWidth;
     private ArrayList<HtmlToView.TextType> textTypes = new ArrayList<>();
     private ArrayList<String> listOfParts = new ArrayList<>();
-
     private SharedPreferences pref;
     private Article article;
     private Context ctx;
@@ -67,6 +76,16 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         sizeOfArticleParts += textTypes.size(); //for artText
 
         listOfParts = HtmlToView.getTextPartsList(HtmlParsing.getElementListFromHtml(article.getText()));
+
+
+        recyclerWidth = ctx.getResources().getDisplayMetrics().widthPixels;
+        if (isTabletMode)
+        {
+            //here we mast change width as there will be a drawer in left part of screen
+            recyclerWidth = recyclerWidth / 3 * 2;
+        }
+        //minusing paddings
+        recyclerWidth -= DipToPx.convert(paddingsInDp * 2, ctx);
     }
 
     @Override
@@ -188,25 +207,16 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 holderTitle.date.setText(sdf.format(article.getPubDate()));
 
                 //image
+
                 LinearLayout.LayoutParams paramsImg;
                 if (article.getImageUrl() != null)
                 {
                     paramsImg = (LinearLayout.LayoutParams) holderTitle.image.getLayoutParams();
 
-                    float width = ctx.getResources().getDisplayMetrics().widthPixels;
-
-                    if (isTabletMode)
-                    {
-                        //TODO here we mast change width as there will be a drawer in left part of screen
-                        width = width / 3 * 2;
-                    }
-                    //minusing paddings
-                    width -= DipToPx.convert(5 * 2, ctx);
-
-                    float scale = width / article.getImageWidth();
+                    float scale = recyclerWidth / article.getImageWidth();
                     float height = (scale) * article.getImageHeight();
 
-                    paramsImg.width = (int) width;
+                    paramsImg.width = (int) recyclerWidth;
                     paramsImg.height = (int) height;
 
                     holderTitle.image.setLayoutParams(paramsImg);
@@ -224,6 +234,52 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 //                final String url = "http://cdn.tproger.ru/wp-content/uploads/2015/12/lena_optimized2.gif";
 //                GifDecoderView gifDecoderView = new GifDecoderView(ctx, url);
 //                holderTitle.root.addView(gifDecoderView);
+
+                //fresco gif test
+                Uri uri = Uri.parse("http://cdn.tproger.ru/wp-content/uploads/2015/12/lena_optimized2.gif");
+                final SimpleDraweeView draweeView = new SimpleDraweeView(ctx);
+                final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) recyclerWidth, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                draweeView.setLayoutParams(params);
+                DraweeController controller = Fresco.newDraweeControllerBuilder()
+                        .setUri(uri)
+                        .setAutoPlayAnimations(true)
+                        .setControllerListener(new BaseControllerListener<ImageInfo>()
+                        {
+                            @Override
+                            public void onFinalImageSet(
+                                    String id,
+                                    @Nullable ImageInfo imageInfo,
+                                    @Nullable Animatable anim)
+                            {
+                                if (imageInfo == null)
+                                {
+                                    return;
+                                }
+                                //TODO check if size of image is less then containers size
+                                //and if so - set draweeView size to size of image;
+                                Log.i("Final image received!", "Size " + imageInfo.getWidth() + " x " + imageInfo.getHeight());
+                                float scale = recyclerWidth / imageInfo.getWidth();
+                                float height = scale * imageInfo.getHeight();
+                                params.height = (int) height;
+                                draweeView.setLayoutParams(params);
+                            }
+
+                            @Override
+                            public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo)
+                            {
+                                Log.i(LOG, "Intermediate image received");
+                            }
+
+                            @Override
+                            public void onFailure(String id, Throwable throwable)
+                            {
+                                Log.e(LOG, "Error loading!");
+                            }
+                        })
+                        .build();
+                draweeView.setController(controller);
+                holderTitle.root.addView(draweeView);
                 break;
             default:
             case TYPE_TEXT:
