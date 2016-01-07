@@ -270,12 +270,6 @@ public class HtmlTextFormatting
     public static boolean hasUnsupportedTags(String html)
     {
         Document doc = Jsoup.parse(html);
-
-//        if (doc.getElementsByTag("table").size() != 0)
-//        {
-//            return true;
-//        }
-//        return false;
         return doc.getElementsByTag("table").size() != 0;
     }
 
@@ -284,11 +278,6 @@ public class HtmlTextFormatting
      */
     public static boolean hasInnerUnsupportedTags(Element el)
     {
-//        if (el.getElementsByTag("table").size() != 0)
-//        {
-//            return true;
-//        }
-//        return false;
         return el.getElementsByTag("table").size() != 0;
     }
 
@@ -297,11 +286,27 @@ public class HtmlTextFormatting
      */
     public static boolean isUnsupportedTag(Element el)
     {
-//        if (el.tagName().equals("table"))
-//        {
-//            return true;
-//        }
-//        return false;
         return el.tagName().equals("table");
+    }
+
+    public static HtmlToView.TextType tagType(Element el)
+    {
+        String tagName = el.tagName();
+        String tagClass = el.className();
+
+        if (tagName.equals("table") || (el.getElementsByTag("table").size() != 0))
+        {
+            return HtmlToView.TextType.Table;
+        }
+        if (tagClass.contains("accordion"))
+        {
+            return HtmlToView.TextType.Accordeon;
+        }
+        if (tagClass.contains("wp-polls"))
+        {
+            return HtmlToView.TextType.Poll;
+        }
+
+        return HtmlToView.TextType.Text;
     }
 }

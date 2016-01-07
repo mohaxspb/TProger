@@ -183,10 +183,16 @@ public class HtmlToView
         }
     }
 
+    /**
+     * sets text to TextView via Html.fromHtml <br>
+     * also makes lins clickable and sets a listener for clicks <br>
+     * also ads imageLoader for images inside text <br>
+     * also adds supporting for list tags
+     */
     public static void setTextToTextView(TextView textView, String textToSet, Context ctx)
     {
-        textToSet = textToSet.replaceAll("</p>", "");
-        textToSet = textToSet.replaceAll("<p>", "<p></p>");
+//        textToSet = textToSet.replaceAll("</p>", "");
+//        textToSet = textToSet.replaceAll("<p>", "<p></p>");
 
         textView.setText(
                 Html.fromHtml(
@@ -202,147 +208,122 @@ public class HtmlToView
         }
     }
 
+//    public static ArrayList<TextType> getTextPartSummary(ArrayList<Element> list)
+//    {
+//        ArrayList<TextType> listOfTypes = new ArrayList<>();
+//
+//        boolean previousTagIsUnsupported = false;
+//        String prevHtml = "";
+//
+//        for (int i = 0; i < list.size(); i++)
+//        {
+//            Element el = list.get(i);
+//
+//            if (HtmlTextFormatting.isUnsupportedTag(el) || HtmlTextFormatting.hasInnerUnsupportedTags(el))
+//            {
+//                String html = prevHtml +
+//                        ((i != 0 && !previousTagIsUnsupported) ? el.toString() : list.get(i - 1).toString() + el.toString());
+//                if (previousTagIsUnsupported)
+//                {
+//                }
+//                else
+//                {
+//                }
+//                if (i == list.size() - 1)
+//                {
+//                    listOfTypes.add(TextType.Table);
+//                    break;
+//                }
+//                Element nextEl = list.get(i + 1);
+//                if (HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl))
+//                {
+//                    prevHtml += html;
+//                    continue;
+//                }
+//                else
+//                {
+//                    listOfTypes.add(TextType.Table);
+//                    prevHtml = "";
+//                }
+//            }
+//            else
+//            {
+//                String html;
+//
+//                if (previousTagIsUnsupported)
+//                {
+//                    if (i == list.size() - 1)
+//                    {
+//                        listOfTypes.add(TextType.Text);
+//                        break;
+//                    }
+//                    Element nextEl = list.get(i + 1);
+//                    if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
+//                    {
+//                        listOfTypes.add(TextType.Text);
+//                        prevHtml = "";
+//                    }
+//                }
+//                else
+//                {
+//                    //prev is TextView
+//                    if (i == 0)
+//                    {
+//                        html = prevHtml + el.toString();
+//
+//                        if (list.size() != i + 1)
+//                        {
+//                            Element nextEl = list.get(i + 1);
+//                            if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
+//                            {
+//                                listOfTypes.add(TextType.Text);
+//                                prevHtml = "";
+//                            }
+//                            else
+//                            {
+//                                prevHtml = html;
+//                            }
+//                        }
+//                        else
+//                        {
+//                            listOfTypes.add(TextType.Text);
+//                            break;
+//                        }
+//                    }
+//                    else
+//                    {
+//                        html = prevHtml + el.toString();
+//                        if (i == list.size() - 1)
+//                        {
+//                            listOfTypes.add(TextType.Text);
+//                            break;
+//                        }
+//                        Element nextEl = list.get(i + 1);
+//                        if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
+//                        {
+//                            listOfTypes.add(TextType.Text);
+//                            prevHtml = "";
+//                        }
+//                        else
+//                        {
+//                            prevHtml = html;
+//                        }
+//                    }
+//                }
+//            }
+//            previousTagIsUnsupported = (HtmlTextFormatting.isUnsupportedTag(el) || HtmlTextFormatting.hasInnerUnsupportedTags(el));
+//        }
+//
+//        return listOfTypes;
+//    }
+
     public static ArrayList<TextType> getTextPartSummary(ArrayList<Element> list)
     {
         ArrayList<TextType> listOfTypes = new ArrayList<>();
 
-        boolean previousTagIsUnsupported = false;
-        String prevHtml = "";
-
-        for (int i = 0; i < list.size(); i++)
+        for (Element el: list)
         {
-            Element el = list.get(i);
-
-            if (HtmlTextFormatting.isUnsupportedTag(el) || HtmlTextFormatting.hasInnerUnsupportedTags(el))
-            {
-//                WebView webView;
-                String html = prevHtml +
-                        ((i != 0 && !previousTagIsUnsupported) ? el.toString() : list.get(i - 1).toString() + el.toString());
-                if (previousTagIsUnsupported)
-                {
-//                    webView = (WebView) lin.getChildAt(lin.getChildCount() - 1);
-                }
-                else
-                {
-//                    webView = new WebView(ctx);
-//                    webView.setLayoutParams(linParams);
-//                    lin.addView(webView);
-//                    listOfTypes.add(TextType.Table);
-                }
-                if (i == list.size() - 1)
-                {
-//                    webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
-                    listOfTypes.add(TextType.Table);
-                    break;
-                }
-                Element nextEl = list.get(i + 1);
-                if (HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl))
-                {
-                    prevHtml += html;
-                    continue;
-                }
-                else
-                {
-//                    webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
-                    listOfTypes.add(TextType.Table);
-                    prevHtml = "";
-                }
-            }
-            else
-            {
-//                TextView textView;
-                String html;
-
-                if (previousTagIsUnsupported)
-                {
-                    if (i == list.size() - 1)
-                    {
-//                        textView = new TextView(ctx);
-//                        lin.addView(textView);
-                        html = el.toString();
-
-//                        setTextToTextView(textView, html, ctx);
-
-                        listOfTypes.add(TextType.Text);
-                        break;
-                    }
-                    Element nextEl = list.get(i + 1);
-                    if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
-                    {
-//                        textView = new TextView(ctx);
-//                        lin.addView(textView);
-
-
-
-                        html = el.toString();
-//                        setTextToTextView(textView, html, ctx);
-                        listOfTypes.add(TextType.Text);
-                        prevHtml = "";
-                    }
-                }
-                else
-                {
-                    //prev is TextView
-                    if (i == 0)
-                    {
-                        html = prevHtml + el.toString();
-
-                        if (list.size() != i + 1)
-                        {
-                            Element nextEl = list.get(i + 1);
-                            if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
-                            {
-//                                textView = new TextView(ctx);
-//                                lin.addView(textView);
-//
-//                                setTextToTextView(textView, html, ctx);
-                                listOfTypes.add(TextType.Text);
-                                prevHtml = "";
-                            }
-                            else
-                            {
-//                                textView = new TextView(ctx);
-//                                lin.addView(textView);
-
-
-                                prevHtml = html;
-                            }
-                        }
-                        else
-                        {
-//                            textView = new TextView(ctx);
-//                            lin.addView(textView);
-//
-//                            setTextToTextView(textView, html, ctx);
-                            listOfTypes.add(TextType.Text);
-                            break;
-                        }
-                    }
-                    else
-                    {
-//                        textView = (TextView) lin.getChildAt(lin.getChildCount() - 1);
-                        html = prevHtml + el.toString();
-                        if (i == list.size() - 1)
-                        {
-//                            setTextToTextView(textView, html, ctx);
-                            listOfTypes.add(TextType.Text);
-                            break;
-                        }
-                        Element nextEl = list.get(i + 1);
-                        if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
-                        {
-//                            setTextToTextView(textView, html, ctx);
-                            listOfTypes.add(TextType.Text);
-                            prevHtml = "";
-                        }
-                        else
-                        {
-                            prevHtml = html;
-                        }
-                    }
-                }
-            }
-            previousTagIsUnsupported = (HtmlTextFormatting.isUnsupportedTag(el) || HtmlTextFormatting.hasInnerUnsupportedTags(el));
+            listOfTypes.add(HtmlTextFormatting.tagType(el));
         }
 
         return listOfTypes;
@@ -352,112 +333,124 @@ public class HtmlToView
     {
         ArrayList<String> listOfTextParts = new ArrayList<>();
 
-        boolean previousTagIsUnsupported = false;
-        String prevHtml = "";
-
-        for (int i = 0; i < list.size(); i++)
+        for (Element el: list)
         {
-            Element el = list.get(i);
-
-            if (HtmlTextFormatting.isUnsupportedTag(el) || HtmlTextFormatting.hasInnerUnsupportedTags(el))
-            {
-                String html = prevHtml +
-                        ((i != 0 && !previousTagIsUnsupported) ? el.toString() : list.get(i - 1).toString() + el.toString());
-
-                if (i == list.size() - 1)
-                {
-//                    listOfTextParts.add(html);
-                    break;
-                }
-                Element nextEl = list.get(i + 1);
-                if (HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl))
-                {
-                    prevHtml += html;
-                    continue;
-                }
-                else
-                {
-                    listOfTextParts.add(html);
-                    prevHtml = "";
-                }
-            }
-            else
-            {
-                String html;
-
-                if (previousTagIsUnsupported)
-                {
-                    if (i == list.size() - 1)
-                    {
-                        html = el.toString();
-                        listOfTextParts.add(html);
-                        break;
-                    }
-                    Element nextEl = list.get(i + 1);
-                    if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
-                    {
-                        html = el.toString();
-                        listOfTextParts.add(html);
-                        prevHtml = "";
-                    }
-                }
-                else
-                {
-                    //prev is TextView
-                    if (i == 0)
-                    {
-                        html = prevHtml + el.toString();
-
-                        if (list.size() != i + 1)
-                        {
-                            Element nextEl = list.get(i + 1);
-                            if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
-                            {
-                                listOfTextParts.add(html);
-                                prevHtml = "";
-                            }
-                            else
-                            {
-//                                listOfTextParts.add(html);
-
-                                prevHtml = html;
-                            }
-                        }
-                        else
-                        {
-                            listOfTextParts.add(html);
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        html = prevHtml + el.toString();
-                        if (i == list.size() - 1)
-                        {
-                            listOfTextParts.add(html);
-                            break;
-                        }
-                        Element nextEl = list.get(i + 1);
-                        if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
-                        {
-                            listOfTextParts.add(html);
-                            prevHtml = "";
-                        }
-                        else
-                        {
-                            prevHtml = html;
-                        }
-                    }
-                }
-            }
-            previousTagIsUnsupported = (HtmlTextFormatting.isUnsupportedTag(el) || HtmlTextFormatting.hasInnerUnsupportedTags(el));
+            listOfTextParts.add(el.toString());
         }
 
         return listOfTextParts;
     }
 
+//    public static ArrayList<String> getTextPartsList(ArrayList<Element> list)
+//    {
+//        ArrayList<String> listOfTextParts = new ArrayList<>();
+//
+//        boolean previousTagIsUnsupported = false;
+//        String prevHtml = "";
+//
+//        for (int i = 0; i < list.size(); i++)
+//        {
+//            Element el = list.get(i);
+//
+//            if (HtmlTextFormatting.isUnsupportedTag(el) || HtmlTextFormatting.hasInnerUnsupportedTags(el))
+//            {
+//                String html = prevHtml +
+//                        ((i != 0 && !previousTagIsUnsupported) ? el.toString() : list.get(i - 1).toString() + el.toString());
+//
+//                if (i == list.size() - 1)
+//                {
+////                    listOfTextParts.add(html);
+//                    break;
+//                }
+//                Element nextEl = list.get(i + 1);
+//                if (HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl))
+//                {
+//                    prevHtml += html;
+//                    continue;
+//                }
+//                else
+//                {
+//                    listOfTextParts.add(html);
+//                    prevHtml = "";
+//                }
+//            }
+//            else
+//            {
+//                String html;
+//
+//                if (previousTagIsUnsupported)
+//                {
+//                    if (i == list.size() - 1)
+//                    {
+//                        html = el.toString();
+//                        listOfTextParts.add(html);
+//                        break;
+//                    }
+//                    Element nextEl = list.get(i + 1);
+//                    if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
+//                    {
+//                        html = el.toString();
+//                        listOfTextParts.add(html);
+//                        prevHtml = "";
+//                    }
+//                }
+//                else
+//                {
+//                    //prev is TextView
+//                    if (i == 0)
+//                    {
+//                        html = prevHtml + el.toString();
+//
+//                        if (list.size() != i + 1)
+//                        {
+//                            Element nextEl = list.get(i + 1);
+//                            if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
+//                            {
+//                                listOfTextParts.add(html);
+//                                prevHtml = "";
+//                            }
+//                            else
+//                            {
+////                                listOfTextParts.add(html);
+//
+//                                prevHtml = html;
+//                            }
+//                        }
+//                        else
+//                        {
+//                            listOfTextParts.add(html);
+//                            break;
+//                        }
+//                    }
+//                    else
+//                    {
+//                        html = prevHtml + el.toString();
+//                        if (i == list.size() - 1)
+//                        {
+//                            listOfTextParts.add(html);
+//                            break;
+//                        }
+//                        Element nextEl = list.get(i + 1);
+//                        if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
+//                        {
+//                            listOfTextParts.add(html);
+//                            prevHtml = "";
+//                        }
+//                        else
+//                        {
+//                            prevHtml = html;
+//                        }
+//                    }
+//                }
+//            }
+//            previousTagIsUnsupported = (HtmlTextFormatting.isUnsupportedTag(el) || HtmlTextFormatting.hasInnerUnsupportedTags(el));
+//        }
+//
+//        return listOfTextParts;
+//    }
+
     public enum TextType
     {
-        Table, Text
+        Table, Text, Accordeon, Poll
     }
 }

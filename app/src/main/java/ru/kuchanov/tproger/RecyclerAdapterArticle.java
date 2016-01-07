@@ -291,10 +291,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 break;
             case TYPE_WEB_VIEW:
                 ViewHolderWebView holderWebView = (ViewHolderWebView) holder;
-                //TODO
-//                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holderWebView.webView.getLayoutParams();
-//                params.width = RecyclerView.LayoutParams.WRAP_CONTENT;
-//                holderWebView.webView.setLayoutParams(params);
                 currentHtml = this.listOfParts.get(position - 1);
                 holderWebView.webView.loadDataWithBaseURL(null, currentHtml, "text/html", "UTF-8", null);
                 break;
