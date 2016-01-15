@@ -243,4 +243,54 @@ public class HtmlParsing
 
         return parsedArticle;
     }
+
+    public static AccordionContent parseAccordion(String accordionHtml)
+    {
+        Document doc = Jsoup.parse(accordionHtml);
+        String title = doc.getElementsByClass("accordion-heading").first().getElementsByTag("a").first().text();
+
+        Element collapsedPart = doc.getElementsByClass("accordion-inner").first();
+        Element imgTag = collapsedPart.getElementsByTag("img").first();
+        String imageUrl=imgTag.attr("src");
+        int imgWidth= Integer.parseInt(imgTag.attr("width"));
+        int imgHeight= Integer.parseInt(imgTag.attr("height"));
+
+        return new AccordionContent(title, imageUrl, imgWidth, imgHeight);
+    }
+
+    public static class AccordionContent
+    {
+        private String title;
+        private String imageUrl;
+        private int imgWidth;
+        private int imgHeight;
+
+        public AccordionContent(String title, String imageUrl, int imgWidth, int imgHeight)
+        {
+            this.title = title;
+            this.imageUrl = imageUrl;
+            this.imgWidth = imgWidth;
+            this.imgHeight = imgHeight;
+        }
+
+        public String getTitle()
+        {
+            return title;
+        }
+
+        public String getImageUrl()
+        {
+            return imageUrl;
+        }
+
+        public int getImgWidth()
+        {
+            return imgWidth;
+        }
+
+        public int getImgHeight()
+        {
+            return imgHeight;
+        }
+    }
 }

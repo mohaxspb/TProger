@@ -3,6 +3,9 @@ package ru.kuchanov.tproger.utils;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.util.Log;
+
+import ru.kuchanov.tproger.R;
 
 /**
  * Created by Юрий on 28.09.2015 0:54.
@@ -10,6 +13,8 @@ import android.graphics.Color;
  */
 public class AttributeGetter
 {
+    private static final String LOG = AttributeGetter.class.getSimpleName();
+
     public static int getColor(Context ctx, int addressInRClass)
     {
         int colorId;
@@ -50,6 +55,20 @@ public class AttributeGetter
         TypedArray ta = ctx.obtainStyledAttributes(attrs);
         value = ta.getDimensionPixelSize(0, -1);
         ta.recycle();
+
+        return value;
+    }
+
+    public static int getDimentionSPSize(Context ctx, int addressInRClass)
+    {
+        int value;
+
+        value  = (int) (ctx.getResources().getDimension(addressInRClass) / ctx.getResources().getDisplayMetrics().density);
+//        int[] attrs = new int[]{addressInRClass};
+//        TypedArray ta = ctx.obtainStyledAttributes(attrs);
+//        value = ta.getDimension(0, 1);
+        Log.i(LOG, "value: " + value);
+//        ta.recycle();
 
         return value;
     }

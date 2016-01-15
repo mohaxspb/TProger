@@ -27,6 +27,10 @@
         <item name="verticalAlignCenterIcon">@drawable/ic_vertical_align_center_grey600_48dp</item>
         <item name="autorenewIcon">@drawable/ic_autorenew_grey600_48dp</item>
 
+        <!-- arrow icons -->
+        <item name="arrowDownIcon">@drawable/ic_arrow_drop_down_grey_600_48dp</item>
+        <item name="arrowUpIcon">@drawable/ic_arrow_drop_up_grey_600_48dp</item>
+
         <item name="themeIconSmall">@drawable/ic_color_lens_grey600_36dp</item>
         <item name="vibrationIconSmall">@drawable/ic_vibration_grey600_36dp</item>
         <item name="aboutIconSmall">@drawable/ic_info_grey600_36dp</item>
@@ -112,6 +116,10 @@
         <item name="myCardBackgroundColor">@color/my_material_grey_800</item>
         <item name="myCardBackgroundColorDark">@color/material_grey_700</item>
         <!-- icons -->
+
+        <!-- arrow icons -->
+        <item name="arrowDownIcon">@drawable/ic_arrow_drop_down_white_48dp</item>
+        <item name="arrowUpIcon">@drawable/ic_arrow_drop_up_white_48dp</item>
 
         <item name="overflowIcon">@drawable/ic_more_vert_white_48dp</item>
         <item name="themeIconSmall">@drawable/ic_color_lens_white_36dp</item>

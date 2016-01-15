@@ -2,10 +2,8 @@ package ru.kuchanov.tproger;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
@@ -13,16 +11,15 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.facebook.imagepipeline.image.ImageInfo;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.text.SimpleDateFormat;
@@ -47,9 +44,11 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     private static final int TYPE_TAGS = 3;
     private static final int TYPE_TO_READ_MORE = 4;
     private static final int TYPE_COMMENTS = 5;
-    private static int paddingsInDp = 5;
-    int sizeOfArticleParts = 0;
-    float recyclerWidth;
+    private static final int TYPE_ACCORDEON = 6;
+    private static final int TYPE_POLL = 7;
+
+    private int sizeOfArticleParts = 0;
+    private float recyclerWidth;
     private ArrayList<HtmlToView.TextType> textTypes = new ArrayList<>();
     private ArrayList<String> listOfParts = new ArrayList<>();
     private SharedPreferences pref;
@@ -57,6 +56,9 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     private Context ctx;
     private ImageLoader imageLoader;
     private boolean isTabletMode;
+
+    private int arrowUp;
+    private int arrowDown;
 
     public RecyclerAdapterArticle(Context ctx, Article article)
     {
@@ -85,7 +87,11 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             recyclerWidth = recyclerWidth / 3 * 2;
         }
         //minusing paddings
+        int paddingsInDp = 5;
         recyclerWidth -= DipToPx.convert(paddingsInDp * 2, ctx);
+
+        arrowDown = AttributeGetter.getDrawableId(ctx, R.attr.arrowDownIcon);
+        arrowUp = AttributeGetter.getDrawableId(ctx, R.attr.arrowUpIcon);
     }
 
     @Override
@@ -121,6 +127,14 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 itemLayoutView = webView;
                 vh = new ViewHolderWebView(itemLayoutView);
                 break;
+            case TYPE_ACCORDEON:
+                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_accordeon, parent, false);
+                vh = new ViewHolderAccordeon(itemLayoutView);
+                break;
+            case TYPE_POLL:
+                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_poll, parent, false);
+                vh = new ViewHolderPoll(itemLayoutView);
+                break;
             case TYPE_TAGS:
                 itemLayoutView = new TextView(ctx);
                 vh = new ViewHolderTags(itemLayoutView);
@@ -155,11 +169,16 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         {
             int positionInTypesList = position - 1;
 
+
             HtmlToView.TextType curType = this.textTypes.get(positionInTypesList);
             switch (curType)
             {
                 case Table:
                     return TYPE_WEB_VIEW;
+                case Accordeon:
+                    return TYPE_ACCORDEON;
+                case Poll:
+                    return TYPE_POLL;
                 case Text:
                 default:
                     return TYPE_TEXT;
@@ -182,10 +201,10 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position)
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position)
     {
         float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
-        float artTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size), 0.75f);
+        float artTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_article), 0.75f);
 
         int textSizePrimary = AttributeGetter.getDimentionPixelSize(ctx, R.dimen.text_size_primary);
         int textSizeSecondary = AttributeGetter.getDimentionPixelSize(ctx, R.dimen.text_size_secondary);
@@ -207,7 +226,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 holderTitle.date.setText(sdf.format(article.getPubDate()));
 
                 //image
-
                 LinearLayout.LayoutParams paramsImg;
                 if (article.getImageUrl() != null)
                 {
@@ -230,78 +248,90 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                     paramsImg.height = 0;
                     holderTitle.image.setLayoutParams(paramsImg);
                 }
-                //TODO test!
-//                final String url = "http://cdn.tproger.ru/wp-content/uploads/2015/12/lena_optimized2.gif";
-//                GifDecoderView gifDecoderView = new GifDecoderView(ctx, url);
-//                holderTitle.root.addView(gifDecoderView);
-
-                //fresco gif test
-                Uri uri = Uri.parse("http://cdn.tproger.ru/wp-content/uploads/2015/12/lena_optimized2.gif");
-                final SimpleDraweeView draweeView = new SimpleDraweeView(ctx);
-                final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) recyclerWidth, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-                draweeView.setLayoutParams(params);
-                DraweeController controller = Fresco.newDraweeControllerBuilder()
-                        .setUri(uri)
-                        .setAutoPlayAnimations(true)
-                        .setControllerListener(new BaseControllerListener<ImageInfo>()
-                        {
-                            @Override
-                            public void onFinalImageSet(
-                                    String id,
-                                    @Nullable ImageInfo imageInfo,
-                                    @Nullable Animatable anim)
-                            {
-                                if (imageInfo == null)
-                                {
-                                    return;
-                                }
-                                //TODO check if size of image is less then containers size
-                                //and if so - set draweeView size to size of image;
-                                Log.i("Final image received!", "Size " + imageInfo.getWidth() + " x " + imageInfo.getHeight());
-                                float scale = recyclerWidth / imageInfo.getWidth();
-                                float height = scale * imageInfo.getHeight();
-                                params.height = (int) height;
-                                draweeView.setLayoutParams(params);
-                            }
-
-                            @Override
-                            public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo)
-                            {
-                                Log.i(LOG, "Intermediate image received");
-                            }
-
-                            @Override
-                            public void onFailure(String id, Throwable throwable)
-                            {
-                                Log.e(LOG, "Error loading!");
-                            }
-                        })
-                        .build();
-                draweeView.setController(controller);
-                holderTitle.root.addView(draweeView);
                 break;
             default:
             case TYPE_TEXT:
                 ViewHolderText holderText = (ViewHolderText) holder;
 
-                //TODO
                 currentHtml = this.listOfParts.get(position - 1);
+
+                holderText.text.setTextSize(TypedValue.COMPLEX_UNIT_PX, artTextScale * textSizePrimary);
                 HtmlToView.setTextToTextView(holderText.text, currentHtml, ctx);
                 break;
             case TYPE_WEB_VIEW:
                 ViewHolderWebView holderWebView = (ViewHolderWebView) holder;
                 currentHtml = this.listOfParts.get(position - 1);
+                WebSettings settings = holderWebView.webView.getSettings();
+                int textSizeInSp = (int) (AttributeGetter.getDimentionSPSize(ctx, R.dimen.text_size_primary) * artTextScale);
+                Log.i(LOG, "textSizeInSp: " + textSizeInSp);
+
+                settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+                settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+                settings.setAppCacheEnabled(false);
+                settings.setBlockNetworkImage(true);
+                settings.setLoadsImagesAutomatically(true);
+                settings.setGeolocationEnabled(false);
+                settings.setNeedInitialFocus(false);
+                settings.setSaveFormData(false);
+
+//                settings.setTextZoom(textSizeInSp);
+                settings.setDefaultFontSize(textSizeInSp);
                 holderWebView.webView.loadDataWithBaseURL(null, currentHtml, "text/html", "UTF-8", null);
                 break;
             case TYPE_TAGS:
-
+                //TODO
                 break;
             case TYPE_TO_READ_MORE:
-
+                //TODO
                 break;
             case TYPE_COMMENTS:
+                //TODO
+                break;
+            case TYPE_ACCORDEON:
+                final ViewHolderAccordeon holderAccordeon = (ViewHolderAccordeon) holder;
+                String accrodionHtml = this.listOfParts.get(position - 1);
+                final HtmlParsing.AccordionContent accordionContent = HtmlParsing.parseAccordion(accrodionHtml);
 
+                holderAccordeon.title.setText(accordionContent.getTitle());
+
+                final LinearLayout.LayoutParams paramsImage = (LinearLayout.LayoutParams) holderAccordeon.image.getLayoutParams();
+
+                holderAccordeon.title.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        if (paramsImage.height == 0)
+                        {
+                            float scale = recyclerWidth / accordionContent.getImgWidth();
+                            float height = scale * accordionContent.getImgHeight();
+                            paramsImage.height = (int) height;
+                            holderAccordeon.image.setLayoutParams(paramsImage);
+
+                            holderAccordeon.title.setCompoundDrawablesWithIntrinsicBounds(0, 0, arrowUp, 0);
+                        }
+                        else
+                        {
+                            paramsImage.height = 0;
+                            holderAccordeon.image.setLayoutParams(paramsImage);
+
+                            holderAccordeon.title.setCompoundDrawablesWithIntrinsicBounds(0, 0, arrowDown, 0);
+                        }
+                    }
+                });
+                //fresco gif
+                Uri uri = Uri.parse(accordionContent.getImageUrl());
+                final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) recyclerWidth, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                holderAccordeon.image.setLayoutParams(params);
+                DraweeController controller = Fresco.newDraweeControllerBuilder()
+                        .setUri(uri)
+                        .setAutoPlayAnimations(true)
+                        .build();
+                holderAccordeon.image.setController(controller);
+                break;
+            case TYPE_POLL:
+                //TODO
                 break;
         }
     }
@@ -312,7 +342,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         return this.sizeOfArticleParts;
     }
 
-    //TODO
     public static class ViewHolderTitle extends RecyclerView.ViewHolder
     {
         public LinearLayout root;
@@ -355,36 +384,56 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     //TODO
     public static class ViewHolderTags extends RecyclerView.ViewHolder
     {
-//        public WebView webView;
 
         public ViewHolderTags(View v)
         {
             super(v);
-//            webView = (WebView) v;
         }
     }
 
     //TODO
     public static class ViewHolderToReadMore extends RecyclerView.ViewHolder
     {
-//        public WebView webView;
 
         public ViewHolderToReadMore(View v)
         {
             super(v);
-//            webView = (WebView) v;
         }
     }
 
     //TODO
     public static class ViewHolderComments extends RecyclerView.ViewHolder
     {
-//        public WebView webView;
 
         public ViewHolderComments(View v)
         {
             super(v);
-//            webView = (WebView) v;
+        }
+    }
+
+    //TODO
+    public static class ViewHolderAccordeon extends RecyclerView.ViewHolder
+    {
+        public LinearLayout root;
+        public TextView title;
+        public SimpleDraweeView image;
+
+        public ViewHolderAccordeon(View v)
+        {
+            super(v);
+            root = (LinearLayout) v;
+            image = (SimpleDraweeView) v.findViewById(R.id.image);
+            title = (TextView) v.findViewById(R.id.title);
+        }
+    }
+
+    //TODO
+    public static class ViewHolderPoll extends RecyclerView.ViewHolder
+    {
+
+        public ViewHolderPoll(View v)
+        {
+            super(v);
         }
     }
 }

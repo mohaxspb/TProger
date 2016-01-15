@@ -8,6 +8,8 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
@@ -21,9 +23,8 @@ public class RoboSpiceRequestArticle extends SpiceRequest<Article>
     public static final String LOG = RoboSpiceRequestArticle.class.getSimpleName();
 
     Context ctx;
-    MyRoboSpiceDatabaseHelper databaseHelper;
     Article article;
-
+    
     public RoboSpiceRequestArticle(Context ctx, Article article)
     {
         super(Article.class);
@@ -36,7 +37,7 @@ public class RoboSpiceRequestArticle extends SpiceRequest<Article>
     public Article loadDataFromNetwork() throws Exception
     {
         Log.i(LOG, "loadDataFromNetwork called");
-        databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+        MyRoboSpiceDatabaseHelper databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
 
         String responseBody = makeRequest();
 

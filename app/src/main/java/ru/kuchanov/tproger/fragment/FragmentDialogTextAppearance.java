@@ -60,10 +60,8 @@ public class FragmentDialogTextAppearance extends DialogFragment
 
         final SeekBar seekbarUI = (SeekBar) customView.findViewById(R.id.seekbar_ui);
         final SeekBar seekbarArticle = (SeekBar) customView.findViewById(R.id.seekbar_article);
-//        final SeekBar seekbarComments = (SeekBar) dialogTextSize.getCustomView().findViewById(R.id.seekbar_comments);
         final TextView tvUi = (TextView) customView.findViewById(R.id.text_size_ui);
         final TextView tvArticle = (TextView) customView.findViewById(R.id.text_size_article);
-//        final TextView tvComments = (TextView) dialogTextSize.getCustomView().findViewById(R.id.text_size_comments);
 
         seekbarUI.setMax(150);
         final float scaleUI = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
@@ -117,31 +115,6 @@ public class FragmentDialogTextAppearance extends DialogFragment
                 pref.edit().putFloat(ctx.getString(R.string.pref_design_key_text_size_article), size).commit();
             }
         });
-
-//        seekbarComments.setMax(150);
-//        float scaleComments = pref.getFloat(ActivityPreference.PREF_KEY_SCALE_COMMENTS, 0.75f);
-//        int curProgressComm = (int) ((scaleComments - 0.50f) * 100);
-//        seekbarComments.setProgress(curProgressComm);
-//        seekbarComments.setOnSeekBarChangeListener(new OnSeekBarChangeListener()
-//        {
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar)
-//            {
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar)
-//            {
-//            }
-//
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
-//            {
-//                float size = (float) (progress / 100f) + 0.50f;
-//                tvComments.setTextSize(size * 21);
-//                pref.edit().putFloat(ActivityPreference.PREF_KEY_SCALE_COMMENTS, size).commit();
-//            }
-//        });
 
         return dialogTextSize;
     }
