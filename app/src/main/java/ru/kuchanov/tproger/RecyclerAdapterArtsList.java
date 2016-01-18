@@ -62,8 +62,10 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
 
         artsList = dataset;
 
-        textSizePrimary = AttributeGetter.getDimentionPixelSize(ctx, R.dimen.text_size_primary);
-        textSizeSecondary = AttributeGetter.getDimentionPixelSize(ctx, R.dimen.text_size_secondary);
+//        textSizePrimary = AttributeGetter.getDimentionPixelSize(ctx, R.dimen.text_size_primary);
+//        textSizeSecondary = AttributeGetter.getDimentionPixelSize(ctx, R.dimen.text_size_secondary);
+        textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
+        textSizeSecondary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_secondary);
     }
 
     @Override

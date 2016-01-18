@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -22,6 +24,8 @@ import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import org.w3c.dom.Text;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -32,6 +36,7 @@ import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DipToPx;
 import ru.kuchanov.tproger.utils.MyUIL;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
+import ru.kuchanov.tproger.utils.html.HtmlTextFormatting;
 import ru.kuchanov.tproger.utils.html.HtmlToView;
 
 public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.ViewHolder>
@@ -46,7 +51,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     private static final int TYPE_COMMENTS = 5;
     private static final int TYPE_ACCORDEON = 6;
     private static final int TYPE_POLL = 7;
-
+    int paddingsInDp = 5;
     private int sizeOfArticleParts = 0;
     private float recyclerWidth;
     private ArrayList<HtmlToView.TextType> textTypes = new ArrayList<>();
@@ -56,7 +61,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     private Context ctx;
     private ImageLoader imageLoader;
     private boolean isTabletMode;
-
     private int arrowUp;
     private int arrowDown;
 
@@ -87,7 +91,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             recyclerWidth = recyclerWidth / 3 * 2;
         }
         //minusing paddings
-        int paddingsInDp = 5;
         recyclerWidth -= DipToPx.convert(paddingsInDp * 2, ctx);
 
         arrowDown = AttributeGetter.getDrawableId(ctx, R.attr.arrowDownIcon);
@@ -120,11 +123,24 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 vh = new ViewHolderText(itemLayoutView);
                 break;
             case TYPE_WEB_VIEW:
-                WebView webView = new WebView(ctx);
-                webView.getSettings().setUseWideViewPort(true);
-                webView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
-                webView.setBackgroundColor(windowBackgroundColor);
-                itemLayoutView = webView;
+//                WebView webView = new WebView(ctx);
+//                webView.getSettings().setUseWideViewPort(true);
+//                webView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+//                webView.setBackgroundColor(windowBackgroundColor);
+//                itemLayoutView = webView;
+
+//                TextView textView1 = new TextView(ctx);
+//                textView1.setBackgroundColor(windowBackgroundColor);
+//                int padding1 = (int) DipToPx.convert(3, ctx);
+//                textView1.setPadding(padding1, 0, padding1, 0);
+//                itemLayoutView = textView1;
+                LinearLayout linearLayout = new LinearLayout(ctx);
+                linearLayout.setOrientation(LinearLayout.VERTICAL);
+                linearLayout.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT));
+                linearLayout.setBackgroundColor(windowBackgroundColor);
+                int padding1 = (int) DipToPx.convert(paddingsInDp, ctx);
+                linearLayout.setPadding(padding1, 0, padding1, 0);
+                itemLayoutView = linearLayout;
                 vh = new ViewHolderWebView(itemLayoutView);
                 break;
             case TYPE_ACCORDEON:
@@ -206,8 +222,10 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
         float artTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_article), 0.75f);
 
-        int textSizePrimary = AttributeGetter.getDimentionPixelSize(ctx, R.dimen.text_size_primary);
-        int textSizeSecondary = AttributeGetter.getDimentionPixelSize(ctx, R.dimen.text_size_secondary);
+        int textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
+        int textSizeSecondary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_secondary);
+//        Log.i(LOG, "textSizePrimary: "+textSizePrimary);
+//        Log.i(LOG, "textSizeSecondary: "+textSizeSecondary);
 
         String currentHtml;
 
@@ -255,28 +273,32 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
                 currentHtml = this.listOfParts.get(position - 1);
 
-                holderText.text.setTextSize(TypedValue.COMPLEX_UNIT_PX, artTextScale * textSizePrimary);
+                float scaledTextSizePrimary = artTextScale * textSizePrimary;
+                //TODO
+//                holderText.text.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledTextSizePrimary);
                 HtmlToView.setTextToTextView(holderText.text, currentHtml, ctx);
                 break;
             case TYPE_WEB_VIEW:
                 ViewHolderWebView holderWebView = (ViewHolderWebView) holder;
+
+                //remove all childView to prevent repeating
+                holderWebView.linearLayout.removeAllViews();
+
                 currentHtml = this.listOfParts.get(position - 1);
-                WebSettings settings = holderWebView.webView.getSettings();
-                int textSizeInSp = (int) (AttributeGetter.getDimentionSPSize(ctx, R.dimen.text_size_primary) * artTextScale);
-                Log.i(LOG, "textSizeInSp: " + textSizeInSp);
 
-                settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
-                settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-                settings.setAppCacheEnabled(false);
-                settings.setBlockNetworkImage(true);
-                settings.setLoadsImagesAutomatically(true);
-                settings.setGeolocationEnabled(false);
-                settings.setNeedInitialFocus(false);
-                settings.setSaveFormData(false);
-
-//                settings.setTextZoom(textSizeInSp);
-                settings.setDefaultFontSize(textSizeInSp);
-                holderWebView.webView.loadDataWithBaseURL(null, currentHtml, "text/html", "UTF-8", null);
+                HtmlTextFormatting.CodeTableContent tableContent = HtmlTextFormatting.parseTableForCodeLines(ctx, currentHtml);
+                LinearLayout.LayoutParams linParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                for (String codeLine : tableContent.getLines())
+                {
+                    Log.i(LOG, codeLine);
+                    TextView tv = new TextView(ctx);
+                    tv.setLayoutParams(linParams);
+                    tv.setEllipsize(TextUtils.TruncateAt.END);
+                    tv.setHorizontallyScrolling(true);
+                    tv.setSingleLine(true);
+                    tv.setText(Html.fromHtml(codeLine));
+                    holderWebView.linearLayout.addView(tv);
+                }
                 break;
             case TYPE_TAGS:
                 //TODO
@@ -370,14 +392,27 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         }
     }
 
+//    public static class ViewHolderWebView extends RecyclerView.ViewHolder
+//    {
+//        public WebView webView;
+//
+//        public ViewHolderWebView(View v)
+//        {
+//            super(v);
+//            webView = (WebView) v;
+//        }
+//    }
+
     public static class ViewHolderWebView extends RecyclerView.ViewHolder
     {
-        public WebView webView;
+        //        public TextView textView;
+        public LinearLayout linearLayout;
 
         public ViewHolderWebView(View v)
         {
             super(v);
-            webView = (WebView) v;
+//            textView = (TextView) v;
+            linearLayout = (LinearLayout) v;
         }
     }
 

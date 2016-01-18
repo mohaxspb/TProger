@@ -58,18 +58,4 @@ public class AttributeGetter
 
         return value;
     }
-
-    public static int getDimentionSPSize(Context ctx, int addressInRClass)
-    {
-        int value;
-
-        value  = (int) (ctx.getResources().getDimension(addressInRClass) / ctx.getResources().getDisplayMetrics().density);
-//        int[] attrs = new int[]{addressInRClass};
-//        TypedArray ta = ctx.obtainStyledAttributes(attrs);
-//        value = ta.getDimension(0, 1);
-        Log.i(LOG, "value: " + value);
-//        ta.recycle();
-
-        return value;
-    }
 }

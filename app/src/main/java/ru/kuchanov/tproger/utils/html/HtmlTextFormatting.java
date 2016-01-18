@@ -5,15 +5,34 @@ package ru.kuchanov.tproger.utils.html;
  * For ExpListTest.
  */
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
+import android.text.Html;
+import android.text.Spanned;
+import android.util.Log;
+
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.parser.Tag;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import ru.kuchanov.tproger.R;
+import ru.kuchanov.tproger.utils.DipToPx;
 
 /**
  * class for formatting Html and extracting some tags from p tag;
  */
 public class HtmlTextFormatting
 {
+    private static final String LOG = HtmlTextFormatting.class.getSimpleName();
 //    static final String LOG = HtmlTextFormatting.class.getSimpleName();
 //
 //    private static final String TAG_IMG = "img";
@@ -308,5 +327,177 @@ public class HtmlTextFormatting
         }
 
         return HtmlToView.TextType.Text;
+    }
+
+    public static String removeTextSizeStyleAttrsFromTable(Context ctx, String html)
+    {
+        Document doc = Jsoup.parse(html);
+        ArrayList<Element> elements = doc.getAllElements();
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        float artTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_article), 0.75f);
+        int textSizeInSp = (int) (ctx.getResources().getDimension(R.dimen.text_size_primary) / ctx.getResources().getDisplayMetrics().density * artTextScale);
+        int textSizeInPx = (int) DipToPx.convert(textSizeInSp, ctx);
+
+        for (Element el : elements)
+        {
+//            if(el.className().equals("crayon-nums-content"))
+//            {
+//                String attr = el.attr("style");
+//                attr = attr.replace("font-size: 12px !important;", "");
+//                attr = attr.replace("line-height: 15px !important;", "line-height: 105px !important;");
+//                el.removeAttr("style");
+//                el.attr("style", attr);
+//            }
+
+            if (!el.hasAttr("style"))
+            {
+                continue;
+            }
+
+            String attr = el.attr("style");
+//            attr = attr.replace("font-size: 12px !important;", "");
+//            attr = attr.replace("line-height: 15px !important;", "");
+            attr = attr.replace("font-size: 12px !important;", "font-size: " + textSizeInPx + "px !important;");
+            attr = attr.replace("line-height: 15px !important;", "line-height: " + textSizeInPx + "px !important;");
+            el.removeAttr("style");
+            el.attr("style", attr);
+        }
+        return doc.outerHtml();
+    }
+
+    public static CodeTableContent parseTableForCodeLines(Context ctx, String html)
+    {
+        ArrayList<String> codeLines = new ArrayList<>();
+
+        Document doc = Jsoup.parse(html);
+
+        Element el = doc.getElementsByClass("crayon-pre").first();
+
+        ArrayList<Element> lines = el.children();
+
+        for (Element element : lines)
+        {
+//            codeLines.add(Html.fromHtml(element.html()).toString());
+            for (Element span : element.children())
+            {
+//                <font color='#123456'>text</font>
+                String spanClass = span.className();
+                CodeTableContent.SpanType spanType = CodeTableContent.getTypeBySpanClass(spanClass);
+                String spanColorInHex = "#" + CodeTableContent.getColorForType(ctx, spanType);
+//                Log.i(LOG, spanColorInHex);
+
+                Element font= new Element(Tag.valueOf("font"), "");
+                font.attr("color", spanColorInHex);
+                font.text(span.text());
+                span.replaceWith(font);
+            }
+            codeLines.add(element.html());
+        }
+
+        return new CodeTableContent(codeLines);
+    }
+
+    /**
+     * class-representation for parsed code section from TProger.ru <br/>
+     * holds {@code ArrayList<String>} of lines of code
+     */
+    public static class CodeTableContent
+    {
+        public static final String CR = "crayon-";
+
+        public static final String TYPE_CN = CR + "cn";//number
+        public static final String TYPE_E = CR + "e";//clazz
+        public static final String TYPE_V = CR + "v";//var
+        public static final String TYPE_R = CR + "r";//new import
+        public static final String TYPE_C = CR + "c";//comment
+        public static final String TYPE_T = CR + "t";//bool
+        public static final String TYPE_O = CR + "o";//operand
+
+        private ArrayList<String> lines;
+
+        public CodeTableContent(ArrayList<String> lines)
+        {
+            this.lines = lines;
+        }
+
+        public static SpanType getTypeBySpanClass(String spanClass)
+        {
+            SpanType type;
+
+            switch (spanClass)
+            {
+                case TYPE_CN:
+                    type = SpanType.Number;
+                    break;
+                case TYPE_E:
+                    type = SpanType.Clazz;
+                    break;
+                default:
+                case TYPE_V:
+                    type = SpanType.Var;
+                    break;
+                case TYPE_R:
+                    type = SpanType.Import;
+                    break;
+                case TYPE_C:
+                    type = SpanType.Comment;
+                    break;
+                case TYPE_T:
+                    type = SpanType.Bool;
+                    break;
+                case TYPE_O:
+                    type = SpanType.Operand;
+                    break;
+            }
+            return type;
+        }
+
+        public static String getColorForType(Context ctx, SpanType type)
+        {
+            int adressOfColor = R.color.my_material_grey_600;
+
+            switch (type)
+            {
+                case Clazz:
+                    adressOfColor = R.color.material_indigo_300;
+                    break;
+                default:
+                case Var:
+                    adressOfColor = R.color.material_indigo_600;
+                    break;
+                case Bool:
+                    adressOfColor = R.color.material_teal_500;
+                    break;
+                case Comment:
+                    adressOfColor = R.color.material_amber_700;
+                    break;
+                case Import:
+                    adressOfColor = R.color.material_teal_500;
+                    break;
+                case Number:
+                    adressOfColor = R.color.material_red_500;
+                    break;
+                case Operand:
+                    adressOfColor = R.color.material_indigo_300;
+                    break;
+            }
+
+//            return ContextCompat.getColor(ctx, adressOfColor);
+//            return ctx.getResources().getString(adressOfColor);
+            return Integer.toHexString(ContextCompat.getColor(ctx, adressOfColor)).substring(2);
+        }
+
+        public ArrayList<String> getLines()
+        {
+            return lines;
+        }
+
+
+        public enum SpanType
+        {
+            //blue darkBlue    violet  orange  red     blue
+            Clazz, Var, Bool, Comment, Import, Number, Operand;
+        }
     }
 }
