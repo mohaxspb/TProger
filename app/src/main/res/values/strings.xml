@@ -20,5 +20,7 @@
     <string name="db_delete_table_articles">Удалить таблицу Articles</string>
     <string name="title_activity_activity_article">Статьи</string>
     <string name="db_delete_first_artcat_in_category">Удалить первую статью в категории</string>
+    <string name="show">Смотреть</string>
+    <string name="copy">Копировать</string>
 
 </resources>

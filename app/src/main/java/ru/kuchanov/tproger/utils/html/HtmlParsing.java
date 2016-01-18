@@ -232,14 +232,13 @@ public class HtmlParsing
         parsedArticle.setPreview(preview);
         parsedArticle.setText(text);
 
-        Article.printInLog(parsedArticle);
+//        Article.printInLog(parsedArticle);
 
-        ArrayList<HtmlToView.TextType> textNodes = HtmlToView.getTextPartSummary(HtmlParsing.getElementListFromHtml(parsedArticle.getText()));
-        for (HtmlToView.TextType type : textNodes)
-        {
-            Log.i(LOG, type.toString());
-        }
-
+//        ArrayList<HtmlToView.TextType> textNodes = HtmlToView.getTextPartSummary(HtmlParsing.getElementListFromHtml(parsedArticle.getText()));
+//        for (HtmlToView.TextType type : textNodes)
+//        {
+//            Log.i(LOG, type.toString());
+//        }
 
         return parsedArticle;
     }

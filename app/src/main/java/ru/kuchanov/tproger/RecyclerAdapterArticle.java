@@ -6,15 +6,12 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,8 +20,6 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.nostra13.universalimageloader.core.ImageLoader;
-
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,8 +30,8 @@ import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DipToPx;
 import ru.kuchanov.tproger.utils.MyUIL;
+import ru.kuchanov.tproger.utils.html.CodeRepresenter;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
-import ru.kuchanov.tproger.utils.html.HtmlTextFormatting;
 import ru.kuchanov.tproger.utils.html.HtmlToView;
 
 public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.ViewHolder>
@@ -45,7 +40,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
     private static final int TYPE_TITLE = 0;
     private static final int TYPE_TEXT = 1;
-    private static final int TYPE_WEB_VIEW = 2;
+    private static final int TYPE_CODE = 2;
     private static final int TYPE_TAGS = 3;
     private static final int TYPE_TO_READ_MORE = 4;
     private static final int TYPE_COMMENTS = 5;
@@ -122,26 +117,16 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 itemLayoutView = textView;
                 vh = new ViewHolderText(itemLayoutView);
                 break;
-            case TYPE_WEB_VIEW:
-//                WebView webView = new WebView(ctx);
-//                webView.getSettings().setUseWideViewPort(true);
-//                webView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
-//                webView.setBackgroundColor(windowBackgroundColor);
-//                itemLayoutView = webView;
-
-//                TextView textView1 = new TextView(ctx);
-//                textView1.setBackgroundColor(windowBackgroundColor);
-//                int padding1 = (int) DipToPx.convert(3, ctx);
-//                textView1.setPadding(padding1, 0, padding1, 0);
-//                itemLayoutView = textView1;
-                LinearLayout linearLayout = new LinearLayout(ctx);
-                linearLayout.setOrientation(LinearLayout.VERTICAL);
-                linearLayout.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT));
-                linearLayout.setBackgroundColor(windowBackgroundColor);
-                int padding1 = (int) DipToPx.convert(paddingsInDp, ctx);
-                linearLayout.setPadding(padding1, 0, padding1, 0);
-                itemLayoutView = linearLayout;
-                vh = new ViewHolderWebView(itemLayoutView);
+            case TYPE_CODE:
+//                LinearLayout linearLayout = new LinearLayout(ctx);
+//                linearLayout.setOrientation(LinearLayout.VERTICAL);
+//                linearLayout.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT));
+//                linearLayout.setBackgroundColor(windowBackgroundColor);
+//                int padding1 = (int) DipToPx.convert(paddingsInDp, ctx);
+//                linearLayout.setPadding(padding1, 0, padding1, 0);
+//                itemLayoutView = linearLayout;
+                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_code_representer_main, parent, false);
+                vh = new ViewHolderCode(itemLayoutView);
                 break;
             case TYPE_ACCORDEON:
                 itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_accordeon, parent, false);
@@ -190,7 +175,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             switch (curType)
             {
                 case Table:
-                    return TYPE_WEB_VIEW;
+                    return TYPE_CODE;
                 case Accordeon:
                     return TYPE_ACCORDEON;
                 case Poll:
@@ -224,6 +209,8 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
         int textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
         int textSizeSecondary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_secondary);
+
+        float scaledTextSizePrimary = artTextScale * textSizePrimary;
 //        Log.i(LOG, "textSizePrimary: "+textSizePrimary);
 //        Log.i(LOG, "textSizeSecondary: "+textSizeSecondary);
 
@@ -273,32 +260,45 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
                 currentHtml = this.listOfParts.get(position - 1);
 
-                float scaledTextSizePrimary = artTextScale * textSizePrimary;
-                //TODO
-//                holderText.text.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledTextSizePrimary);
+                holderText.text.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledTextSizePrimary);
                 HtmlToView.setTextToTextView(holderText.text, currentHtml, ctx);
                 break;
-            case TYPE_WEB_VIEW:
-                ViewHolderWebView holderWebView = (ViewHolderWebView) holder;
-
+            case TYPE_CODE:
+                ViewHolderCode holderCode = (ViewHolderCode) holder;
                 //remove all childView to prevent repeating
-                holderWebView.linearLayout.removeAllViews();
+                holderCode.content.removeAllViews();
 
                 currentHtml = this.listOfParts.get(position - 1);
 
-                HtmlTextFormatting.CodeTableContent tableContent = HtmlTextFormatting.parseTableForCodeLines(ctx, currentHtml);
-                LinearLayout.LayoutParams linParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                for (String codeLine : tableContent.getLines())
+                CodeRepresenter tableContent = CodeRepresenter.parseTableForCodeLines(ctx, currentHtml);
+
+                for (int i = 0; i < tableContent.getLines().size(); i++)
                 {
-                    Log.i(LOG, codeLine);
-                    TextView tv = new TextView(ctx);
-                    tv.setLayoutParams(linParams);
-                    tv.setEllipsize(TextUtils.TruncateAt.END);
-                    tv.setHorizontallyScrolling(true);
-                    tv.setSingleLine(true);
-                    tv.setText(Html.fromHtml(codeLine));
-                    holderWebView.linearLayout.addView(tv);
+                    String codeLine = tableContent.getLines().get(i);
+//                    Log.i(LOG, codeLine);
+                    LinearLayout codeLineLayout = (LinearLayout) LayoutInflater.from(ctx).inflate(R.layout.recycler_item_code_representer_code_line, holderCode.content, false);
+
+                    TextView lineNumber = (TextView) codeLineLayout.findViewById(R.id.line_number);
+                    String number = " " + i + " ";
+                    lineNumber.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledTextSizePrimary);
+                    lineNumber.setText(number);
+
+                    TextView lineCode = (TextView) codeLineLayout.findViewById(R.id.line_code);
+                    lineCode.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledTextSizePrimary);
+                    lineCode.setText(Html.fromHtml(codeLine));
+
+                    //each second line must have darker color
+                    if (i % 2 != 0)
+                    {
+                        codeLineLayout.setBackgroundResource(R.color.material_teal_200);
+                        lineNumber.setBackgroundResource(R.color.material_teal_400);
+                        lineCode.setBackgroundResource(R.color.material_teal_200);
+                    }
+
+                    holderCode.content.addView(codeLineLayout);
                 }
+                //// TODO: 18.01.2016 add clickListener to btns
+
                 break;
             case TYPE_TAGS:
                 //TODO
@@ -314,6 +314,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 String accrodionHtml = this.listOfParts.get(position - 1);
                 final HtmlParsing.AccordionContent accordionContent = HtmlParsing.parseAccordion(accrodionHtml);
 
+                holderAccordeon.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledTextSizePrimary);
                 holderAccordeon.title.setText(accordionContent.getTitle());
 
                 final LinearLayout.LayoutParams paramsImage = (LinearLayout.LayoutParams) holderAccordeon.image.getLayoutParams();
@@ -343,7 +344,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 });
                 //fresco gif
                 Uri uri = Uri.parse(accordionContent.getImageUrl());
-                final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) recyclerWidth, LinearLayout.LayoutParams.WRAP_CONTENT);
+                final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) recyclerWidth, 0);
 
                 holderAccordeon.image.setLayoutParams(params);
                 DraweeController controller = Fresco.newDraweeControllerBuilder()
@@ -392,27 +393,20 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         }
     }
 
-//    public static class ViewHolderWebView extends RecyclerView.ViewHolder
-//    {
-//        public WebView webView;
-//
-//        public ViewHolderWebView(View v)
-//        {
-//            super(v);
-//            webView = (WebView) v;
-//        }
-//    }
-
-    public static class ViewHolderWebView extends RecyclerView.ViewHolder
+    public static class ViewHolderCode extends RecyclerView.ViewHolder
     {
-        //        public TextView textView;
-        public LinearLayout linearLayout;
+        public LinearLayout root;
+        public LinearLayout content;
+        public Button show;
+        public Button copy;
 
-        public ViewHolderWebView(View v)
+        public ViewHolderCode(View v)
         {
             super(v);
-//            textView = (TextView) v;
-            linearLayout = (LinearLayout) v;
+            root = (LinearLayout) v;
+            content = (LinearLayout) v.findViewById(R.id.content);
+            show = (Button) v.findViewById(R.id.show);
+            copy = (Button) v.findViewById(R.id.copy);
         }
     }
 
