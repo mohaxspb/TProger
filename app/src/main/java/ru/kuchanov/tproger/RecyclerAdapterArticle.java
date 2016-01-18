@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import ru.kuchanov.tproger.fragment.FragmentDialogCodeRepresenter;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DipToPx;
@@ -118,13 +120,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 vh = new ViewHolderText(itemLayoutView);
                 break;
             case TYPE_CODE:
-//                LinearLayout linearLayout = new LinearLayout(ctx);
-//                linearLayout.setOrientation(LinearLayout.VERTICAL);
-//                linearLayout.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT));
-//                linearLayout.setBackgroundColor(windowBackgroundColor);
-//                int padding1 = (int) DipToPx.convert(paddingsInDp, ctx);
-//                linearLayout.setPadding(padding1, 0, padding1, 0);
-//                itemLayoutView = linearLayout;
                 itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_code_representer_main, parent, false);
                 vh = new ViewHolderCode(itemLayoutView);
                 break;
@@ -270,11 +265,11 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
                 currentHtml = this.listOfParts.get(position - 1);
 
-                CodeRepresenter tableContent = CodeRepresenter.parseTableForCodeLines(ctx, currentHtml);
+                final CodeRepresenter codeRepresenter = CodeRepresenter.parseTableForCodeLines(ctx, currentHtml);
 
-                for (int i = 0; i < tableContent.getLines().size(); i++)
+                for (int i = 0; i < codeRepresenter.getLines().size(); i++)
                 {
-                    String codeLine = tableContent.getLines().get(i);
+                    String codeLine = codeRepresenter.getLines().get(i);
 //                    Log.i(LOG, codeLine);
                     LinearLayout codeLineLayout = (LinearLayout) LayoutInflater.from(ctx).inflate(R.layout.recycler_item_code_representer_code_line, holderCode.content, false);
 
@@ -298,7 +293,25 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                     holderCode.content.addView(codeLineLayout);
                 }
                 //// TODO: 18.01.2016 add clickListener to btns
-
+                holderCode.copy.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        //TODO
+                    }
+                });
+                holderCode.show.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        ArrayList<String> lines = codeRepresenter.getLines();
+                        lines.addAll(codeRepresenter.getLines());//TODO delete
+                        FragmentDialogCodeRepresenter fragmentDialogCodeRepresenter = FragmentDialogCodeRepresenter.newInstance(lines);
+                        fragmentDialogCodeRepresenter.show(((AppCompatActivity)ctx).getFragmentManager(), FragmentDialogCodeRepresenter.LOG);
+                    }
+                });
                 break;
             case TYPE_TAGS:
                 //TODO
@@ -314,6 +327,8 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 String accrodionHtml = this.listOfParts.get(position - 1);
                 final HtmlParsing.AccordionContent accordionContent = HtmlParsing.parseAccordion(accrodionHtml);
 
+                int windowBackgroundDark=AttributeGetter.getColor(ctx, R.attr.windowBackgroundDark);
+                holderAccordeon.title.setBackgroundColor(windowBackgroundDark);
                 holderAccordeon.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledTextSizePrimary);
                 holderAccordeon.title.setText(accordionContent.getTitle());
 

@@ -2,6 +2,8 @@
 <resources>
     <attr name="myCardBackgroundColor" format="color"/>
     <attr name="myCardBackgroundColorDark" format="color"/>
+
+    <attr name="windowBackgroundDark" format="color"/>
     <!---->
     <attr name="overflowIcon" format="reference" />
     <attr name="settingsIcon" format="reference"/>

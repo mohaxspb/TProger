@@ -12,6 +12,7 @@
         <item name="android:textColorSecondary">@color/material_grey_700</item>
         <item name="actionMenuTextColor">@color/my_material_grey_800</item>
         <item name="android:windowBackground">@color/my_material_grey_100</item>
+        <item name="windowBackgroundDark">@color/material_grey_200</item>
         <!--custom colors-->
         <item name="myCardBackgroundColor">@color/my_material_grey_50</item>
         <item name="myCardBackgroundColorDark">@color/my_material_grey_300</item>
@@ -112,6 +113,7 @@
         <item name="android:textColorSecondary">@color/material_grey_400</item>
         <item name="actionMenuTextColor">@color/material_grey_400</item>
         <item name="android:windowBackground">@color/my_material_grey_900</item>
+        <item name="windowBackgroundDark">@color/my_material_grey_800</item>
         <!--custom colors-->
         <item name="myCardBackgroundColor">@color/my_material_grey_800</item>
         <item name="myCardBackgroundColorDark">@color/material_grey_700</item>
@@ -169,7 +171,7 @@
         <item name="cover_top_to_bottom">@drawable/cover_top_to_bottom_dark</item>
         <item name="cover_bottom_to_top">@drawable/cover_bottom_to_top_dark</item>
         <item name="top_rounded_corners_background">@drawable/top_rounded_corners_dark</item>
-       <!-- <item name="actionBarTheme">@style/MyApp.ActionBarTheme.Dark</item>-->
+        <!-- <item name="actionBarTheme">@style/MyApp.ActionBarTheme.Dark</item>-->
     </style>
 
     <!--<style name="MyApp.ActionBarTheme.Dark" parent="@style/ThemeOverlay.AppCompat.ActionBar">

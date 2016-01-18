@@ -81,8 +81,8 @@ public class HtmlToView
             }
             else
             {
-                TextView textView;// = null;
-                String html;// = "";
+                TextView textView;
+                String html;
 
                 if (previousTagIsUnsupported)
                 {
@@ -191,9 +191,6 @@ public class HtmlToView
      */
     public static void setTextToTextView(TextView textView, String textToSet, Context ctx)
     {
-//        textToSet = textToSet.replaceAll("</p>", "");
-//        textToSet = textToSet.replaceAll("<p>", "<p></p>");
-
         textView.setText(
                 Html.fromHtml(
                         textToSet, new UILImageGetter(textView, ctx), new MyHtmlTagHandler()));

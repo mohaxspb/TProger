@@ -2,11 +2,21 @@
 <resources>
 
     <style name="My.Theme.Light" parent="Base.Theme.Light">
+        <!--need it with android prefix to be able to autoapplying theme to toolbar that is not in collapsingToolbarLayout -->
+        <!--<item name="android:colorPrimary">@color/my_material_grey_800</item>-->
+        <!--<item name="android:colorPrimaryDark">@color/my_material_grey_900</item>-->
+        <!--<item name="android:colorAccent">@color/material_indigo_500</item>-->
+        <!---->
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:navigationBarColor">@color/material_grey_500</item>
     </style>
 
     <style name="My.Theme.Dark" parent="Base.Theme.Dark">
+        <!--need it with android prefix to be able to autoapplying theme to toolbar that is not in collapsingToolbarLayout -->
+        <!--<item name="android:colorPrimary">@color/my_material_grey_800</item>-->
+        <!--<item name="android:colorPrimaryDark">@color/my_material_grey_900</item>-->
+        <!--<item name="android:colorAccent">@color/material_indigo_500</item>-->
+        <!---->
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:navigationBarColor">@color/my_material_grey_900</item>
     </style>

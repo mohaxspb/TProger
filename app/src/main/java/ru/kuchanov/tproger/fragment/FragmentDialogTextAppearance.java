@@ -1,11 +1,13 @@
 package ru.kuchanov.tproger.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
@@ -37,6 +39,7 @@ public class FragmentDialogTextAppearance extends DialogFragment
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
@@ -80,6 +83,7 @@ public class FragmentDialogTextAppearance extends DialogFragment
             {
             }
 
+            @SuppressLint("CommitPrefEdits")
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
             {
@@ -107,6 +111,7 @@ public class FragmentDialogTextAppearance extends DialogFragment
             {
             }
 
+            @SuppressLint("CommitPrefEdits")
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
             {

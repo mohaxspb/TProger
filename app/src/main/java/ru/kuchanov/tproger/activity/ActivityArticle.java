@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
@@ -49,6 +50,7 @@ import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
+import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.MyColorFilter;
 import ru.kuchanov.tproger.utils.MyRandomUtil;
 import ru.kuchanov.tproger.utils.MyUIL;
@@ -97,6 +99,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     /////////////
 //    ChangeImageWithAlpha changeImageWithAlpha;
     ChangeImageWithAlpha changeImageWithAlphaLeft;
+    ImageLoader imageLoader;
     /**
      * list of articles to show in pager and recyclerView
      */
@@ -111,8 +114,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     private Timer timer;
     private TimerTask timerTask;
     private boolean isTabletMode;
-
-    ImageLoader imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -139,7 +140,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         //TODO make layout for phone
         setContentView(R.layout.activity_article_tablet);
 
-        if(savedInstanceState == null)
+        if (savedInstanceState == null)
         {
             restoreStateFromIntent(this.getIntent().getExtras());
         }
@@ -239,6 +240,12 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
 
     protected void setUpNavigationDrawer()
     {
+        //changing statusBarColor
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            getWindow().setStatusBarColor(AttributeGetter.getColor(ctx, R.attr.colorPrimaryDark));
+        }
+
         setSupportActionBar(toolbar);
 
         final ActionBar actionBar = getSupportActionBar();
@@ -402,12 +409,12 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     {
 //        if (state != null)
 //        {
-            isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
-            prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
-            artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE);
+        isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
+        prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
+        artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE);
 
-            artsList = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
-            currentPositionOfArticleInList = state.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
+        artsList = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
+        currentPositionOfArticleInList = state.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
 //        }
 //        else
 //        {
