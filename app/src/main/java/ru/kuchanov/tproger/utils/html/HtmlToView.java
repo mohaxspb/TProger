@@ -209,7 +209,7 @@ public class HtmlToView
     {
         ArrayList<TextType> listOfTypes = new ArrayList<>();
 
-        for (Element el: list)
+        for (Element el : list)
         {
             listOfTypes.add(HtmlTextFormatting.tagType(el));
         }
@@ -221,7 +221,7 @@ public class HtmlToView
     {
         ArrayList<String> listOfTextParts = new ArrayList<>();
 
-        for (Element el: list)
+        for (Element el : list)
         {
             listOfTextParts.add(el.toString());
         }
@@ -231,6 +231,6 @@ public class HtmlToView
 
     public enum TextType
     {
-        Table, Text, Accordeon, Poll
+        Code, Text, Accordion, Poll, Table
     }
 }

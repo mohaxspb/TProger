@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--toolbarStyleFix-->
+    <attr name="myToolbarStyle" format="reference"/>
+    <attr name="myToolbarPopupStyle" format="reference"/>
+
     <attr name="myCardBackgroundColor" format="color"/>
     <attr name="myCardBackgroundColorDark" format="color"/>
 

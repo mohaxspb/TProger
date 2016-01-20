@@ -302,11 +302,11 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 
 
             //////////////////////
-            ArrayList<HtmlToView.TextType> types = HtmlToView.getTextPartSummary(HtmlParsing.getElementListFromHtml(article.getText()));
-            ArrayList<String> listOfParts = HtmlToView.getTextPartsList(HtmlParsing.getElementListFromHtml(article.getText()));
+//            ArrayList<HtmlToView.TextType> types = HtmlToView.getTextPartSummary(HtmlParsing.getElementListFromHtml(article.getText()));
+//            ArrayList<String> listOfParts = HtmlToView.getTextPartsList(HtmlParsing.getElementListFromHtml(article.getText()));
 
-            Log.i(LOG, "types size: " + types.size());
-            Log.i(LOG, "listOfParts size: " + listOfParts.size());
+//            Log.i(LOG, "types size: " + types.size());
+//            Log.i(LOG, "listOfParts size: " + listOfParts.size());
 //            Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!");
 //            for (String s : listOfParts)
 //            {

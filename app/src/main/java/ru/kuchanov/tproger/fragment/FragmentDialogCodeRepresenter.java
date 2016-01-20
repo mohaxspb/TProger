@@ -2,6 +2,8 @@ package ru.kuchanov.tproger.fragment;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
@@ -66,6 +69,30 @@ public class FragmentDialogCodeRepresenter extends DialogFragment
         builder.title("Код")
                 .positiveText(R.string.close)
                 .neutralText(R.string.copy)
+                .onNeutral(new MaterialDialog.SingleButtonCallback()
+                {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction)
+                    {
+                        StringBuilder builder = new StringBuilder();
+                        for (String codeLine : codeLines)
+                        {
+                            builder.append(Html.fromHtml(codeLine).toString()).append("\n");
+                        }
+                        ClipboardManager clipboard = (ClipboardManager) ctx.getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("code", builder.toString());
+                        clipboard.setPrimaryClip(clip);
+                    }
+                })
+                .onPositive(new MaterialDialog.SingleButtonCallback()
+                {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction)
+                    {
+                        materialDialog.dismiss();
+                    }
+                })
+                .autoDismiss(false)
                 .customView(R.layout.fragment_dialog_code, true);
 
         dialog = builder.build();

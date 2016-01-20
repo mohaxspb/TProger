@@ -14,6 +14,8 @@ public class HtmlTextFormatting
         return el.getElementsByTag("table").size() != 0;
     }
 
+    //TODO delete it. Change by enum types
+
     /**
      * @return true if given el's tag's name is "table"
      */
@@ -27,13 +29,17 @@ public class HtmlTextFormatting
         String tagName = el.tagName();
         String tagClass = el.className();
 
+        if(tagClass.contains("crayon-syntax"))
+        {
+            return HtmlToView.TextType.Code;
+        }
         if (tagName.equals("table") || (el.getElementsByTag("table").size() != 0))
         {
             return HtmlToView.TextType.Table;
         }
         if (tagClass.contains("accordion"))
         {
-            return HtmlToView.TextType.Accordeon;
+            return HtmlToView.TextType.Accordion;
         }
         if (tagClass.contains("wp-polls"))
         {

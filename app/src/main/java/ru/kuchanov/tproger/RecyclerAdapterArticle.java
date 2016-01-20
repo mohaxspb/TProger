@@ -1,5 +1,7 @@
 package ru.kuchanov.tproger;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -7,7 +9,6 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,8 +47,11 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     private static final int TYPE_TAGS = 3;
     private static final int TYPE_TO_READ_MORE = 4;
     private static final int TYPE_COMMENTS = 5;
-    private static final int TYPE_ACCORDEON = 6;
+    private static final int TYPE_ACCORDION = 6;
     private static final int TYPE_POLL = 7;
+    private static final int TYPE_GALLERY = 8;
+    private static final int TYPE_TABLE = 9;
+
     int paddingsInDp = 5;
     private int sizeOfArticleParts = 0;
     private float recyclerWidth;
@@ -123,13 +127,18 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_code_representer_main, parent, false);
                 vh = new ViewHolderCode(itemLayoutView);
                 break;
-            case TYPE_ACCORDEON:
+            case TYPE_ACCORDION:
                 itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_accordeon, parent, false);
                 vh = new ViewHolderAccordeon(itemLayoutView);
                 break;
             case TYPE_POLL:
                 itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_poll, parent, false);
                 vh = new ViewHolderPoll(itemLayoutView);
+                break;
+            case TYPE_TABLE:
+                itemLayoutView = new TextView(ctx);
+                vh = new ViewHolderTags(itemLayoutView);
+                //TODO
                 break;
             case TYPE_TAGS:
                 itemLayoutView = new TextView(ctx);
@@ -169,10 +178,10 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             HtmlToView.TextType curType = this.textTypes.get(positionInTypesList);
             switch (curType)
             {
-                case Table:
+                case Code:
                     return TYPE_CODE;
-                case Accordeon:
-                    return TYPE_ACCORDEON;
+                case Accordion:
+                    return TYPE_ACCORDION;
                 case Poll:
                     return TYPE_POLL;
                 case Text:
@@ -292,13 +301,20 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
                     holderCode.content.addView(codeLineLayout);
                 }
-                //// TODO: 18.01.2016 add clickListener to btns
+                //add clickListener to btns
                 holderCode.copy.setOnClickListener(new View.OnClickListener()
                 {
                     @Override
                     public void onClick(View v)
                     {
-                        //TODO
+                        StringBuilder builder = new StringBuilder();
+                        for (String codeLine : codeRepresenter.getLines())
+                        {
+                            builder.append(Html.fromHtml(codeLine).toString()).append("\n");
+                        }
+                        ClipboardManager clipboard = (ClipboardManager) ctx.getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("code", builder.toString());
+                        clipboard.setPrimaryClip(clip);
                     }
                 });
                 holderCode.show.setOnClickListener(new View.OnClickListener()
@@ -307,9 +323,8 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                     public void onClick(View v)
                     {
                         ArrayList<String> lines = codeRepresenter.getLines();
-                        lines.addAll(codeRepresenter.getLines());//TODO delete
                         FragmentDialogCodeRepresenter fragmentDialogCodeRepresenter = FragmentDialogCodeRepresenter.newInstance(lines);
-                        fragmentDialogCodeRepresenter.show(((AppCompatActivity)ctx).getFragmentManager(), FragmentDialogCodeRepresenter.LOG);
+                        fragmentDialogCodeRepresenter.show(((AppCompatActivity) ctx).getFragmentManager(), FragmentDialogCodeRepresenter.LOG);
                     }
                 });
                 break;
@@ -322,12 +337,12 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             case TYPE_COMMENTS:
                 //TODO
                 break;
-            case TYPE_ACCORDEON:
+            case TYPE_ACCORDION:
                 final ViewHolderAccordeon holderAccordeon = (ViewHolderAccordeon) holder;
                 String accrodionHtml = this.listOfParts.get(position - 1);
                 final HtmlParsing.AccordionContent accordionContent = HtmlParsing.parseAccordion(accrodionHtml);
 
-                int windowBackgroundDark=AttributeGetter.getColor(ctx, R.attr.windowBackgroundDark);
+                int windowBackgroundDark = AttributeGetter.getColor(ctx, R.attr.windowBackgroundDark);
                 holderAccordeon.title.setBackgroundColor(windowBackgroundDark);
                 holderAccordeon.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledTextSizePrimary);
                 holderAccordeon.title.setText(accordionContent.getTitle());
@@ -369,6 +384,12 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 holderAccordeon.image.setController(controller);
                 break;
             case TYPE_POLL:
+                //TODO
+                break;
+            case TYPE_GALLERY:
+                //TODO
+                break;
+            case TYPE_TABLE:
                 //TODO
                 break;
         }
@@ -476,6 +497,26 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     {
 
         public ViewHolderPoll(View v)
+        {
+            super(v);
+        }
+    }
+
+    //TODO
+    public static class ViewHolderGallery extends RecyclerView.ViewHolder
+    {
+
+        public ViewHolderGallery(View v)
+        {
+            super(v);
+        }
+    }
+
+    //TODO
+    public static class ViewHolderTable extends RecyclerView.ViewHolder
+    {
+
+        public ViewHolderTable(View v)
         {
             super(v);
         }

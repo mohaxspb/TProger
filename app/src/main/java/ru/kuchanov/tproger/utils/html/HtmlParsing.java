@@ -38,7 +38,15 @@ public class HtmlParsing
         }
 
         Element mainColumns = doc.getElementById("main_columns");
-        Elements articles = mainColumns.getElementsByTag("article");
+        Elements articlesAll = mainColumns.getElementsByTag("article");
+        Elements articles = new Elements();
+        for (Element element : articlesAll)
+        {
+            if (element.className().contains("type-post"))
+            {
+                articles.add(element);
+            }
+        }
         ArrayList<Article> list = new ArrayList<>();
         for (Element article : articles)
         {
@@ -248,9 +256,9 @@ public class HtmlParsing
 
         Element collapsedPart = doc.getElementsByClass("accordion-inner").first();
         Element imgTag = collapsedPart.getElementsByTag("img").first();
-        String imageUrl=imgTag.attr("src");
-        int imgWidth= Integer.parseInt(imgTag.attr("width"));
-        int imgHeight= Integer.parseInt(imgTag.attr("height"));
+        String imageUrl = imgTag.attr("src");
+        int imgWidth = Integer.parseInt(imgTag.attr("width"));
+        int imgHeight = Integer.parseInt(imgTag.attr("height"));
 
         return new AccordionContent(title, imageUrl, imgWidth, imgHeight);
     }
