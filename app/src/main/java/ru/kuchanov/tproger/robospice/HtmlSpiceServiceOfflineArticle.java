@@ -6,4 +6,5 @@ package ru.kuchanov.tproger.robospice;
  */
 public class HtmlSpiceServiceOfflineArticle extends HtmlSpiceServiceOffline
 {
+    //TODO
 }

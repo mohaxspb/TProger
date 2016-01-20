@@ -3,9 +3,6 @@ package ru.kuchanov.tproger.utils;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.util.Log;
-
-import ru.kuchanov.tproger.R;
 
 /**
  * Created by Юрий on 28.09.2015 0:54.
@@ -13,8 +10,13 @@ import ru.kuchanov.tproger.R;
  */
 public class AttributeGetter
 {
-    private static final String LOG = AttributeGetter.class.getSimpleName();
+//    private static final String LOG = AttributeGetter.class.getSimpleName();
 
+    /**
+     *
+     * @param addressInRClass R.color.someColor or R.attr.someReferenceToColor
+     * @return not id of recourse, but Color itself. I think so)
+     */
     public static int getColor(Context ctx, int addressInRClass)
     {
         int colorId;
@@ -37,16 +39,16 @@ public class AttributeGetter
         return drawableId;
     }
 
-    public static int getHeight(Context ctx, int addressInRClass)
-    {
-        int height;
-        int[] attrs = new int[]{addressInRClass};
-        TypedArray ta = ctx.obtainStyledAttributes(attrs);
-        height = ta.getInt(0, -1);
-        ta.recycle();
-
-        return height;
-    }
+//    public static int getHeight(Context ctx, int addressInRClass)
+//    {
+//        int height;
+//        int[] attrs = new int[]{addressInRClass};
+//        TypedArray ta = ctx.obtainStyledAttributes(attrs);
+//        height = ta.getInt(0, -1);
+//        ta.recycle();
+//
+//        return height;
+//    }
 
     public static int getDimentionPixelSize(Context ctx, int addressInRClass)
     {

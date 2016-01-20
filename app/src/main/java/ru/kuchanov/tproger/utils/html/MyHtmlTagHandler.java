@@ -1,13 +1,20 @@
 package ru.kuchanov.tproger.utils.html;
 
+import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.Html.TagHandler;
 import android.text.Spanned;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 
 import org.xml.sax.XMLReader;
 
-//TODO make suporing background color via BackgroundColorSpan (use it for CODE TAG)
+import ru.kuchanov.tproger.R;
+import ru.kuchanov.tproger.utils.AttributeGetter;
+
+
 public class MyHtmlTagHandler implements TagHandler
 {
     //    public static String FOUR_NON_BREAKED_SPACES = "&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -15,9 +22,21 @@ public class MyHtmlTagHandler implements TagHandler
     String parent = null;
     int index = 1;
 
+    Context ctx;
+
+    public MyHtmlTagHandler(Context ctx)
+    {
+        this.ctx = ctx;
+    }
+
     @Override
     public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader)
     {
+        //make supporting background color via BackgroundColorSpan (use it for CODE TAG)
+        if (tag.equalsIgnoreCase("code"))
+        {
+            processCode(opening, output);
+        }
         if (tag.equalsIgnoreCase("strike") || tag.equals("s"))
         {
             processStrike(opening, output);
@@ -37,9 +56,7 @@ public class MyHtmlTagHandler implements TagHandler
             {
                 if (first)
                 {
-                    output.append("\n\t•");
-//                    output.append("<br/>" + FOUR_NON_BREAKED_SPACES + "•");
-//                    output.append("<br/>").append(FOUR_NON_BREAKED_SPACES).append("•");
+                    output.append("\n\t• ");
                     first = false;
                 }
                 else
@@ -52,8 +69,6 @@ public class MyHtmlTagHandler implements TagHandler
                 if (first)
                 {
                     output.append("\n\t").append(String.valueOf(index)).append(". ");
-//                    output.append("<br/>" + FOUR_NON_BREAKED_SPACES + index + "•");
-//                    output.append("<br/>").append(FOUR_NON_BREAKED_SPACES).append(String.valueOf(index)).append("•");
                     first = false;
                     index++;
                 }
@@ -104,6 +119,33 @@ public class MyHtmlTagHandler implements TagHandler
                 }
             }
             return null;
+        }
+    }
+
+    private void processCode(boolean opening, Editable output)
+    {
+        int len = output.length();
+
+        int windowBackgroundDark = AttributeGetter.getColor(ctx, R.attr.windowBackgroundDark);
+
+        if (opening)
+        {
+            output.setSpan(new ForegroundColorSpan(ContextCompat.getColor(ctx, R.color.material_red_500)), len, len, Spanned.SPAN_MARK_MARK);
+            output.setSpan(new BackgroundColorSpan(windowBackgroundDark), len, len, Spanned.SPAN_MARK_MARK);
+
+        }
+        else
+        {
+            Object obj = getLast(output, BackgroundColorSpan.class);
+            int where = output.getSpanStart(obj);
+
+            output.removeSpan(obj);
+
+            if (where != len)
+            {
+                output.setSpan(new ForegroundColorSpan(ContextCompat.getColor(ctx, R.color.material_red_500)), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                output.setSpan(new BackgroundColorSpan(windowBackgroundDark), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
         }
     }
 }

@@ -22,7 +22,7 @@ public class RoboSpiceRequestArticle extends SpiceRequest<Article>
 
     Context ctx;
     Article article;
-    
+
     public RoboSpiceRequestArticle(Context ctx, Article article)
     {
         super(Article.class);
@@ -40,7 +40,7 @@ public class RoboSpiceRequestArticle extends SpiceRequest<Article>
         String responseBody = makeRequest();
 
         //TODO
-        Article loadedArticle = HtmlParsing.parseArticle(ctx, responseBody, article.getUrl());
+        Article loadedArticle = HtmlParsing.parseArticle(responseBody, article.getUrl());
         //write to DB
 //        Article artWritenToDB = Article.writeArtsList(list, databaseHelper);
 
@@ -50,7 +50,7 @@ public class RoboSpiceRequestArticle extends SpiceRequest<Article>
 
     private String makeRequest() throws Exception
     {
-        Log.i(LOG, "mekeRequest with url: "+article.getUrl());
+        Log.i(LOG, "mekeRequest with url: " + article.getUrl());
         OkHttpClient client = new OkHttpClient();
 
         Request.Builder request = new Request.Builder();

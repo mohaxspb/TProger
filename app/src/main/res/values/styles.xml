@@ -17,7 +17,7 @@
 
         <item name="actionMenuTextColor">@color/my_material_grey_800</item>
         <item name="android:windowBackground">@color/my_material_grey_100</item>
-        <item name="windowBackgroundDark">@color/material_grey_200</item>
+        <item name="windowBackgroundDark">@color/material_grey_300</item>
         <!--custom colors-->
         <item name="myCardBackgroundColor">@color/my_material_grey_50</item>
         <item name="myCardBackgroundColorDark">@color/my_material_grey_300</item>

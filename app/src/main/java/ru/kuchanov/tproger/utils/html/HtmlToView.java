@@ -193,7 +193,7 @@ public class HtmlToView
     {
         textView.setText(
                 Html.fromHtml(
-                        textToSet, new UILImageGetter(textView, ctx), new MyHtmlTagHandler()));
+                        textToSet, new UILImageGetter(textView, ctx), new MyHtmlTagHandler(ctx)));
 
         textView.setLinksClickable(true);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
