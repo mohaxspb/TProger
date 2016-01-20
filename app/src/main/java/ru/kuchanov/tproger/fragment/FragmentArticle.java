@@ -221,7 +221,11 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         }
         if (key.equals(this.getString(R.string.pref_design_key_text_size_ui)))
         {
-            //TODO i'm sure here we'll need change only one item (first)
+            //here we need change only one item (first)
+            recyclerView.getAdapter().notifyItemChanged(0);
+        }
+        if (key.equals(this.getString(R.string.pref_design_key_text_size_article)))
+        {
             recyclerView.getAdapter().notifyDataSetChanged();
         }
     }
@@ -230,7 +234,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
     {
 //        Log.i(LOG, "isLoading: " + isLoading);
         this.isLoading = isLoading;
-
         //workaround from
         //http://stackoverflow.com/a/26910973/3212712
         swipeRefreshLayout.post(new Runnable()
@@ -277,7 +280,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
             {
                 e.printStackTrace();
             }
-
             setLoading(false);
         }
 
@@ -299,7 +301,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 //                //update cover
 //                BusProvider.getInstance().post(new EventArtsReceived(artsList));
 //            }
-
 
             //////////////////////
 //            ArrayList<HtmlToView.TextType> types = HtmlToView.getTextPartSummary(HtmlParsing.getElementListFromHtml(article.getText()));
