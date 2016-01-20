@@ -24,6 +24,7 @@ import com.octo.android.robospice.request.listener.PendingRequestListener;
 import java.util.ArrayList;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
+import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapterArticle;
 import ru.kuchanov.tproger.SingltonRoboSpice;
@@ -98,12 +99,8 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
             Bundle args = this.getArguments();
             this.article = args.getParcelable(Article.KEY_ARTICLE);
 
-            //TODO
-            //text+Table+text
-//            this.article.setUrl("http://tproger.ru/problems/max-multiplication-of-three-numbers/");
-            //text+table+text+images+table and so on.
-            this.article.setUrl("http://tproger.ru/articles/animated-gif-java/");
-
+            //TODO test some article
+            this.article.setUrl(Const.Articles.CODE_AND_SPOILER_GIF);
         }
 
         LOG = FragmentArticle.class.getSimpleName() + " - " + article.getUrl();

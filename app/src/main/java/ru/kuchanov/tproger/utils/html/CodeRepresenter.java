@@ -69,14 +69,15 @@ public class CodeRepresenter
 
     public static String getColorForType(Context ctx, SpanType type)
     {
-        int adressOfColor = R.color.my_material_grey_600;
-
+        int adressOfColor;
         switch (type)
         {
+            default:
+                adressOfColor = R.color.my_material_grey_600;
+                break;
             case Clazz:
                 adressOfColor = R.color.material_indigo_300;
                 break;
-            default:
             case Var:
                 adressOfColor = R.color.material_indigo_600;
                 break;
@@ -138,6 +139,6 @@ public class CodeRepresenter
     public enum SpanType
     {
         //blue darkBlue    violet  orange  red     blue
-        Clazz, Var, Bool, Comment, Import, Number, Operand;
+        Clazz, Var, Bool, Comment, Import, Number, Operand
     }
 }

@@ -1,8 +1,12 @@
 package ru.kuchanov.tproger.utils.html;
 
+import android.content.Context;
+import android.support.v4.content.ContextCompat;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 
 import java.text.DateFormat;
@@ -14,6 +18,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import ru.kuchanov.tproger.Const;
+import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
 
@@ -118,16 +123,6 @@ public class HtmlParsing
             previewDiv.select("footer").remove();
             preview = previewDiv.html();
 
-//            if (HtmlTextFormatting.hasUnsupportedTags(preview))
-//            {
-//                preview = "<html><head><meta charset=\"UTF-8\"></head><body>" + preview + "</body></html>";
-//            }
-//            else
-//            {
-//                preview = preview.replaceAll("</p>", "");
-//                preview = preview.replaceAll("<p>", "<p></p>");
-//            }
-
             Article a = new Article();
             a.setUrl(url);
             a.setTitle(title);
@@ -147,16 +142,11 @@ public class HtmlParsing
 
     public static ArrayList<Element> getElementListFromHtml(String html)
     {
-//        ArrayList<Element> list = new ArrayList<>();
-
-        Document doc = Jsoup.parse(html);
-
-//        Log.i(LOG, "doc.children(): " + doc.body().children());
-
-        return doc.body().children();
+        return Jsoup.parse(html).body().children();
     }
 
-    public static Article parseArticle(/*MyRoboSpiceDatabaseHelper h, */String html, String url) throws Exception
+    //    public static Article parseArticle(/*MyRoboSpiceDatabaseHelper h, */String html, String url) throws Exception
+    public static Article parseArticle(Context ctx, String html, String url) throws Exception
     {
         //so at least we'll have url in assed article.
         //And, if it was in DB we also have all data (id, preview etc)
@@ -223,6 +213,17 @@ public class HtmlParsing
         String text;
         Element textDiv = doc.getElementsByClass("entry-content").first();
         textDiv.select("footer").remove();
+        //replace CODE tag with FONT tag
+        ArrayList<Element> codeTags = textDiv.getElementsByTag("code");
+        for (Element codeTag : codeTags)
+        {
+            String materialRedInHex = "#" + Integer.toHexString(ContextCompat.getColor(ctx, R.color.material_red_500)).substring(2);
+
+            Element font = new Element(Tag.valueOf("font"), "");
+            font.attr("color", materialRedInHex);
+            font.text(codeTag.text());
+            codeTag.replaceWith(font);
+        }
         text = textDiv.html();
 
         Article parsedArticle = new Article();

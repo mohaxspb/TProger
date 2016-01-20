@@ -8,8 +8,6 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
@@ -42,7 +40,7 @@ public class RoboSpiceRequestArticle extends SpiceRequest<Article>
         String responseBody = makeRequest();
 
         //TODO
-        Article loadedArticle = HtmlParsing.parseArticle(responseBody, article.getUrl());
+        Article loadedArticle = HtmlParsing.parseArticle(ctx, responseBody, article.getUrl());
         //write to DB
 //        Article artWritenToDB = Article.writeArtsList(list, databaseHelper);
 

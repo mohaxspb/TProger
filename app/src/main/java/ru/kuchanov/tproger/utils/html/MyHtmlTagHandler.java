@@ -7,16 +7,16 @@ import android.text.style.StrikethroughSpan;
 
 import org.xml.sax.XMLReader;
 
+//TODO make suporing background color via BackgroundColorSpan (use it for CODE TAG)
 public class MyHtmlTagHandler implements TagHandler
 {
-    public static String FOUR_NON_BREAKED_SPACES = "&nbsp;&nbsp;&nbsp;&nbsp;";
+    //    public static String FOUR_NON_BREAKED_SPACES = "&nbsp;&nbsp;&nbsp;&nbsp;";
     boolean first = true;
     String parent = null;
     int index = 1;
 
     @Override
-    public void handleTag(boolean opening, String tag, Editable output,
-                          XMLReader xmlReader)
+    public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader)
     {
         if (tag.equalsIgnoreCase("strike") || tag.equals("s"))
         {
@@ -51,7 +51,7 @@ public class MyHtmlTagHandler implements TagHandler
             {
                 if (first)
                 {
-                    output.append("\n\t" + index + ". ");
+                    output.append("\n\t").append(String.valueOf(index)).append(". ");
 //                    output.append("<br/>" + FOUR_NON_BREAKED_SPACES + index + "•");
 //                    output.append("<br/>").append(FOUR_NON_BREAKED_SPACES).append(String.valueOf(index)).append("•");
                     first = false;
