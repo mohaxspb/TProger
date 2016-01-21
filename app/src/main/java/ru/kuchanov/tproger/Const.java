@@ -17,5 +17,6 @@ public class Const
         public final static String TABLE = "http://tproger.ru/news/java-on-the-top-of-2015/";
         public final static String GALLERY = "http://tproger.ru/articles/particle-acceleration-on-gpu/";
         public final static String POLL = "http://tproger.ru/news/windows-10-over-200-million-devices/";
+        public final static String WELL = "http://tproger.ru/translations/how-to-start-android/";
     }
 }

@@ -29,7 +29,7 @@ public class HtmlTextFormatting
         String tagName = el.tagName();
         String tagClass = el.className();
 
-        if(tagClass.contains("crayon-syntax"))
+        if (tagClass.contains("crayon-syntax"))
         {
             return HtmlToView.TextType.Code;
         }
@@ -44,6 +44,10 @@ public class HtmlTextFormatting
         if (tagClass.contains("wp-polls"))
         {
             return HtmlToView.TextType.Poll;
+        }
+        if (tagClass.equals("well"))
+        {
+            return HtmlToView.TextType.Well;
         }
 
         return HtmlToView.TextType.Text;

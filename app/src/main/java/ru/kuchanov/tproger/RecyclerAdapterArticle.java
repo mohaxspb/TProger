@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.TypedValue;
@@ -33,9 +34,11 @@ import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DipToPx;
 import ru.kuchanov.tproger.utils.MyUIL;
+import ru.kuchanov.tproger.utils.UILImageGetter;
 import ru.kuchanov.tproger.utils.html.CodeRepresenter;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
 import ru.kuchanov.tproger.utils.html.HtmlToView;
+import ru.kuchanov.tproger.utils.html.MyHtmlTagHandler;
 
 public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
@@ -51,6 +54,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     private static final int TYPE_POLL = 7;
     private static final int TYPE_GALLERY = 8;
     private static final int TYPE_TABLE = 9;
+    private static final int TYPE_WELL = 10;
 
     int paddingsInDp = 5;
     private int sizeOfArticleParts = 0;
@@ -113,16 +117,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_title, parent, false);
                 vh = new ViewHolderTitle(itemLayoutView);
                 break;
-            default:
-            case TYPE_TEXT:
-                TextView textView = new TextView(ctx);
-                textView.setBackgroundColor(windowBackgroundColor);
-                int padding = (int) DipToPx.convert(3, ctx);
-                textView.setPadding(padding, 0, padding, 0);
-                textView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
-                itemLayoutView = textView;
-                vh = new ViewHolderText(itemLayoutView);
-                break;
+
             case TYPE_CODE:
                 itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_code_representer_main, parent, false);
                 vh = new ViewHolderCode(itemLayoutView);
@@ -132,8 +127,13 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 vh = new ViewHolderAccordeon(itemLayoutView);
                 break;
             case TYPE_POLL:
+                //TODO
                 itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_poll, parent, false);
                 vh = new ViewHolderPoll(itemLayoutView);
+                break;
+            case TYPE_WELL:
+                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_well, parent, false);
+                vh = new ViewHolderWell(itemLayoutView);
                 break;
             case TYPE_TABLE:
                 itemLayoutView = new TextView(ctx);
@@ -154,6 +154,16 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 itemLayoutView = new TextView(ctx);
                 vh = new ViewHolderComments(itemLayoutView);
                 //TODO
+                break;
+            default:
+            case TYPE_TEXT:
+                TextView textView = new TextView(ctx);
+                textView.setBackgroundColor(windowBackgroundColor);
+                int padding = (int) DipToPx.convert(3, ctx);
+                textView.setPadding(padding, 0, padding, 0);
+                textView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+                itemLayoutView = textView;
+                vh = new ViewHolderText(itemLayoutView);
                 break;
         }
 
@@ -182,10 +192,14 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                     return TYPE_CODE;
                 case Accordion:
                     return TYPE_ACCORDION;
+                case Well:
+                    return TYPE_WELL;
                 case Poll:
                     return TYPE_POLL;
-                case Text:
+                case Table:
+                    return TYPE_TABLE;
                 default:
+                case Text:
                     return TYPE_TEXT;
             }
         }
@@ -392,6 +406,13 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             case TYPE_TABLE:
                 //TODO
                 break;
+            case TYPE_WELL:
+                final ViewHolderWell holderWell = (ViewHolderWell) holder;
+                holderWell.textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
+                holderWell.textView.setText(Html.fromHtml(listOfParts.get(position - 1),
+                        new UILImageGetter(holderWell.textView, ctx),
+                        new MyHtmlTagHandler(ctx)));
+                break;
         }
     }
 
@@ -519,6 +540,19 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         public ViewHolderTable(View v)
         {
             super(v);
+        }
+    }
+
+    public static class ViewHolderWell extends RecyclerView.ViewHolder
+    {
+        CardView card;
+        TextView textView;
+
+        public ViewHolderWell(View v)
+        {
+            super(v);
+            card = (CardView) v.findViewById(R.id.cardView);
+            textView = (TextView) v.findViewById(R.id.text_view);
         }
     }
 }

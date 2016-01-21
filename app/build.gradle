@@ -67,7 +67,7 @@ dependencies {
     }
     //UIL
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
-    //fresco (facebook image loader lib
-    compile 'com.facebook.fresco:fresco:0.8.1'
+    //fresco (facebook image loader lib)
+    compile 'com.facebook.fresco:fresco:0.9.0'
     repositories { mavenCentral() }
 }

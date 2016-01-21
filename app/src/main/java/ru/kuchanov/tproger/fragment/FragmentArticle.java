@@ -100,7 +100,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
             this.article = args.getParcelable(Article.KEY_ARTICLE);
 
             //TODO test some article
-            this.article.setUrl(Const.Articles.CODE_AND_SPOILER_GIF);
+            this.article.setUrl(Const.Articles.WELL);
         }
 
         LOG = FragmentArticle.class.getSimpleName() + " - " + article.getUrl();

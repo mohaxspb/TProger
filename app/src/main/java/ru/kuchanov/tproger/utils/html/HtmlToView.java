@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.util.TypedValue;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
@@ -195,6 +196,10 @@ public class HtmlToView
                 Html.fromHtml(
                         textToSet, new UILImageGetter(textView, ctx), new MyHtmlTagHandler(ctx)));
 
+//        textView.setText(
+//                Html.fromHtml(
+//                        textToSet, new ImageLoaderFresco(ctx, textView), new MyHtmlTagHandler(ctx)));
+
         textView.setLinksClickable(true);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -213,6 +218,10 @@ public class HtmlToView
         {
             listOfTypes.add(HtmlTextFormatting.tagType(el));
         }
+//        for (TextType type : listOfTypes)
+//        {
+//            Log.i(LOG, type.toString());
+//        }
 
         return listOfTypes;
     }
@@ -231,6 +240,6 @@ public class HtmlToView
 
     public enum TextType
     {
-        Code, Text, Accordion, Poll, Table
+        Code, Text, Accordion, Poll, Table, Well
     }
 }
