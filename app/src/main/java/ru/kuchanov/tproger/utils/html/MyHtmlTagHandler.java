@@ -3,13 +3,17 @@ package ru.kuchanov.tproger.utils.html;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
+import android.text.Html;
 import android.text.Html.TagHandler;
 import android.text.Spanned;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
+import android.util.Log;
 
 import org.xml.sax.XMLReader;
+
+import java.util.ArrayList;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.utils.AttributeGetter;
@@ -17,12 +21,20 @@ import ru.kuchanov.tproger.utils.AttributeGetter;
 
 public class MyHtmlTagHandler implements TagHandler
 {
-    //    public static String FOUR_NON_BREAKED_SPACES = "&nbsp;&nbsp;&nbsp;&nbsp;";
-    boolean first = true;
+    private static final String LOG = MyHtmlTagHandler.class.getSimpleName();
+//    public static String FOUR_NON_BREAKED_SPACES = "&nbsp;&nbsp;&nbsp;&nbsp;";
+public static String TWO_NON_BREAKED_SPACES = "&nbsp;&nbsp;";
+    boolean closed = false;
     String parent = null;
     int index = 1;
-
     Context ctx;
+
+    ArrayList<Boolean> listOfUnclosedTags = new ArrayList<>();
+
+    public MyHtmlTagHandler()
+    {
+        Log.i(LOG, "constructor called");
+    }
 
     public MyHtmlTagHandler(Context ctx)
     {
@@ -54,28 +66,41 @@ public class MyHtmlTagHandler implements TagHandler
         {
             if (parent.equals("ul"))
             {
-                if (first)
-                {
-                    output.append("\n\t• ");
-                    first = false;
-                }
-                else
-                {
-                    first = true;
-                }
+                processLi(opening, output, true);
             }
             else
             {
-                if (first)
+                processLi(opening, output, false);
+            }
+        }
+    }
+
+    private void processLi(boolean opening, Editable output, boolean isUlNotOl)
+    {
+        if (isUlNotOl)
+        {
+            if (opening)
+            {
+                listOfUnclosedTags.add(true);
+                output.append("\n");
+                for (Boolean b: listOfUnclosedTags)
                 {
-                    output.append("\n\t").append(String.valueOf(index)).append(". ");
-                    first = false;
-                    index++;
+                    output.append("\t\t");
                 }
-                else
-                {
-                    first = true;
-                }
+                output.append("• ");
+            }
+            else
+            {
+                listOfUnclosedTags.remove(listOfUnclosedTags.size() - 1);
+            }
+        }
+        else
+        {
+            //TODO
+            if (opening)
+            {
+                output.append(" \n\t").append(String.valueOf(index)).append(". ");
+                index++;
             }
         }
     }
