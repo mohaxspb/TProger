@@ -31,7 +31,7 @@ public class Article implements Parcelable
 
     public static final String FIELD_URL = "url";
     public static final String FIELD_ID = "id";
-
+    //    Parcel implementation/////////////////////////////
     public static final Parcelable.Creator<Article> CREATOR = new Parcelable.Creator<Article>()
     {
 
@@ -73,7 +73,7 @@ public class Article implements Parcelable
     private boolean isRead;
     @DatabaseField(foreign = true)
     private Articles result;
-
+    //    Parcel implementation/////////////////////////////
     private Article(Parcel in)
     {
         this.id = in.readInt();
@@ -334,8 +334,6 @@ public class Article implements Parcelable
         return preview;
     }
 
-    //////PARCEL implementation
-
 //     id; url; title; pubDate; tagMainTitle; tagMainUrl;imageUrl; imageWidth;imageHeight;preview;text;isRead
 
     public void setPreview(String preview)
@@ -357,19 +355,18 @@ public class Article implements Parcelable
     {
         return text;
     }
-//    Parcel implementation/////////////////////////////
-
     public void setText(String text)
     {
         this.text = text;
     }
 
+//    Parcel implementation/////////////////////////////
     @Override
     public int describeContents()
     {
         return 0;
     }
-
+    //    Parcel implementation/////////////////////////////
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {

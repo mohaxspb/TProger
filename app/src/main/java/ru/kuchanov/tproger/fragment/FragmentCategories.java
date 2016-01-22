@@ -40,6 +40,7 @@ import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
+import ru.kuchanov.tproger.robospice.db.Tag;
 import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArts;
 import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArtsFromBottom;
 import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArtsFromBottomOffline;
@@ -48,42 +49,35 @@ import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.ScreenProperties;
 
 /**
- * Created by Юрий on 17.09.2015 17:20.
- * For ExpListTest.
+ * Created by Юрий on 17.09.2015 17:20 16:55.
+ * For TProger.
  */
 public class FragmentCategories extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String LOG = FragmentCategories.class.getSimpleName();
 
-    public static final String KEY_CATEGORY = "keyCategory";
-    public static final String KEY_CURRENT_PAGE_TO_LOAD = "keyCurrentPageToLoad";
+    public static final int TYPE_CATEGORY = 0;
+    public static final int TYPE_TAG = 1;
+    public static final String KEY_CUR_CATEGORY_TYPE = "KEY_CUR_CATEGORY_TYPE";
     public static final String KEY_IS_LOADING = "isLoading";
-    public static final String KEY_IS_LOADING_FROM_TOP = "isLoadingFromTop";
-
     protected MySpiceManager spiceManager;
     protected MySpiceManager spiceManagerOffline;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
-    private String categoryUrl;
-
-    private Category category;
+    private int curCategoryType = 0;
+    private ArrayList<Category> categories;
+    private ArrayList<Tag> tags;
     private AppCompatActivity act;
     private Context ctx;
-    private int currentPageToLoad = 1;
     private boolean isLoading = false;
-    private boolean isLoadingFromTop = true;
-
     private SharedPreferences pref;
-
     private int numOfColsInGridLayoutManager = 2;
 
-    private ArrayList<Article> artsList = new ArrayList<>();
-
-    public static FragmentCategories newInstance(String category)
+    public static FragmentCategories newInstance(int categoryType)
     {
         FragmentCategories frag = new FragmentCategories();
         Bundle b = new Bundle();
-        b.putString(KEY_CATEGORY, category);
+        b.putInt(KEY_CUR_CATEGORY_TYPE, categoryType);
         frag.setArguments(b);
 
         return frag;
@@ -96,9 +90,8 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         super.onSaveInstanceState(outState);
 
         outState.putBoolean(KEY_IS_LOADING, isLoading);
-        outState.putBoolean(KEY_IS_LOADING_FROM_TOP, isLoadingFromTop);
-        outState.putInt(KEY_CURRENT_PAGE_TO_LOAD, currentPageToLoad);
-        outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
+        outState.putParcelableArrayList(Category.LOG, categories);
+        outState.putParcelableArrayList(Tag.LOG, tags);
     }
 
     @Override
@@ -108,18 +101,16 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         super.onCreate(savedInstanceState);
 
         Bundle args = this.getArguments();
-        this.categoryUrl = args.getString(KEY_CATEGORY);
+        this.curCategoryType = args.getInt(KEY_CUR_CATEGORY_TYPE);
 
         MyRoboSpiceDatabaseHelper databaseHelper;
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
-        this.category = Category.getCategoryByUrl(categoryUrl, databaseHelper);
 
         if (savedInstanceState != null)
         {
             this.isLoading = savedInstanceState.getBoolean(KEY_IS_LOADING);
-            this.isLoadingFromTop = savedInstanceState.getBoolean(KEY_IS_LOADING_FROM_TOP);
-            this.currentPageToLoad = savedInstanceState.getInt(KEY_CURRENT_PAGE_TO_LOAD);
-            this.artsList = savedInstanceState.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
+            this.categories = savedInstanceState.getParcelableArrayList(Category.LOG);
+            this.tags = savedInstanceState.getParcelableArrayList(Tag.LOG);
         }
 
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -139,7 +130,6 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
             @Override
             public void onRefresh()
             {
-                currentPageToLoad = 1;
                 performRequest(1, true, false);
             }
         });
@@ -147,8 +137,8 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler);
 
         boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
-        boolean isOnArticleActivity = (ctx instanceof ActivityArticle);
-        if (isGridManager && !isOnArticleActivity)
+//        boolean isOnArticleActivity = (ctx instanceof ActivityArticle);
+        if (isGridManager)
         {
             recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
         }
@@ -175,7 +165,6 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
                 public void onLoadMore()
                 {
                     Log.i(LOG, "OnLoadMore called!");
-                    currentPageToLoad++;
                     performRequest(currentPageToLoad, false, false);
                 }
             });
@@ -483,7 +472,7 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
                 Log.i(LOG, "error in DB - need to reset category;");
                 int prevSize = artsList.size();
 
-                if(recyclerView.getAdapter()!=null)
+                if (recyclerView.getAdapter() != null)
                 {
                     recyclerView.getAdapter().notifyItemRangeRemoved(0, prevSize);
                 }

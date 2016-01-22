@@ -15,6 +15,7 @@ import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
+import ru.kuchanov.tproger.robospice.db.Tag;
 
 /**
  * Created by Юрий on 17.10.2015 16:57.
@@ -151,5 +152,19 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
             e.printStackTrace();
         }
         return daoCategory;
+    }
+
+    public Dao<Tag, Integer> getDaoTag()
+    {
+        Dao<Tag, Integer> daoTag = null;
+        try
+        {
+            daoTag = this.getDao(Tag.class);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return daoTag;
     }
 }

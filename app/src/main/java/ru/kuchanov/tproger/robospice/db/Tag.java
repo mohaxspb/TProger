@@ -1,8 +1,10 @@
 package ru.kuchanov.tproger.robospice.db;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -17,27 +19,27 @@ import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
  * Created by Юрий on 20.10.2015 0:48.
  * For ExpListTest.
  */
-@DatabaseTable(tableName = "category")
-public class Category implements Parcelable
+@DatabaseTable(tableName = "tag")
+public class Tag implements Parcelable
 {
-    public static final String LOG = Category.class.getSimpleName();
+    public static final String LOG = Tag.class.getSimpleName();
     public static final String FIELD_URL = "url";
     public static final String FIELD_TITLE = "title";
     public static final String FIELD_REFRESHED = "refreshed";
     //    Parcel implementation/////////////////////////////
-    public static final Parcelable.Creator<Category> CREATOR = new Parcelable.Creator<Category>()
+    public static final Parcelable.Creator<Tag> CREATOR = new Parcelable.Creator<Tag>()
     {
 
         @Override
-        public Category createFromParcel(Parcel source)
+        public Tag createFromParcel(Parcel source)
         {
-            return new Category(source);
+            return new Tag(source);
         }
 
         @Override
-        public Category[] newArray(int size)
+        public Tag[] newArray(int size)
         {
-            return new Category[size];
+            return new Tag[size];
         }
     };
     @DatabaseField(generatedId = true)
@@ -50,7 +52,7 @@ public class Category implements Parcelable
     private Date refreshed = new Date(0);
 
     //    Parcel implementation/////////////////////////////
-    private Category(Parcel in)
+    private Tag(Parcel in)
     {
         this.id = in.readInt();
         this.url = in.readString();
@@ -62,7 +64,7 @@ public class Category implements Parcelable
     /**
      * empty constructor
      */
-    public Category()
+    public Tag()
     {
 
     }
@@ -74,10 +76,10 @@ public class Category implements Parcelable
     {
         int id = -1;
 
-        Category c;
+        Tag c;
         try
         {
-            c = h.getDao(Category.class).queryBuilder().where().eq(Category.FIELD_URL, url).queryForFirst();
+            c = h.getDao(Tag.class).queryBuilder().where().eq(Tag.FIELD_URL, url).queryForFirst();
             if (c != null)
             {
                 id = c.getId();
@@ -91,12 +93,12 @@ public class Category implements Parcelable
         return id;
     }
 
-    public static Category getCategoryByUrl(String url, MyRoboSpiceDatabaseHelper h)
+    public static Tag getCategoryByUrl(String url, MyRoboSpiceDatabaseHelper h)
     {
-        Category c = null;
+        Tag c = null;
         try
         {
-            c = h.getDaoCategory().queryBuilder().where().eq(Category.FIELD_URL, url).queryForFirst();
+            c = h.getDaoTag().queryBuilder().where().eq(Tag.FIELD_URL, url).queryForFirst();
         }
         catch (SQLException e)
         {
@@ -109,11 +111,11 @@ public class Category implements Parcelable
     /**
      * @return true if lastRefreshedDate was more than refreshPeriod mills ago from now;
      */
-    public static boolean refreshDateExpired(Category category, Context ctx)
+    public static boolean refreshDateExpired(Tag category, Context ctx)
     {
         long currentTimeInMills = System.currentTimeMillis();
 
-//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
 
         int refreshPeriodInHours = ctx.getResources().getInteger(R.integer.refresh_period_hours);
         long millsInRefreshPeriod = refreshPeriodInHours * 60 * 60 * 1000;
@@ -130,7 +132,7 @@ public class Category implements Parcelable
      */
     public static void deleteFirstInCatAndUpdateSecond(MyRoboSpiceDatabaseHelper h, String categoryUrl)
     {
-        Category category = Category.getCategoryByUrl(categoryUrl, h);
+        Tag category = Tag.getCategoryByUrl(categoryUrl, h);
         ArticleCategory topArtCat = ArticleCategory.getTopArtCat(category.getId(), h);
         ArticleCategory secondArtCat = ArticleCategory.getNextArtCat(h, topArtCat);
 
@@ -183,17 +185,19 @@ public class Category implements Parcelable
         return refreshed;
     }
 
-    //    Parcel implementation/////////////////////////////
+
     public void setRefreshed(Date refreshed)
     {
         this.refreshed = refreshed;
     }
+
     //    Parcel implementation/////////////////////////////
     @Override
     public int describeContents()
     {
         return 0;
     }
+
     //    Parcel implementation/////////////////////////////
     @Override
     public void writeToParcel(Parcel dest, int flags)

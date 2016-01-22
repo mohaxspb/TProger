@@ -10,6 +10,7 @@ import android.text.style.BulletSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.LeadingMarginSpan;
 import android.text.style.StrikethroughSpan;
+import android.util.Log;
 
 import org.xml.sax.XMLReader;
 
@@ -21,7 +22,7 @@ import ru.kuchanov.tproger.utils.AttributeGetter;
 
 public class MyHtmlTagHandler implements TagHandler
 {
-//    private static final String LOG = MyHtmlTagHandler.class.getSimpleName();
+    private static final String LOG = MyHtmlTagHandler.class.getSimpleName();
     /**
      * List indentation in pixels. Nested lists use multiple of this.
      */
@@ -106,6 +107,10 @@ public class MyHtmlTagHandler implements TagHandler
         if (tag.equalsIgnoreCase("ul") || tag.equalsIgnoreCase("ol") || tag.equalsIgnoreCase("li"))
         {
             processUlOlLi(opening, tag, output);
+        }
+        else
+        {
+            Log.e(LOG, "Unknown tag in TagHandler with name: " + tag);
         }
     }
 
