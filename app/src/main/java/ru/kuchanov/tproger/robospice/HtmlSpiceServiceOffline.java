@@ -15,6 +15,7 @@ import java.util.List;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.Articles;
+import ru.kuchanov.tproger.robospice.db.TagsCategories;
 
 /**
  * Created by Юрий on 16.10.2015 16:31.
@@ -51,6 +52,10 @@ public class HtmlSpiceServiceOffline extends SpiceService
         // add persisted classes to class collection
         classCollection.add(Article.class);
         classCollection.add(Articles.class);
+
+        //TODO test
+        classCollection.add(TagsCategories.class);
+
 
         // init
         MyRoboSpiceDatabaseHelper databaseHelper = new MyRoboSpiceDatabaseHelper(application, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);

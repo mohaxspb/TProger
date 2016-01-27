@@ -48,6 +48,11 @@ public class Category implements Parcelable
     private String title;
     @DatabaseField(canBeNull = false, columnName = FIELD_REFRESHED)
     private Date refreshed = new Date(0);
+    /**
+     * need this for supporting ormListe in roboSpice
+     */
+    @DatabaseField(foreign = true)
+    private TagsCategories result;
 
     //    Parcel implementation/////////////////////////////
     private Category(Parcel in)
@@ -188,12 +193,14 @@ public class Category implements Parcelable
     {
         this.refreshed = refreshed;
     }
+
     //    Parcel implementation/////////////////////////////
     @Override
     public int describeContents()
     {
         return 0;
     }
+
     //    Parcel implementation/////////////////////////////
     @Override
     public void writeToParcel(Parcel dest, int flags)
@@ -203,5 +210,31 @@ public class Category implements Parcelable
         dest.writeString(title);
 
         dest.writeLong(refreshed.getTime());
+    }
+
+    /**
+     * need this to check if parsed list contains rows from db
+     *
+     * @param o category to check for equality
+     * @return true, if urls of categories are equal
+     */
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Category))
+        {
+            return false;
+        }
+
+        Category givenCat = (Category) o;
+
+        return this.url.equals(givenCat.getUrl());
+    }
+
+    //TODO need to override?..
+    @Override
+    public int hashCode()
+    {
+        return super.hashCode();
     }
 }

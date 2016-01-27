@@ -21,12 +21,11 @@ import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.PendingRequestListener;
 
-import java.util.ArrayList;
-
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapterArticle;
+import ru.kuchanov.tproger.RecyclerAdapterArtsList;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
@@ -168,8 +167,11 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         super.onStart();
 
 //        BusProvider.getInstance().register(this);
-        spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
-        spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
+//        spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
+//        spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
+
+        spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
+        spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
         //remove spiceServiceStart to on resume
     }
 
@@ -293,7 +295,18 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 
             article = loadedArticle;
 
-            recyclerView.setAdapter(new RecyclerAdapterArticle(ctx, loadedArticle));
+//            recyclerView.setAdapter(new RecyclerAdapterArticle(ctx, loadedArticle));
+            //show animation on articles text updating
+            int prevSize = HtmlToView.getTextPartsList(HtmlParsing.getElementListFromHtml(article.getText())).size();
+            if (recyclerView.getAdapter() == null)
+            {
+                recyclerView.setAdapter(new RecyclerAdapterArticle(ctx, loadedArticle));
+                recyclerView.getAdapter().notifyItemRangeInserted(0, prevSize);
+            }
+            else
+            {
+                recyclerView.getAdapter().notifyItemRangeRemoved(0, prevSize);
+            }
             //TODO
 //                //update cover
 //                BusProvider.getInstance().post(new EventArtsReceived(artsList));

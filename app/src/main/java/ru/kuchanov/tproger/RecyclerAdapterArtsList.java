@@ -40,16 +40,14 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     public static final String LOG = RecyclerAdapterArtsList.class.getSimpleName();
     private static final int SHOW_MAX_INFO = 1;
     private static final int SHOW_MIN_INFO = 0;
+    int textSizePrimary;
+    int textSizeSecondary;
     private ArrayList<Article> artsList;
     private SharedPreferences pref;
     private Context ctx;
     private ImageLoader imageLoader;
-
     private boolean isTabletMode;
     private boolean isOnArticleActivity;
-
-    int textSizePrimary;
-    int textSizeSecondary;
 
     public RecyclerAdapterArtsList(Context ctx, ArrayList<Article> dataset)
     {
@@ -62,8 +60,6 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
 
         artsList = dataset;
 
-//        textSizePrimary = AttributeGetter.getDimentionPixelSize(ctx, R.dimen.text_size_primary);
-//        textSizeSecondary = AttributeGetter.getDimentionPixelSize(ctx, R.dimen.text_size_secondary);
         textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
         textSizeSecondary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_secondary);
     }

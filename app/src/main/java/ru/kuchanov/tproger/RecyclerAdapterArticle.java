@@ -42,7 +42,7 @@ import ru.kuchanov.tproger.utils.html.MyHtmlTagHandler;
 
 public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
-    private static final String LOG = RecyclerAdapterArticle.class.getSimpleName();
+//    private static final String LOG = RecyclerAdapterArticle.class.getSimpleName();
 
     private static final int TYPE_TITLE = 0;
     private static final int TYPE_TEXT = 1;
@@ -56,7 +56,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     private static final int TYPE_TABLE = 9;
     private static final int TYPE_WELL = 10;
 
-    int paddingsInDp = 5;
+    private int paddingsInDp = 5;
     private int sizeOfArticleParts = 0;
     private float recyclerWidth;
     private ArrayList<HtmlToView.TextType> textTypes = new ArrayList<>();

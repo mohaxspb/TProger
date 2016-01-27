@@ -71,6 +71,9 @@ public class Article implements Parcelable
     private String text;
     @DatabaseField
     private boolean isRead;
+    /**
+     * need this for supporting ormListe in roboSpice
+     */
     @DatabaseField(foreign = true)
     private Articles result;
     //    Parcel implementation/////////////////////////////

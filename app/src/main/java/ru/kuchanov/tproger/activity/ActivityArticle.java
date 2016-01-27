@@ -94,8 +94,10 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     ///////////
 
     ///////////
-    protected MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
-    protected MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
+//    protected MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
+//    protected MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
+    private MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
+    private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
     /////////////
 //    ChangeImageWithAlpha changeImageWithAlpha;
     ChangeImageWithAlpha changeImageWithAlphaLeft;

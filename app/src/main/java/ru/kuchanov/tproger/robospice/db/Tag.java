@@ -50,6 +50,11 @@ public class Tag implements Parcelable
     private String title;
     @DatabaseField(canBeNull = false, columnName = FIELD_REFRESHED)
     private Date refreshed = new Date(0);
+    /**
+     * need this for supporting ormListe in roboSpice
+     */
+    @DatabaseField(foreign = true)
+    private TagsCategories result;
 
     //    Parcel implementation/////////////////////////////
     private Tag(Parcel in)
@@ -207,5 +212,31 @@ public class Tag implements Parcelable
         dest.writeString(title);
 
         dest.writeLong(refreshed.getTime());
+    }
+
+    /**
+     * need this to check if parsed list contains rows from db
+     *
+     * @param o category to check for equality
+     * @return true, if urls of categories are equal
+     */
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Tag))
+        {
+            return false;
+        }
+
+        Tag givenTag = (Tag) o;
+
+        return this.url.equals(givenTag.getUrl());
+    }
+
+    //TODO need to override?..
+    @Override
+    public int hashCode()
+    {
+        return super.hashCode();
     }
 }

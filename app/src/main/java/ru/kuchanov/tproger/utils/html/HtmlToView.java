@@ -26,7 +26,7 @@ import ru.kuchanov.tproger.utils.UILImageGetter;
  */
 public class HtmlToView
 {
-    protected static final String LOG = HtmlParsing.class.getSimpleName();
+    protected static final String LOG = HtmlToView.class.getSimpleName();
 
     public static void add(LinearLayout lin, ArrayList<Element> list)
     {
@@ -47,6 +47,7 @@ public class HtmlToView
         for (int i = 0; i < list.size(); i++)
         {
             Element el = list.get(i);
+//            Log.i(LOG, el.toString());
 
             if (HtmlTextFormatting.isUnsupportedTag(el) || HtmlTextFormatting.hasInnerUnsupportedTags(el))
             {
@@ -192,6 +193,7 @@ public class HtmlToView
      */
     public static void setTextToTextView(TextView textView, String textToSet, Context ctx)
     {
+//        Log.i(LOG, textToSet);
         textView.setText(
                 Html.fromHtml(
                         textToSet, new UILImageGetter(textView, ctx), new MyHtmlTagHandler(ctx)));

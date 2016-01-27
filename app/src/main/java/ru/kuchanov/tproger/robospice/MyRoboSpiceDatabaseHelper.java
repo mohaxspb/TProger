@@ -16,6 +16,7 @@ import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.db.Tag;
+import ru.kuchanov.tproger.robospice.db.TagsCategories;
 
 /**
  * Created by Юрий on 17.10.2015 16:57.
@@ -36,6 +37,7 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
     @Override
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion)
     {
+
         // override if needed
         try
         {
@@ -43,7 +45,7 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
             TableUtils.dropTable(connectionSource, Article.class, true);
             TableUtils.dropTable(connectionSource, ArticleCategory.class, true);
             TableUtils.dropTable(connectionSource, Articles.class, true);
-
+//TODO add new tables
             this.onCreate(database, connectionSource);
         }
         catch (SQLException e)
@@ -64,9 +66,11 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
             TableUtils.createTableIfNotExists(connectionSource, Article.class);
             //writeArtsList artCatTable table
             TableUtils.createTableIfNotExists(connectionSource, ArticleCategory.class);
-
+//table for holding lists of Article rows
             TableUtils.createTableIfNotExists(connectionSource, Articles.class);
-
+//TODO add new tables
+            TableUtils.createTableIfNotExists(connectionSource, Tag.class);
+            TableUtils.createTableIfNotExists(connectionSource, TagsCategories.class);
             Log.i(LOG, "all tables have been created");
 
             //fill with initial data

@@ -8,6 +8,12 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -18,6 +24,7 @@ import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
+import ru.kuchanov.tproger.robospice.db.Tag;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
 
 /**
@@ -93,6 +100,10 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         articles.setNumOfNewArts(newArtsQuont);
         articles.setResult(list);
 
+        //TODO if need
+        //parse and write new categories and tags to DB
+        this.updateTagsAndCategoriesIfNeed(responseBody);
+
         return articles;
     }
 
@@ -106,5 +117,82 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         Response response = client.newCall(request.build()).execute();
 
         return response.body().string();
+    }
+
+    private void updateTagsAndCategoriesIfNeed(String html)
+    {
+        Document document = Jsoup.parse(html);
+        Element divCategories = document.getElementsByClass("bl_category").first();
+//        Element divTags = document.getElementsByClass("widget_tag_cloud").first();
+        Element divTags = document.getElementById("tag_cloud-3");
+
+        ArrayList<Category> categoriesFromDB = new ArrayList<>();
+        ArrayList<Tag> tagsFromDB = new ArrayList<>();
+        try
+        {
+            categoriesFromDB = (ArrayList<Category>) databaseHelper.getDaoCategory().queryForAll();
+            tagsFromDB = (ArrayList<Tag>) databaseHelper.getDaoTag().queryForAll();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        ArrayList<Category> categoriesToWrite = new ArrayList<>();
+
+        Elements liWithCategory = divCategories.getElementsByTag("li");
+        for (Element element : liWithCategory)
+        {
+            Element aTag = element.getElementsByTag("a").first();
+            Category category = new Category();
+            category.setUrl(aTag.attr("href"));
+            category.setTitle(aTag.text());
+
+            if (categoriesFromDB.contains(category))
+            {
+                Log.d(LOG, category.getTitle() + " already in DB");
+//                continue;
+            }
+            else
+            {
+                categoriesToWrite.add(category);
+            }
+        }
+        //parse tags
+        ArrayList<Tag> tagsToWrite = new ArrayList<>();
+
+        Elements aWithTag = divTags.getElementsByTag("a");
+        for (Element aTag : aWithTag)
+        {
+//            Element aTag = element.getElementsByTag("a").first();
+            Tag tag = new Tag();
+            tag.setUrl(aTag.attr("href"));
+            tag.setTitle(aTag.text());
+
+            if (tagsFromDB.contains(tag))
+            {
+                Log.d(LOG, tag.getTitle() + " already in DB");
+            }
+            else
+            {
+                tagsToWrite.add(tag);
+            }
+        }
+
+        //write them
+        try
+        {
+            for (Category c : categoriesToWrite)
+            {
+                databaseHelper.getDaoCategory().createOrUpdate(c);
+            }
+            for (Tag t : tagsToWrite)
+            {
+                databaseHelper.getDaoTag().createOrUpdate(t);
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

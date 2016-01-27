@@ -32,7 +32,6 @@ import ru.kuchanov.tproger.RecyclerAdapterArtsList;
 import ru.kuchanov.tproger.RecyclerViewOnScrollListener;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;
-import ru.kuchanov.tproger.activity.ActivityMain;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
@@ -211,20 +210,20 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
         BusProvider.getInstance().register(this);
 
-        if (act instanceof ActivityArticle)
-        {
-            spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
-            spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
-        }
-        else if (act instanceof ActivityMain)
-        {
+//        if (act instanceof ActivityArticle)
+//        {
+//            spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
+//            spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
+//        }
+//        else if (act instanceof ActivityMain)
+//        {
             spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
             spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
-        }
-        else
-        {
-            throw new NullPointerException("need to add service for this activity: " + act.getClass().getSimpleName());
-        }
+//        }
+//        else
+//        {
+//            throw new NullPointerException("need to add service for this activity: " + act.getClass().getSimpleName());
+//        }
 
         //remove spiceServiceStart to on resume
 

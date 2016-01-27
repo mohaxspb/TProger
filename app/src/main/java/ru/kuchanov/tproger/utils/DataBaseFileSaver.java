@@ -11,12 +11,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Created by Юрий on 22.10.2015 17:56.
- * For ExpListTest.
+ * Created by Юрий on 22.10.2015 17:56 22:20.
+ * For TProger.
  */
 public class DataBaseFileSaver
 {
     // Copy to sdcard for debug use
+    private final static String LOG = DataBaseFileSaver.class.getSimpleName();
 
     /**
      * @return path to saved DB or error msg
@@ -28,26 +29,25 @@ public class DataBaseFileSaver
         String databasePath = c.getDatabasePath(DATABASE_NAME).getPath();
         File f = new File(databasePath);
         OutputStream myOutput = null;
-        InputStream myInput = null;
-        Log.i("testing", " testing db path " + databasePath);
-        Log.i("testing", " testing db exist " + f.exists());
+        InputStream myInput;
+        Log.d(LOG, " testing db path " + databasePath);
+        Log.d(LOG, " testing db exist " + f.exists());
 
         if (f.exists())
         {
             try
             {
-
-//                File directory = new File("/mnt/sdcard/DB_DEBUG");
                 File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/DB_DEBUG");
+//                File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
                 result = directory.getAbsolutePath();
-                Log.i("testing", " new db path " + directory.getAbsolutePath());
+                Log.d(LOG, " new db path " + directory.getAbsolutePath());
                 if (!directory.exists())
                 {
                     directory.mkdirs();
                 }
 
                 myOutput = new FileOutputStream(directory.getAbsolutePath()
-                        + "/" + DATABASE_NAME + ".db");
+                        + "/" + DATABASE_NAME/* + ".db");*/);
                 myInput = new FileInputStream(databasePath);
 
                 byte[] buffer = new byte[1024];
@@ -70,16 +70,17 @@ public class DataBaseFileSaver
                     if (myOutput != null)
                     {
                         myOutput.close();
-                        myOutput = null;
+//                        myOutput = null;
                     }
-                    if (myInput != null)
-                    {
-                        myInput.close();
-                        myInput = null;
-                    }
+//                    if (myInput != null)
+//                    {
+//                        myInput.close();
+//                        myInput = null;
+//                    }
                 }
                 catch (Exception e)
                 {
+                    e.printStackTrace();
                 }
             }
         }

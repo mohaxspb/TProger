@@ -94,6 +94,10 @@ public class MyHtmlTagHandler implements TagHandler
     @Override
     public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader)
     {
+        if (tag.equalsIgnoreCase("html") || tag.equalsIgnoreCase("body"))
+        {
+            return;
+        }
         //make supporting background color via BackgroundColorSpan (use it for CODE TAG)
         if (tag.equalsIgnoreCase("code"))
         {
@@ -103,7 +107,7 @@ public class MyHtmlTagHandler implements TagHandler
         {
             processStrike(opening, output);
         }
-        ////////
+
         if (tag.equalsIgnoreCase("ul") || tag.equalsIgnoreCase("ol") || tag.equalsIgnoreCase("li"))
         {
             processUlOlLi(opening, tag, output);

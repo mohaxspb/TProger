@@ -59,7 +59,7 @@ public class RoboSpiceRequestCategoriesArtsOffline extends SpiceRequest<Articles
         }
         else
         {
-            //So it's first time we assking for cahche and there is no cahce
+            //So it's first time we asking for cahche and there is no cahce
             //so load from web via returning null
             return null;
         }

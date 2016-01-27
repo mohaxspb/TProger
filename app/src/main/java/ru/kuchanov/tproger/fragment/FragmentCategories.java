@@ -23,30 +23,19 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.PendingRequestListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
-import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.RecyclerAdapterArtsList;
-import ru.kuchanov.tproger.RecyclerViewOnScrollListener;
+import ru.kuchanov.tproger.RecyclerAdapter;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;
-import ru.kuchanov.tproger.activity.ActivityMain;
-import ru.kuchanov.tproger.otto.BusProvider;
-import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
-import ru.kuchanov.tproger.robospice.db.Article;
-import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.db.Tag;
-import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArts;
-import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArtsFromBottom;
-import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArtsFromBottomOffline;
-import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArtsOffline;
+import ru.kuchanov.tproger.robospice.db.TagsCategories;
+import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestTagsCategoriesOffline;
 import ru.kuchanov.tproger.utils.AttributeGetter;
-import ru.kuchanov.tproger.utils.ScreenProperties;
 
 /**
  * Created by Юрий on 17.09.2015 17:20 16:55.
@@ -59,17 +48,16 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
     public static final int TYPE_CATEGORY = 0;
     public static final int TYPE_TAG = 1;
     public static final String KEY_CUR_CATEGORY_TYPE = "KEY_CUR_CATEGORY_TYPE";
-    public static final String KEY_IS_LOADING = "isLoading";
-    protected MySpiceManager spiceManager;
+    //    public static final String KEY_IS_LOADING = "isLoading";
     protected MySpiceManager spiceManagerOffline;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
     private int curCategoryType = 0;
-    private ArrayList<Category> categories;
-    private ArrayList<Tag> tags;
+    private ArrayList<Category> categories = new ArrayList<>();
+    private ArrayList<Tag> tags = new ArrayList<>();
     private AppCompatActivity act;
     private Context ctx;
-    private boolean isLoading = false;
+    //    private boolean isLoading = false;
     private SharedPreferences pref;
     private int numOfColsInGridLayoutManager = 2;
 
@@ -89,7 +77,7 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
 //        Log.i(LOG, "onSaveInstanceState called");
         super.onSaveInstanceState(outState);
 
-        outState.putBoolean(KEY_IS_LOADING, isLoading);
+//        outState.putBoolean(KEY_IS_LOADING, isLoading);
         outState.putParcelableArrayList(Category.LOG, categories);
         outState.putParcelableArrayList(Tag.LOG, tags);
     }
@@ -108,7 +96,7 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
 
         if (savedInstanceState != null)
         {
-            this.isLoading = savedInstanceState.getBoolean(KEY_IS_LOADING);
+//            this.isLoading = savedInstanceState.getBoolean(KEY_IS_LOADING);
             this.categories = savedInstanceState.getParcelableArrayList(Category.LOG);
             this.tags = savedInstanceState.getParcelableArrayList(Tag.LOG);
         }
@@ -125,19 +113,11 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         View v = inflater.inflate(R.layout.fragment_recycler_in_swipe, container, false);
 
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
-        {
-            @Override
-            public void onRefresh()
-            {
-                performRequest(1, true, false);
-            }
-        });
+        swipeRefreshLayout.setEnabled(false);
 
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler);
 
         boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
-//        boolean isOnArticleActivity = (ctx instanceof ActivityArticle);
         if (isGridManager)
         {
             recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
@@ -154,24 +134,30 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         recyclerView.getItemAnimator().setChangeDuration(500);
 
         //fill recycler with data of make request for it
-        if (artsList.size() != 0)
+        switch (curCategoryType)
         {
-            recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
-
-            recyclerView.clearOnScrollListeners();
-            recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
-            {
-                @Override
-                public void onLoadMore()
+            case TYPE_CATEGORY:
+                if (categories.size() != 0)
                 {
-                    Log.i(LOG, "OnLoadMore called!");
-                    performRequest(currentPageToLoad, false, false);
+//                    recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
+                    //TODO
                 }
-            });
-        }
-        else
-        {
-            this.setLoading(isLoading);
+                else
+                {
+                    this.setLoading(true);
+                }
+                break;
+            case TYPE_TAG:
+                if (tags.size() != 0)
+                {
+//                    recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
+                    //TODO
+                }
+                else
+                {
+                    this.setLoading(true);
+                }
+                break;
         }
 
         return v;
@@ -187,39 +173,12 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
     }
 
     @Override
-    public void onDetach()
-    {
-//        Log.i(LOG, "onDetach called");
-        super.onDetach();
-    }
-
-    @Override
     public void onStart()
     {
-//        Log.i(LOG, "onStart called from activity: " + getActivity().getClass().getSimpleName());
+//        Log.i(LOG, "onStart called");
         super.onStart();
-
-        BusProvider.getInstance().register(this);
-
-        if (act instanceof ActivityArticle)
-        {
-            spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
-            spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
-        }
-        else if (act instanceof ActivityMain)
-        {
-            spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
-            spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
-        }
-        else
-        {
-            throw new NullPointerException("need to add service for this activity: " + act.getClass().getSimpleName());
-        }
-
-        //remove spiceServiceStart to on resume
-
-        spiceManager.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
-        spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
+        spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
+        spiceManagerOffline.addListenerIfPending(TagsCategories.class, "unused", new TagsCategoriesRequestListener());
     }
 
     @Override
@@ -228,10 +187,6 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
 //        Log.i(LOG, "onStop called from activity: " + getActivity().getClass().getSimpleName());
         super.onStop();
         //remove spiceServiceStart to onPause
-
-        //should unregister in onStop to avoid some issues while pausing activity/fragment
-        //see http://stackoverflow.com/a/19737191/3212712
-        BusProvider.getInstance().unregister(this);
     }
 
     @Override
@@ -240,20 +195,12 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
 //        Log.i(LOG, "onResume called from activity: " + getActivity().getClass().getSimpleName());
         super.onResume();
 
-//        spiceManager.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
-//        spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
+        spiceManagerOffline.addListenerIfPending(TagsCategories.class, "unused", new TagsCategoriesRequestListener());
         //make request for it
-        if (artsList.size() == 0)
+        if (tags.size() == 0 && categories.size() == 0)
         {
-            performRequest(1, false, false);
+            performRequest();
         }
-    }
-
-    @Override
-    public void onPause()
-    {
-//        Log.i(LOG, "onPause called from activity: " + getActivity().getClass().getSimpleName());
-        super.onPause();
     }
 
     @Override
@@ -266,23 +213,25 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         }
         if (key.equals(this.getString(R.string.pref_design_key_list_style)))
         {
+            //TODO
             boolean isGridManager = sharedPreferences.getBoolean(key, false);
             boolean isOnArticleActivity = (ctx instanceof ActivityArticle);
             if (isGridManager && !isOnArticleActivity)
             {
-                recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
-                this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
-                recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
+//                recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
+//                this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
+//                recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
             }
             else
             {
-                recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
-                this.recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
-                recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
+//                recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
+//                this.recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+//                recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
             }
         }
         if (key.equals(this.getString(R.string.pref_design_key_col_num)))
         {
+            //TODO
             boolean isGridManager = sharedPreferences.getBoolean(this.getString(R.string.pref_design_key_list_style), false);
 
             this.numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(key, "2"));
@@ -290,16 +239,12 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
             boolean isOnArticleActivity = (ctx instanceof ActivityArticle);
             if (isGridManager && !isOnArticleActivity)
             {
-                recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
-                this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
-                recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
+//                recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
+//                this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
+//                recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
             }
         }
-        if (key.equals(this.getString(R.string.pref_design_key_art_card_style))
-                || key.equals(this.getString(R.string.pref_design_key_art_card_preview_show))
-                || key.equals(this.getString(R.string.pref_design_key_text_size_ui))
-                || key.equals(this.getString(R.string.pref_design_key_art_card_preview_short))
-                )
+        if (key.equals(this.getString(R.string.pref_design_key_text_size_ui)))
         {
             recyclerView.getAdapter().notifyDataSetChanged();
         }
@@ -308,9 +253,8 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
     private void setLoading(final boolean isLoading)
     {
 //        Log.i(LOG, "isLoading: " + isLoading +
-//          " isLoadingFromTop: " + isLoadingFromTop +
 //          " swipeRefreshLayout.isRefreshing(): " + swipeRefreshLayout.isRefreshing());
-        this.isLoading = isLoading;
+//        this.isLoading = isLoading;
 
         if (isLoading && swipeRefreshLayout.isRefreshing())
         {
@@ -319,27 +263,7 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         }
 
         int actionBarSize = AttributeGetter.getDimentionPixelSize(ctx, android.R.attr.actionBarSize);
-        if (isLoading)
-        {
-//            Log.i(LOG, "isLoading is TRUE!!!");
-//            swipeRefreshLayout.setEnabled(true);
-//            swipeRefreshLayout.setLayoutMovementEnabled(true);
-            if (this.isLoadingFromTop)
-            {
-                swipeRefreshLayout.setProgressViewEndTarget(false, actionBarSize);
-            }
-            else
-            {
-                int screenHeight = ScreenProperties.getHeight(act);
-                swipeRefreshLayout.setProgressViewEndTarget(false, screenHeight - actionBarSize * 2);
-            }
-//            swipeRefreshLayout.setRefreshing(true);
-        }
-        else
-        {
-            swipeRefreshLayout.setProgressViewEndTarget(false, actionBarSize);
-//            swipeRefreshLayout.setRefreshing(false);
-        }
+        swipeRefreshLayout.setProgressViewEndTarget(false, actionBarSize);
 
         //workaround from
         //http://stackoverflow.com/a/26910973/3212712
@@ -353,64 +277,17 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         });
     }
 
-    private void resetOnScroll()
+    private void performRequest()
     {
-        recyclerView.clearOnScrollListeners();
-        recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
-        {
-            @Override
-            public void onLoadMore()
-            {
-                Log.i(LOG, "OnLoadMore called!");
-                currentPageToLoad++;
-                performRequest(currentPageToLoad, false, false);
-            }
-        });
+        Log.i(LOG, "performRequest");
+
+        this.setLoading(true);
+        RoboSpiceRequestTagsCategoriesOffline requestFromDB = new RoboSpiceRequestTagsCategoriesOffline(ctx);
+        spiceManagerOffline.execute(requestFromDB, "unused", DurationInMillis.ALWAYS_EXPIRED, new TagsCategoriesRequestListener());
+
     }
 
-    private void performRequest(int page, boolean forceRefresh, boolean resetCategoryInDB)
-    {
-        Log.i(LOG, "performRequest with page: " + page + " and forceRefresh: " + forceRefresh);
-
-        if (page == 1)
-        {
-            isLoadingFromTop = true;
-            this.setLoading(true);
-            //if !forceRefresh we must load arts from DB
-            if (!forceRefresh)
-            {
-                RoboSpiceRequestCategoriesArtsOffline requestFromDB = new RoboSpiceRequestCategoriesArtsOffline(ctx, categoryUrl);
-                spiceManagerOffline.execute(requestFromDB, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
-            }
-            else
-            {
-                RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, categoryUrl);
-                if (resetCategoryInDB)
-                {
-                    request.setResetCategoryInDB();
-                }
-                spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
-            }
-        }
-        else
-        {
-            isLoadingFromTop = false;
-            this.setLoading(true);
-            if (!forceRefresh)
-            {
-                RoboSpiceRequestCategoriesArtsFromBottomOffline request = new RoboSpiceRequestCategoriesArtsFromBottomOffline(ctx, categoryUrl, page);
-                spiceManagerOffline.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
-            }
-            else
-            {
-                RoboSpiceRequestCategoriesArtsFromBottom request = new RoboSpiceRequestCategoriesArtsFromBottom(ctx, categoryUrl, page);
-                spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
-            }
-        }
-    }
-
-    //inner class of your spiced Activity
-    private class ListFollowersRequestListener implements PendingRequestListener<Articles>
+    private class TagsCategoriesRequestListener implements PendingRequestListener<TagsCategories>
     {
         @Override
         public void onRequestFailure(SpiceException e)
@@ -434,18 +311,11 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
                 e.printStackTrace();
             }
 
-            //reset onScrollListener (isuue #1)
-            resetOnScroll();
-
             setLoading(false);
-            if (currentPageToLoad > 1)
-            {
-                currentPageToLoad--;
-            }
         }
 
         @Override
-        public void onRequestSuccess(Articles articles)
+        public void onRequestSuccess(TagsCategories tagsCategories)
         {
 //            Log.i(LOG, "onRequestSuccess");
             if (!isAdded())
@@ -453,105 +323,42 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
                 Log.e(LOG, "frag not added");
                 return;
             }
-            if (articles == null || articles.getResult() == null)
-            {
-                //no data in cache?..
-                Log.i(LOG, "no data in cache for page: " + currentPageToLoad);
-                performRequest(currentPageToLoad, true, false);
-                return;
-            }
 
-            ArrayList<Article> list = new ArrayList<>(articles.getResult());
+//            ArrayList<Article> list = new ArrayList<>(t.getResult());
 
-            resetOnScroll();
             setLoading(false);
 
-            if (list.size() != Const.NUM_OF_ARTS_ON_PAGE && !articles.isContainsBottomArt())
+            //TODO test
+            tags.clear();
+            tags.addAll(tagsCategories.getTags());
+            categories.clear();
+            categories.addAll(tagsCategories.getCategories());
+
+            ArrayList<String> dummyData = new ArrayList<>();
+            for (Category c : categories)
             {
-                //error in DB - need to reset category;
-                Log.i(LOG, "error in DB - need to reset category;");
-                int prevSize = artsList.size();
-
-                if (recyclerView.getAdapter() != null)
-                {
-                    recyclerView.getAdapter().notifyItemRangeRemoved(0, prevSize);
-                }
-                artsList = new ArrayList<>();
-                currentPageToLoad = 1;
-                performRequest(currentPageToLoad, true, true);
-
-                return;
+                dummyData.add(c.getTitle());
             }
 
-            Log.i(LOG, "RECEIVE " + list.size() + " arts for page: " + currentPageToLoad);
+            recyclerView.setAdapter(new RecyclerAdapter(dummyData));
 
-            Collections.sort(list, new Article.PubDateComparator());
 
-            if (currentPageToLoad > 1)
-            {
-                int prevListSize = artsList.size();
-                artsList.addAll(list);
-                recyclerView.getAdapter().notifyItemRangeInserted(prevListSize, artsList.size());
+//            Log.i(LOG, "RECEIVE " + list.size() + " categories or tags");
 
-                //update cover
-                BusProvider.getInstance().post(new EventArtsReceived(artsList));
-            }
-            else
-            {
-                int prevSize = artsList.size();
-                artsList.clear();
-                artsList.addAll(list);
-                if (recyclerView.getAdapter() == null)
-                {
-                    recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
-                    recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
-                }
-                else
-                {
-                    recyclerView.getAdapter().notifyItemRangeRemoved(0, prevSize);
-                }
+            //TODO
+//            int prevSize = artsList.size();
+//            artsList.clear();
+//            artsList.addAll(list);
+//            if (recyclerView.getAdapter() == null)
+//            {
+//                recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
+//                recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
+//            }
+//            else
+//            {
+//                recyclerView.getAdapter().notifyItemRangeRemoved(0, prevSize);
+//            }
 
-                //update cover
-                BusProvider.getInstance().post(new EventArtsReceived(artsList));
-
-                int newArtsQuont = articles.getNumOfNewArts();
-                switch (newArtsQuont)
-                {
-                    case -2:
-                        //not set - do nothing
-//                        break;
-                    case -1:
-                        //initial loading  - do nothing
-                        //here we can match current time-Category.refreshed with default refresh period and start request from web
-                        String autoRefreshIsOnKey = ctx.getString(R.string.pref_system_key_autorenew);
-                        boolean autoRefreshIsOn = pref.getBoolean(autoRefreshIsOnKey, false);
-                        if (autoRefreshIsOn)
-                        {
-                            Log.i(LOG, "autoRefreshIsOn so start loading from web");
-                            currentPageToLoad = 1;
-                            performRequest(currentPageToLoad, true, false);
-                        }
-                        else
-                        {
-                            if (Category.refreshDateExpired(category, ctx))
-                            {
-                                Log.i(LOG, "autoRefreshIs OFF but refreshDate expired so start loading from web");
-                                currentPageToLoad = 1;
-                                performRequest(currentPageToLoad, true, false);
-                            }
-                        }
-                        break;
-                    case 0:
-                        Toast.makeText(ctx, "Новых статей не обнаружено!", Toast.LENGTH_SHORT).show();
-                        break;
-                    case 10:
-                        Toast.makeText(ctx, "Обнаружено более 10 новых статей!", Toast.LENGTH_SHORT).show();
-                        break;
-                    default:
-                        Toast.makeText(ctx, "Обнаружено " + newArtsQuont + " новых статей!", Toast.LENGTH_SHORT).show();
-                        break;
-                }
-            }
         }
 
         @Override
