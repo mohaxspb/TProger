@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="categories_title" formatted="false">
+        <item><![CDATA[Главная]]></item>
+        <item><![CDATA[Вопросы к экспертам]]></item>
+        <item><![CDATA[Еженедельная подборка]]></item>
+        <item><![CDATA[Задачки]]></item>
+        <item><![CDATA[Интервью]]></item>
+        <item><![CDATA[Интересные ссылки]]></item>
+        <item><![CDATA[Книги]]></item>
+        <item><![CDATA[Новости]]></item>
+        <item><![CDATA[Переводы]]></item>
+        <item><![CDATA[Подборки]]></item>
+        <item><![CDATA[Рассказы о своих проектах]]></item>
+        <item><![CDATA[События]]></item>
+        <item><![CDATA[Статьи]]></item>
+    </string-array>
+
+    <string-array name="categories_url" formatted="false">
+        <item><![CDATA[]]></item>
+        <item><![CDATA[category/experts/]]></item>
+        <item><![CDATA[category/weekly/]]></item>
+        <item><![CDATA[category/problems/]]></item>
+        <item><![CDATA[category/interview/]]></item>
+        <item><![CDATA[category/links/]]></item>
+        <item><![CDATA[category/books/]]></item>
+        <item><![CDATA[category/news/]]></item>
+        <item><![CDATA[category/translations/]]></item>
+        <item><![CDATA[category/digest/]]></item>
+        <item><![CDATA[category/projects/]]></item>
+        <item><![CDATA[category/events/]]></item>
+        <item><![CDATA[category/articles/]]></item>
+    </string-array>
+
+    <string-array name="tags_title" formatted="false">
+        <item><![CDATA[Android]]></item>
+        <item><![CDATA[API]]></item>
+        <item><![CDATA[C#]]></item>
+        <item><![CDATA[C и C++]]></item>
+        <item><![CDATA[Hardware]]></item>
+        <item><![CDATA[Java]]></item>
+        <item><![CDATA[JavaScript]]></item>
+        <item><![CDATA[Linux]]></item>
+        <item><![CDATA[OpenSource]]></item>
+        <item><![CDATA[Python]]></item>
+        <item><![CDATA[Unity]]></item>
+        <item><![CDATA[Web]]></item>
+        <item><![CDATA[Алгоритмы]]></item>
+        <item><![CDATA[Безопасность]]></item>
+        <item><![CDATA[Безопасный код]]></item>
+        <item><![CDATA[Головоломки]]></item>
+        <item><![CDATA[Для мотивации]]></item>
+        <item><![CDATA[Для начинающих]]></item>
+        <item><![CDATA[Задачи повышенной сложности]]></item>
+        <item><![CDATA[Задачи умеренной сложности]]></item>
+        <item><![CDATA[Инструменты]]></item>
+        <item><![CDATA[Интернет]]></item>
+        <item><![CDATA[История успеха]]></item>
+        <item><![CDATA[Красивый хак]]></item>
+        <item><![CDATA[Лучшая практика]]></item>
+        <item><![CDATA[Массивы и строки]]></item>
+        <item><![CDATA[Масштабируемость и ограничения памяти]]></item>
+        <item><![CDATA[Математика и теория вероятностей]]></item>
+        <item><![CDATA[Мобильная разработка]]></item>
+        <item><![CDATA[Низкоуровневое программирование]]></item>
+        <item><![CDATA[Обучение программированию]]></item>
+        <item><![CDATA[Оптимизация]]></item>
+        <item><![CDATA[Потоки и блокировки]]></item>
+        <item><![CDATA[Прохождение интервью]]></item>
+        <item><![CDATA[Разработка игр]]></item>
+        <item><![CDATA[Рекомендуем]]></item>
+        <item><![CDATA[Рекурсия и динамика]]></item>
+        <item><![CDATA[Ретро]]></item>
+        <item><![CDATA[Связные списки]]></item>
+        <item><![CDATA[Сортировка и поиск]]></item>
+        <item><![CDATA[Стеки и очереди]]></item>
+        <item><![CDATA[Тестирование]]></item>
+        <item><![CDATA[Функциональное программирование]]></item>
+        <item><![CDATA[Языки программирования]]></item>
+        <item><![CDATA[песочница]]></item>
+    </string-array>
+
+    <string-array name="tags_url" formatted="false">
+        <item><![CDATA[tag/android/]]></item>
+        <item><![CDATA[tag/api/]]></item>
+        <item><![CDATA[tag/c-sharp/]]></item>
+        <item><![CDATA[tag/c-and-cpp/]]></item>
+        <item><![CDATA[tag/hardware/]]></item>
+        <item><![CDATA[tag/java/]]></item>
+        <item><![CDATA[tag/javascript/]]></item>
+        <item><![CDATA[tag/linux/]]></item>
+        <item><![CDATA[tag/opensource/]]></item>
+        <item><![CDATA[tag/python/]]></item>
+        <item><![CDATA[tag/unity/]]></item>
+        <item><![CDATA[tag/web/]]></item>
+        <item><![CDATA[tag/algorithms/]]></item>
+        <item><![CDATA[tag/security/]]></item>
+        <item><![CDATA[tag/safe-code/]]></item>
+        <item><![CDATA[tag/brain-teasers/]]></item>
+        <item><![CDATA[tag/for-motivation/]]></item>
+        <item><![CDATA[tag/for-beginners/]]></item>
+        <item><![CDATA[tag/%d0%b7%d0%b0%d0%b4%d0%b0%d1%87%d0%b8-%d0%bf%d0%be%d0%b2%d1%8b%d1%88%d0%b5%d0%bd%d0%bd%d0%be%d0%b9-%d1%81%d0%bb%d0%be%d0%b6%d0%bd%d0%be%d1%81%d1%82%d0%b8/]]></item>
+        <item><![CDATA[tag/%d0%b7%d0%b0%d0%b4%d0%b0%d1%87%d0%b8-%d1%83%d0%bc%d0%b5%d1%80%d0%b5%d0%bd%d0%bd%d0%be%d0%b9-%d1%81%d0%bb%d0%be%d0%b6%d0%bd%d0%be%d1%81%d1%82%d0%b8/]]></item>
+        <item><![CDATA[tag/tools/]]></item>
+        <item><![CDATA[tag/internet/]]></item>
+        <item><![CDATA[tag/success-story/]]></item>
+        <item><![CDATA[tag/good-hack/]]></item>
+        <item><![CDATA[tag/best-practice/]]></item>
+        <item><![CDATA[tag/arrays-and-strings/]]></item>
+        <item><![CDATA[tag/scalability-and-memory-limits/]]></item>
+        <item><![CDATA[tag/math-and-probability/]]></item>
+        <item><![CDATA[tag/mobiledev/]]></item>
+        <item><![CDATA[tag/low-level-coding/]]></item>
+        <item><![CDATA[tag/learn-programming/]]></item>
+        <item><![CDATA[tag/optimization/]]></item>
+        <item><![CDATA[tag/threads-and-locks/]]></item>
+        <item><![CDATA[tag/job-interview/]]></item>
+        <item><![CDATA[tag/gamedev/]]></item>
+        <item><![CDATA[tag/featured/]]></item>
+        <item><![CDATA[tag/recursion-and-dynamic-programming/]]></item>
+        <item><![CDATA[tag/retro/]]></item>
+        <item><![CDATA[tag/linked-lists/]]></item>
+        <item><![CDATA[tag/sorting-and-searching/]]></item>
+        <item><![CDATA[tag/stacks-and-queues/]]></item>
+        <item><![CDATA[tag/testing/]]></item>
+        <item><![CDATA[tag/functional-programming/]]></item>
+        <item><![CDATA[tag/programming-languages/]]></item>
+        <item><![CDATA[tag/sandbox/]]></item>
+    </string-array>
+</resources>

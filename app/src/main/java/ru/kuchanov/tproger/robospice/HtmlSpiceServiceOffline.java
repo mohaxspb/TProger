@@ -53,9 +53,7 @@ public class HtmlSpiceServiceOffline extends SpiceService
         classCollection.add(Article.class);
         classCollection.add(Articles.class);
 
-        //TODO test
         classCollection.add(TagsCategories.class);
-
 
         // init
         MyRoboSpiceDatabaseHelper databaseHelper = new MyRoboSpiceDatabaseHelper(application, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);

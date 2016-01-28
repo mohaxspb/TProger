@@ -76,6 +76,7 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
                 }
             }
             e.printStackTrace();
+            throw new Exception(Const.ERROR_404_WHILE_PARSING_PAGE);
         }
 
         //write to DB

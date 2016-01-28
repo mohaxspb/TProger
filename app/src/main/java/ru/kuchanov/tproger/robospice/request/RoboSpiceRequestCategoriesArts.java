@@ -16,7 +16,6 @@ import org.jsoup.select.Elements;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.TimeZone;
 
 import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
@@ -25,6 +24,7 @@ import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.db.Tag;
+import ru.kuchanov.tproger.utils.WriteFile;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
 
 /**
@@ -50,7 +50,7 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         this.category = category;
 
 //        this.url = "http://tproger.ru/page/1/";
-        this.url = Const.DOMAIN_MAIN + category + Const.SLASH + "page" + Const.SLASH + 1 + Const.SLASH;
+        this.url = Const.DOMAIN_MAIN + category /*+ Const.SLASH*/ + "page" + Const.SLASH + 1;// + Const.SLASH;
 
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
 
@@ -93,7 +93,8 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         Log.i(LOG, "newArtsQuont: " + newArtsQuont);
 
         //update refreshed date of category to currentTimeInMills
-        cat.setRefreshed(Calendar.getInstance(TimeZone.getTimeZone("GMT+00:00")).getTime());
+//        cat.setRefreshed(Calendar.getInstance(TimeZone.getTimeZone("GMT+00:00")).getTime());
+        cat.setRefreshed(Calendar.getInstance().getTime());
         databaseHelper.getDaoCategory().createOrUpdate(cat);
 
         Articles articles = new Articles();
@@ -144,39 +145,47 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         {
             Element aTag = element.getElementsByTag("a").first();
             Category category = new Category();
-            category.setUrl(aTag.attr("href"));
+            String url = aTag.attr("href");
+            url = url.replace(Const.DOMAIN_MAIN, "");
+            category.setUrl(url);
             category.setTitle(aTag.text());
 
-            if (categoriesFromDB.contains(category))
-            {
-                Log.d(LOG, category.getTitle() + " already in DB");
+//            if (categoriesFromDB.contains(category))
+//            {
+//                Log.d(LOG, category.getTitle() + " already in DB");
 //                continue;
-            }
-            else
+//            }
+            if (!categoriesFromDB.contains(category))
             {
                 categoriesToWrite.add(category);
             }
         }
+
         //parse tags
         ArrayList<Tag> tagsToWrite = new ArrayList<>();
 
         Elements aWithTag = divTags.getElementsByTag("a");
         for (Element aTag : aWithTag)
         {
-//            Element aTag = element.getElementsByTag("a").first();
             Tag tag = new Tag();
-            tag.setUrl(aTag.attr("href"));
+            String url = aTag.attr("href");
+            url = url.replace(Const.DOMAIN_MAIN, "");
+            tag.setUrl(url);
             tag.setTitle(aTag.text());
 
-            if (tagsFromDB.contains(tag))
-            {
-                Log.d(LOG, tag.getTitle() + " already in DB");
-            }
-            else
+//            if (tagsFromDB.contains(tag))
+//            {
+//                Log.d(LOG, tag.getTitle() + " already in DB");
+//            }
+//            else
+            if (!tagsFromDB.contains(tag))
             {
                 tagsToWrite.add(tag);
             }
         }
+
+        //just get initial info for DB. Need to comment it in release;
+//        createInitialTagCategoriesInfoFile(categoriesFromDB, tagsFromDB);
 
         //write them
         try
@@ -194,5 +203,46 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         {
             e.printStackTrace();
         }
+    }
+
+    private void createInitialTagCategoriesInfoFile(ArrayList<Category> cats, ArrayList<Tag> tags)
+    {
+        StringBuilder builder = new StringBuilder();
+
+        //categories
+        builder.append("<string-array name=\"categories_title\" formatted=\"false\">\n");
+        for (Category category : cats)
+        {
+            builder.append("<item><![CDATA[").append(category.getTitle()).append("]]></item>\n");
+        }
+        builder.append("</string-array>");
+        builder.append("\n").append("\n");
+
+        builder.append("<string-array name=\"categories_url\" formatted=\"false\">\n");
+        for (Category category : cats)
+        {
+            builder.append("<item><![CDATA[").append(category.getUrl()).append("]]></item>\n");
+        }
+        builder.append("</string-array>");
+        builder.append("\n").append("\n");
+
+        //tags
+        builder.append("<string-array name=\"tags_title\" formatted=\"false\">\n");
+        for (Tag tag : tags)
+        {
+            builder.append("<item><![CDATA[").append(tag.getTitle()).append("]]></item>\n");
+        }
+        builder.append("</string-array>");
+        builder.append("\n").append("\n");
+
+        builder.append("<string-array name=\"tags_url\" formatted=\"false\">");
+        for (Tag tag : tags)
+        {
+            builder.append("<item><![CDATA[").append(tag.getUrl()).append("]]></item>\n");
+        }
+        builder.append("</string-array>");
+
+        WriteFile write = new WriteFile(builder.toString(), "DB_DEBUG", "cats_and_tags_res.txt", ctx);
+        write.execute();
     }
 }

@@ -24,6 +24,7 @@ import com.octo.android.robospice.request.listener.PendingRequestListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.Const;
@@ -37,6 +38,7 @@ import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
+import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArts;
@@ -110,6 +112,10 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
         MyRoboSpiceDatabaseHelper databaseHelper;
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+        //TODO test
+//        String[] arr = getResources().getStringArray(R.array.categories_url);
+//        this.categoryUrl = arr[new Random().nextInt(arr.length)];
+        this.categoryUrl = "category/interview/";
         this.category = Category.getCategoryByUrl(categoryUrl, databaseHelper);
 
         if (savedInstanceState != null)
@@ -217,8 +223,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //        }
 //        else if (act instanceof ActivityMain)
 //        {
-            spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
-            spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
+        spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
+        spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
 //        }
 //        else
 //        {
@@ -227,8 +233,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
         //remove spiceServiceStart to on resume
 
-        spiceManager.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
-        spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
+        spiceManager.addListenerIfPending(Articles.class, "unused", new CategoriesArtsRequestListener());
+        spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new CategoriesArtsRequestListener());
     }
 
     @Override
@@ -249,8 +255,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //        Log.i(LOG, "onResume called from activity: " + getActivity().getClass().getSimpleName());
         super.onResume();
 
-//        spiceManager.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
-//        spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new ListFollowersRequestListener());
+//        spiceManager.addListenerIfPending(Articles.class, "unused", new CategoriesArtsRequestListener());
+//        spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new CategoriesArtsRequestListener());
         //make request for it
         if (artsList.size() == 0)
         {
@@ -389,7 +395,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             if (!forceRefresh)
             {
                 RoboSpiceRequestCategoriesArtsOffline requestFromDB = new RoboSpiceRequestCategoriesArtsOffline(ctx, categoryUrl);
-                spiceManagerOffline.execute(requestFromDB, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+                spiceManagerOffline.execute(requestFromDB, "unused", DurationInMillis.ALWAYS_EXPIRED, new CategoriesArtsRequestListener());
             }
             else
             {
@@ -398,7 +404,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 {
                     request.setResetCategoryInDB();
                 }
-                spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+                spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new CategoriesArtsRequestListener());
             }
         }
         else
@@ -408,23 +414,30 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             if (!forceRefresh)
             {
                 RoboSpiceRequestCategoriesArtsFromBottomOffline request = new RoboSpiceRequestCategoriesArtsFromBottomOffline(ctx, categoryUrl, page);
-                spiceManagerOffline.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+                spiceManagerOffline.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new CategoriesArtsRequestListener());
             }
             else
             {
                 RoboSpiceRequestCategoriesArtsFromBottom request = new RoboSpiceRequestCategoriesArtsFromBottom(ctx, categoryUrl, page);
-                spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new ListFollowersRequestListener());
+                spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new CategoriesArtsRequestListener());
             }
         }
     }
 
     //inner class of your spiced Activity
-    private class ListFollowersRequestListener implements PendingRequestListener<Articles>
+    private class CategoriesArtsRequestListener implements PendingRequestListener<Articles>
     {
         @Override
         public void onRequestFailure(SpiceException e)
         {
-            Log.i(LOG, "onRequestFailure");
+            Log.i(LOG, "onRequestFailure with error = " + e.getClass().getSimpleName());
+
+            //here we must reduce pageNumber if it was more than 1
+            if (currentPageToLoad != 1)
+            {
+                currentPageToLoad--;
+            }
+
             if (!isAdded())
             {
                 Log.e(LOG, "frag not added");
@@ -440,6 +453,15 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             }
             else
             {
+                if (e.getMessage() != null)
+                {
+                    if (e.getMessage().equals(Const.ERROR_404_WHILE_PARSING_PAGE))
+                    {
+                        Log.i(LOG, "seems to be we reached the last art in cat; So toast about it");
+                        Toast.makeText(ctx, "Больше нету статей в этом разделе!", Toast.LENGTH_SHORT).show();
+                        recyclerView.clearOnScrollListeners();
+                    }
+                }
                 e.printStackTrace();
             }
 
@@ -447,10 +469,10 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             resetOnScroll();
 
             setLoading(false);
-            if (currentPageToLoad > 1)
-            {
-                currentPageToLoad--;
-            }
+//            if (currentPageToLoad > 1)
+//            {
+//                currentPageToLoad--;
+//            }
         }
 
         @Override
@@ -481,7 +503,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 Log.i(LOG, "error in DB - need to reset category;");
                 int prevSize = artsList.size();
 
-                if(recyclerView.getAdapter()!=null)
+                if (recyclerView.getAdapter() != null)
                 {
                     recyclerView.getAdapter().notifyItemRangeRemoved(0, prevSize);
                 }
@@ -490,6 +512,13 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 performRequest(currentPageToLoad, true, true);
 
                 return;
+            }
+            else
+            {
+                Log.i(LOG, "end of cats arts list reached");
+                Toast.makeText(ctx, "Больше нету статей в этом разделе!", Toast.LENGTH_SHORT).show();
+                currentPageToLoad--;
+                recyclerView.clearOnScrollListeners();
             }
 
             Log.i(LOG, "RECEIVE " + list.size() + " arts for page: " + currentPageToLoad);

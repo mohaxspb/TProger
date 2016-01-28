@@ -47,7 +47,7 @@ public class DataBaseFileSaver
                 }
 
                 myOutput = new FileOutputStream(directory.getAbsolutePath()
-                        + "/" + DATABASE_NAME/* + ".db");*/);
+                        + "/" + DATABASE_NAME + ".db");
                 myInput = new FileInputStream(databasePath);
 
                 byte[] buffer = new byte[1024];
