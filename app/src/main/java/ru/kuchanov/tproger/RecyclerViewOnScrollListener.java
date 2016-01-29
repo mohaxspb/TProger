@@ -16,16 +16,11 @@ import ru.kuchanov.tproger.activity.ActivityArticle;
  */
 public abstract class RecyclerViewOnScrollListener extends OnScrollListener
 {
-    static final String LOG = RecyclerViewOnScrollListener.class.getSimpleName();
-
-    private LinearLayoutManager managerLinear;
-    private StaggeredGridLayoutManager managerGrid;
+//    private  static final String LOG = RecyclerViewOnScrollListener.class.getSimpleName();
 
     private boolean loading = true; // True if we are still waiting for the last set of data to load.
     private int previousTotal = 0; // The total number of items in the dataset after the last load
-    // The minimum amount of items to have below your current scroll position before loading more.
-    private int visibleThreshold = 3;
-    private int firstVisibleItem, visibleItemCount, totalItemCount;
+
 
     public RecyclerViewOnScrollListener()
     {
@@ -35,6 +30,13 @@ public abstract class RecyclerViewOnScrollListener extends OnScrollListener
     @Override
     public void onScrolled(RecyclerView recyclerView, int x, int y)
     {
+        LinearLayoutManager managerLinear;
+        StaggeredGridLayoutManager managerGrid;
+
+        // The minimum amount of items to have below your current scroll position before loading more.
+        int visibleThreshold = 3;
+        int firstVisibleItem, visibleItemCount, totalItemCount;
+
         Context ctx = recyclerView.getContext();
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
 
@@ -82,17 +84,17 @@ public abstract class RecyclerViewOnScrollListener extends OnScrollListener
             //check if totaItemCount a multiple of 10
             if ((totalItemCount) % Const.NUM_OF_ARTS_ON_PAGE == 0)
             {
-                // TODO if so we can load more from bottom
+                //if so we can load more from bottom
                 //CHECK here situation when total quont of arts on are multiple of 30
                 //to prevent a lot of requests
                 onLoadMore();
                 loading = true;
             }
-            else
-            {
-                //if so, we have reached onSiteVeryBottomOfArtsList
-                //so we do not need to start download
-            }
+//            else
+//            {
+//                //if so, we have reached onSiteVeryBottomOfArtsList
+//                //so we do not need to start download
+//            }
         }
     }
 

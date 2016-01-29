@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapter;
+import ru.kuchanov.tproger.RecyclerAdapterCatsTags;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
@@ -334,13 +335,16 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
             categories.clear();
             categories.addAll(tagsCategories.getCategories());
 
-            ArrayList<String> dummyData = new ArrayList<>();
-            for (Category c : categories)
-            {
-                dummyData.add(c.getTitle());
-            }
-
-            recyclerView.setAdapter(new RecyclerAdapter(dummyData));
+//            ArrayList<String> dummyData = new ArrayList<>();
+//            for (Category c : categories)
+//            {
+//                dummyData.add(c.getTitle());
+//            }
+//
+//            recyclerView.setAdapter(new RecyclerAdapter(dummyData));
+            RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories);
+            adapterCatsTags.setDataType(RecyclerAdapterCatsTags.TYPE_TAG);
+            recyclerView.setAdapter(adapterCatsTags);
 
 
 //            Log.i(LOG, "RECEIVE " + list.size() + " categories or tags");
