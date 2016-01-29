@@ -15,8 +15,8 @@ import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
 
 /**
- * Created by Юрий on 16.10.2015 16:43.
- * For ExpListTest.
+ * Created by Юрий on 16.10.2015 16:43 20:06.
+ * For TProger.
  */
 public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceRequest<Articles>
 {

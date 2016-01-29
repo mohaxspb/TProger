@@ -18,8 +18,8 @@ import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
 
 /**
- * Created by Юрий on 16.10.2015 16:43.
- * For ExpListTest.
+ * Created by Юрий on 16.10.2015 16:43 20:07.
+ * For TProger.
  */
 public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Articles>
 {
@@ -50,7 +50,7 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
     {
 //        Log.i(LOG, "loadDataFromNetwork() called");
 
-        ArrayList<Article> list = new ArrayList<>();
+        ArrayList<Article> list;
 
         int categoryId = Category.getCategoryIdByUrl(this.category, databaseHelper);
 

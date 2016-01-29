@@ -24,7 +24,6 @@ import com.octo.android.robospice.request.listener.PendingRequestListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.Const;
@@ -38,7 +37,6 @@ import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
-import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArts;

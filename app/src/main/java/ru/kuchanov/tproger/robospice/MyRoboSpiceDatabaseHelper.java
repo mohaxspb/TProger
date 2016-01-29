@@ -10,7 +10,9 @@ import com.j256.ormlite.table.TableUtils;
 import com.octo.android.robospice.persistence.ormlite.RoboSpiceDatabaseHelper;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
+import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Articles;
@@ -19,8 +21,8 @@ import ru.kuchanov.tproger.robospice.db.Tag;
 import ru.kuchanov.tproger.robospice.db.TagsCategories;
 
 /**
- * Created by Юрий on 17.10.2015 16:57.
- * For ExpListTest.
+ * Created by Юрий on 17.10.2015 16:57 20:31.
+ * For TProger.
  */
 public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
 {
@@ -29,15 +31,17 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
     public final static String DB_NAME = "tpoger_db";
     public final static int DB_VERSION = 1;
 
+    Context context;
+
     public MyRoboSpiceDatabaseHelper(Context context, String databaseName, int databaseVersion)
     {
         super(context, databaseName, databaseVersion);
+        this.context = context;
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion)
     {
-
         // override if needed
         try
         {
@@ -45,7 +49,9 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
             TableUtils.dropTable(connectionSource, Article.class, true);
             TableUtils.dropTable(connectionSource, ArticleCategory.class, true);
             TableUtils.dropTable(connectionSource, Articles.class, true);
-//TODO add new tables
+            TableUtils.dropTable(connectionSource, Tag.class, true);
+            TableUtils.dropTable(connectionSource, TagsCategories.class, true);
+
             this.onCreate(database, connectionSource);
         }
         catch (SQLException e)
@@ -60,15 +66,10 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
         try
         {
             Log.i(LOG, "onCreate");
-            //writeArtsList category table
             TableUtils.createTableIfNotExists(connectionSource, Category.class);
-            //writeArtsList article table
             TableUtils.createTableIfNotExists(connectionSource, Article.class);
-            //writeArtsList artCatTable table
             TableUtils.createTableIfNotExists(connectionSource, ArticleCategory.class);
-//table for holding lists of Article rows
             TableUtils.createTableIfNotExists(connectionSource, Articles.class);
-//TODO add new tables
             TableUtils.createTableIfNotExists(connectionSource, Tag.class);
             TableUtils.createTableIfNotExists(connectionSource, TagsCategories.class);
             Log.i(LOG, "all tables have been created");
@@ -85,16 +86,53 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
 
     private void fillTables()
     {
-        Category c = new Category();
-        c.setTitle("Главная");
-        c.setUrl("");
+        //write initial info for tags and cats
+        String[] catsTitle = context.getResources().getStringArray(R.array.categories_title);
+        String[] catsUrl = context.getResources().getStringArray(R.array.categories_url);
+        String[] tagsTitle = context.getResources().getStringArray(R.array.tags_title);
+        String[] tagsUrl = context.getResources().getStringArray(R.array.tags_url);
+
+        ArrayList<Category> cats = new ArrayList<>();
+        for (int i = 0; i < catsTitle.length; i++)
+        {
+            String title = catsTitle[i];
+            String url = catsUrl[i];
+            Category c = new Category();
+            c.setTitle(title);
+            c.setUrl(url);
+            cats.add(c);
+        }
+        ArrayList<Tag> tags = new ArrayList<>();
+        for (int i = 0; i < tagsTitle.length; i++)
+        {
+            String title = tagsTitle[i];
+            String url = tagsUrl[i];
+            Tag tag = new Tag();
+            tag.setTitle(title);
+            tag.setUrl(url);
+            tags.add(tag);
+        }
+
+        long startTime = System.currentTimeMillis();
         try
         {
-            this.getDao(Category.class).create(c);
+            for (Category c : cats)
+            {
+                getDaoCategory().create(c);
+            }
+            for (Tag c : tags)
+            {
+                getDaoTag().create(c);
+            }
         }
         catch (SQLException e)
         {
             e.printStackTrace();
+        }
+        finally
+        {
+            long resultTime = System.currentTimeMillis() - startTime;
+            Log.d(LOG, "resultTime is: " + resultTime);
         }
     }
 
@@ -103,10 +141,14 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
         Log.i(LOG, "recreateDB called");
         try
         {
-            TableUtils.dropTable(connectionSource, Category.class, true);
             TableUtils.dropTable(connectionSource, Article.class, true);
-            TableUtils.dropTable(connectionSource, ArticleCategory.class, true);
             TableUtils.dropTable(connectionSource, Articles.class, true);
+
+            TableUtils.dropTable(connectionSource, ArticleCategory.class, true);
+
+            TableUtils.dropTable(connectionSource, Category.class, true);
+            TableUtils.dropTable(connectionSource, Tag.class, true);
+            TableUtils.dropTable(connectionSource, TagsCategories.class, true);
 
             this.onCreate(this.getWritableDatabase(), connectionSource);
         }
