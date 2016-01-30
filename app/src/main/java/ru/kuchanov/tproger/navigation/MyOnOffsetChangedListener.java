@@ -18,7 +18,7 @@ public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedLi
 {
     public static final String LOG = MyOnOffsetChangedListener.class.getSimpleName();
 
-    ActivityMain activityMain;
+    private ActivityMain activityMain;
 
     public MyOnOffsetChangedListener(ActivityMain activityMain)
     {
@@ -80,7 +80,8 @@ public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedLi
 
             viewInTabsScrollView.setPadding(leftPadding, 0, rightPadding, 0);
 
-            //scroll tabs to center selected
+            //TEST!!!!!!!!!!!
+//            scroll tabs to center selected
             int offset = 0;
             for (int i = 0; i < activityMain.getPager().getCurrentItem(); i++)
             {

@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
@@ -40,6 +41,7 @@ import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
+import ru.kuchanov.tproger.navigation.FabUpdater;
 import ru.kuchanov.tproger.navigation.ImageChanger;
 import ru.kuchanov.tproger.navigation.MyOnOffsetChangedListener;
 import ru.kuchanov.tproger.navigation.NavigationViewOnNavigationItemSelectedListener;
@@ -48,25 +50,26 @@ import ru.kuchanov.tproger.navigation.PagerAdapterMain;
 import ru.kuchanov.tproger.navigation.TabLayoutOnTabSelectedListener;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
+import ru.kuchanov.tproger.otto.EventCatsTagsShow;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Category;
+import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DataBaseFileSaver;
 import ru.kuchanov.tproger.utils.MyColorFilter;
 import ru.kuchanov.tproger.utils.MyRandomUtil;
 import ru.kuchanov.tproger.utils.MyUIL;
 import ru.kuchanov.tproger.utils.anim.ChangeImageWithAlpha;
 
-public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger, SharedPreferences.OnSharedPreferenceChangeListener
+public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger, FabUpdater, SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String NAV_ITEM_ID = "NAV_ITEM_ID";
     protected static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
     protected static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
 
     private final static String LOG = ActivityMain.class.getSimpleName();
-
     protected final int[] coverImgsIds = {R.drawable.tproger_small, R.drawable.cremlin, R.drawable.petergof};
     protected Toolbar toolbar;
     protected CollapsingToolbarLayout collapsingToolbarLayout;
@@ -76,7 +79,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     protected boolean drawerOpened;
     protected ViewPager pager;
     protected CoordinatorLayout coordinatorLayout;
-
     protected int checkedDrawerItemId = R.id.tab_1;
     protected boolean isCollapsed = true;
     protected View cover2Border;
@@ -86,9 +88,10 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     ///////////
     protected MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
     protected MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
-    //listeners for navView and pager
-    OnPageChangeListenerMain onPageChangeListenerMain;
     NavigationViewOnNavigationItemSelectedListener navigationViewOnNavigationItemSelectedListener;
+    private FloatingActionButton fab;
+    //listeners for navView and pager
+    private OnPageChangeListenerMain onPageChangeListenerMain;
     //    protected View cover2;
     private View coverThatChangesAlpha;
     private ImageView cover;
@@ -102,7 +105,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     private TimerTask timerTask;
 
 
-    //    private SupportAnimator animator;
     private ChangeImageWithAlpha cr;
 
     @Override
@@ -163,6 +165,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         pager = (ViewPager) findViewById(R.id.pager);
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
     }
 
 
@@ -218,13 +222,15 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     {
         pager.setAdapter(new PagerAdapterMain(this.getSupportFragmentManager(), 3));
 
-        onPageChangeListenerMain = new OnPageChangeListenerMain(this, this);
+        onPageChangeListenerMain = new OnPageChangeListenerMain(this, this, this);
 
         pager.addOnPageChangeListener(onPageChangeListenerMain);
 
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 111111111111"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 222222222222"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 333333333333"));
+        String[] drawerItems = ctx.getResources().getStringArray(R.array.drawer_items);
+
+        tabLayout.addTab(tabLayout.newTab().setText(drawerItems[0]));
+        tabLayout.addTab(tabLayout.newTab().setText(drawerItems[1]));
+        tabLayout.addTab(tabLayout.newTab().setText(drawerItems[2]));
 
         pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayoutOnTabSelectedListener(this, pager));
@@ -389,8 +395,10 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     private void restoreFromIntent()
     {
         Intent curIntent = getIntent();
-
-        this.checkedDrawerItemId = curIntent.getIntExtra(NAV_ITEM_ID, R.id.tab_1);
+        if (curIntent.hasExtra(NAV_ITEM_ID))
+        {
+            this.checkedDrawerItemId = curIntent.getIntExtra(NAV_ITEM_ID, R.id.tab_1);
+        }
     }
 
     @Override
@@ -704,6 +712,10 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         return this.pager;
     }
 
+    public OnPageChangeListenerMain getOnPageChangeListenerMain()
+    {
+        return onPageChangeListenerMain;
+    }
 
     public CollapsingToolbarLayout getCollapsingToolbarLayout()
     {
@@ -721,6 +733,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 //        Log.i(LOG, "fullyExpanded: " + fullyExpanded);
     }
 
+
     public TabLayout getTabLayout()
     {
         return tabLayout;
@@ -735,5 +748,48 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         }
     }
 
-
+    @Override
+    public void updateFAB(final int positionInViewPager)
+    {
+        switch (positionInViewPager)
+        {
+            case 0:
+                fab.setImageResource(AttributeGetter.getDrawableId(ctx, R.attr.downloadIconWhite));
+                fab.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        Log.d(LOG, "FAB clicked for load arts with pagers position: " + positionInViewPager);
+                        //TODO load arts
+                    }
+                });
+                break;
+            case 1:
+                fab.setImageResource(AttributeGetter.getDrawableId(ctx, R.attr.importExportIconWhite));
+                fab.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        Log.d(LOG, "FAB clicked for show tags/cats with pagers position: " + positionInViewPager);
+                        //TODO change type in recyclers adapter
+                        BusProvider.getInstance().post(new EventCatsTagsShow());
+                    }
+                });
+                break;
+            case 2:
+                fab.setImageResource(AttributeGetter.getDrawableId(ctx, R.attr.downloadIconWhite));
+                fab.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        Log.d(LOG, "FAB clicked for load arts with pagers position: " + positionInViewPager);
+                        //TODO load arts
+                    }
+                });
+                break;
+        }
+    }
 }

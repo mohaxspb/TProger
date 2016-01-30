@@ -113,7 +113,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         //TODO test
 //        String[] arr = getResources().getStringArray(R.array.categories_url);
 //        this.categoryUrl = arr[new Random().nextInt(arr.length)];
-        this.categoryUrl = "category/interview/";
+//        this.categoryUrl = "category/interview/";
         this.category = Category.getCategoryByUrl(categoryUrl, databaseHelper);
 
         if (savedInstanceState != null)
@@ -456,7 +456,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                     if (e.getMessage().equals(Const.ERROR_404_WHILE_PARSING_PAGE))
                     {
                         Log.i(LOG, "seems to be we reached the last art in cat; So toast about it");
-                        Toast.makeText(ctx, "Больше нету статей в этом разделе!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ctx, "Все статьи раздела загружены!", Toast.LENGTH_SHORT).show();
                         recyclerView.clearOnScrollListeners();
                     }
                 }
@@ -514,8 +514,12 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             else
             {
                 Log.i(LOG, "end of cats arts list reached");
-                Toast.makeText(ctx, "Больше нету статей в этом разделе!", Toast.LENGTH_SHORT).show();
-                currentPageToLoad--;
+                Toast.makeText(ctx, "Все статьи раздела загружены!", Toast.LENGTH_SHORT).show();
+                //here we must reduce pageNumber if it was more than 1
+                if (currentPageToLoad != 1)
+                {
+                    currentPageToLoad--;
+                }
                 recyclerView.clearOnScrollListeners();
             }
 

@@ -21,15 +21,17 @@ import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.PendingRequestListener;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.RecyclerAdapter;
 import ru.kuchanov.tproger.RecyclerAdapterCatsTags;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;
+import ru.kuchanov.tproger.otto.BusProvider;
+import ru.kuchanov.tproger.otto.EventCatsTagsShow;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Category;
@@ -79,6 +81,7 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         super.onSaveInstanceState(outState);
 
 //        outState.putBoolean(KEY_IS_LOADING, isLoading);
+        outState.putInt(KEY_CUR_CATEGORY_TYPE, curCategoryType);
         outState.putParcelableArrayList(Category.LOG, categories);
         outState.putParcelableArrayList(Tag.LOG, tags);
     }
@@ -98,6 +101,7 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         if (savedInstanceState != null)
         {
 //            this.isLoading = savedInstanceState.getBoolean(KEY_IS_LOADING);
+            this.curCategoryType = savedInstanceState.getInt(KEY_CUR_CATEGORY_TYPE);
             this.categories = savedInstanceState.getParcelableArrayList(Category.LOG);
             this.tags = savedInstanceState.getParcelableArrayList(Tag.LOG);
         }
@@ -140,8 +144,9 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
             case TYPE_CATEGORY:
                 if (categories.size() != 0)
                 {
-//                    recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
-                    //TODO
+                    RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories);
+                    adapterCatsTags.setDataType(RecyclerAdapterCatsTags.TYPE_CATEGORY);
+                    recyclerView.setAdapter(adapterCatsTags);
                 }
                 else
                 {
@@ -151,8 +156,9 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
             case TYPE_TAG:
                 if (tags.size() != 0)
                 {
-//                    recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
-                    //TODO
+                    RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories);
+                    adapterCatsTags.setDataType(RecyclerAdapterCatsTags.TYPE_TAG);
+                    recyclerView.setAdapter(adapterCatsTags);
                 }
                 else
                 {
@@ -180,6 +186,8 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         super.onStart();
         spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
         spiceManagerOffline.addListenerIfPending(TagsCategories.class, "unused", new TagsCategoriesRequestListener());
+
+        BusProvider.getInstance().register(this);
     }
 
     @Override
@@ -188,6 +196,10 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
 //        Log.i(LOG, "onStop called from activity: " + getActivity().getClass().getSimpleName());
         super.onStop();
         //remove spiceServiceStart to onPause
+
+        //should unregister in onStop to avoid some issues while pausing activity/fragment
+        //see http://stackoverflow.com/a/19737191/3212712
+        BusProvider.getInstance().unregister(this);
     }
 
     @Override
@@ -286,6 +298,15 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         RoboSpiceRequestTagsCategoriesOffline requestFromDB = new RoboSpiceRequestTagsCategoriesOffline(ctx);
         spiceManagerOffline.execute(requestFromDB, "unused", DurationInMillis.ALWAYS_EXPIRED, new TagsCategoriesRequestListener());
 
+    }
+
+    @Subscribe
+    public void onTypeChange(EventCatsTagsShow eventCatsTagsShow)
+    {
+        curCategoryType = (curCategoryType == RecyclerAdapterCatsTags.TYPE_CATEGORY) ?
+                RecyclerAdapterCatsTags.TYPE_TAG : RecyclerAdapterCatsTags.TYPE_CATEGORY;
+        ((RecyclerAdapterCatsTags) recyclerView.getAdapter()).setDataType(curCategoryType);
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     private class TagsCategoriesRequestListener implements PendingRequestListener<TagsCategories>

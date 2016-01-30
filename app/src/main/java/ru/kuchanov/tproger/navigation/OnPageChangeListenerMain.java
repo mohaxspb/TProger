@@ -9,14 +9,15 @@ public class OnPageChangeListenerMain implements ViewPager.OnPageChangeListener
 {
     private final static String LOG = OnPageChangeListenerMain.class.getSimpleName();
 
-    DrawerUpdateSelected drawerUpdateSelected;
-    ImageChanger imageChanger;
+    private DrawerUpdateSelected drawerUpdateSelected;
+    private ImageChanger imageChanger;
+    private FabUpdater fabUpdater;
 
-
-    public OnPageChangeListenerMain(DrawerUpdateSelected drawerUpdateSelected, ImageChanger imageChanger)
+    public OnPageChangeListenerMain(DrawerUpdateSelected drawerUpdateSelected, ImageChanger imageChanger, FabUpdater fabUpdater)
     {
         this.drawerUpdateSelected = drawerUpdateSelected;
         this.imageChanger = imageChanger;
+        this.fabUpdater = fabUpdater;
     }
 
     @Override
@@ -31,13 +32,15 @@ public class OnPageChangeListenerMain implements ViewPager.OnPageChangeListener
                 break;
             case 1:
                 checkedDrawerItemId = R.id.tab_2;
+
                 break;
             case 2:
                 checkedDrawerItemId = R.id.tab_3;
                 break;
         }
         drawerUpdateSelected.updateNavigationViewState(checkedDrawerItemId);
-        this.imageChanger.updateImage(position);
+        imageChanger.updateImage(position);
+        fabUpdater.updateFAB(position);
     }
 
     @Override

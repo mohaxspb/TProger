@@ -4,21 +4,25 @@
         android:id="@+id/navigation_subheader"
         android:title="@string/app_name">
         <menu>
-        <group android:checkableBehavior="single">
-            <item
-                android:id="@+id/tab_1"
-                android:checked="true"
-                android:icon="@mipmap/ic_launcher"
-                android:title="tab 1" />
-            <item
-                android:id="@+id/tab_2"
-                android:icon="@mipmap/ic_launcher"
-                android:title="tab 2" />
-            <item
-                android:id="@+id/tab_3"
-                android:icon="@mipmap/ic_launcher"
-                android:title="tab 3" />
-        </group>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/tab_1"
+                    android:checked="true"
+                    android:icon="@mipmap/ic_launcher"
+                    android:title="@string/fresh"/>
+                <item
+                    android:id="@+id/tab_2"
+                    android:icon="@mipmap/ic_launcher"
+                    android:title="@string/cats_and_themes"/>
+                <item
+                    android:id="@+id/tab_3"
+                    android:icon="?saveIcon"
+                    android:title="@string/downloaded_arts"/>
+                <item
+                    android:id="@+id/tab_4"
+                    android:icon="?settingsIcon"
+                    android:title="@string/settings"/>
+            </group>
         </menu>
     </item>
 </menu>

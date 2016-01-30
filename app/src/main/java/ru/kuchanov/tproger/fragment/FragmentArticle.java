@@ -22,10 +22,8 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.PendingRequestListener;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
-import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapterArticle;
-import ru.kuchanov.tproger.RecyclerAdapterArtsList;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
@@ -44,7 +42,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
     public static final String KEY_IS_LOADING = "isLoading";
     public static final String KEY_ = "isLoading";
     //    public static final String KEY_ARTICLE_URL = "KEY_ARTICLE_URL";
-    public String LOG;
+    public String LOG = FragmentArticle.class.getSimpleName();
     protected MySpiceManager spiceManager;
     protected MySpiceManager spiceManagerOffline;
     protected SwipeRefreshLayout swipeRefreshLayout;
@@ -99,10 +97,13 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
             this.article = args.getParcelable(Article.KEY_ARTICLE);
 
             //TODO test some article
-            this.article.setUrl(Const.Articles.WELL);
+//            this.article.setUrl(Const.Articles.WELL);
         }
 
-        LOG = FragmentArticle.class.getSimpleName() + " - " + article.getUrl();
+        if (article != null)
+        {
+            LOG = FragmentArticle.class.getSimpleName() + " - " + article.getUrl();
+        }
 
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
         this.pref.registerOnSharedPreferenceChangeListener(this);

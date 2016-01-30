@@ -23,4 +23,15 @@
     <string name="show">Смотреть</string>
     <string name="copy">Копировать</string>
 
+    <string name="fresh">Свежее</string>
+    <string name="cats_and_themes">Категории и темы</string>
+    <string name="downloaded_arts">Загруженные статьи</string>
+
+    <string-array name="drawer_items">
+        <item>@string/fresh</item>
+        <item>@string/cats_and_themes</item>
+        <item>@string/downloaded_arts</item>
+        <item>@string/settings</item>
+    </string-array>
+
 </resources>
