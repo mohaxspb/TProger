@@ -94,27 +94,27 @@ public class MyHtmlTagHandler implements TagHandler
     @Override
     public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader)
     {
-        if (tag.equalsIgnoreCase("html") || tag.equalsIgnoreCase("body"))
+        switch (tag)
         {
-            return;
-        }
-        //make supporting background color via BackgroundColorSpan (use it for CODE TAG)
-        if (tag.equalsIgnoreCase("code"))
-        {
-            processCode(opening, output);
-        }
-        if (tag.equalsIgnoreCase("strike") || tag.equals("s"))
-        {
-            processStrike(opening, output);
-        }
-
-        if (tag.equalsIgnoreCase("ul") || tag.equalsIgnoreCase("ol") || tag.equalsIgnoreCase("li"))
-        {
-            processUlOlLi(opening, tag, output);
-        }
-        else
-        {
-            Log.e(LOG, "Unknown tag in TagHandler with name: " + tag);
+            case "html":
+            case "body":
+                //nothing to do
+                break;
+            case "code":
+                processCode(opening, output);
+                break;
+            case "strike":
+            case "s":
+                processStrike(opening, output);
+                break;
+            case "ul":
+            case "ol":
+            case "li":
+                processUlOlLi(opening, tag, output);
+                break;
+            default:
+                Log.e(LOG, "Unknown tag in TagHandler with name: " + tag);
+                break;
         }
     }
 
@@ -236,15 +236,21 @@ public class MyHtmlTagHandler implements TagHandler
 
     private void processCode(boolean opening, Editable output)
     {
+        if (!opening)
+        {
+            output.append(" ");
+        }
+
         int len = output.length();
 
         int windowBackgroundDark = AttributeGetter.getColor(ctx, R.attr.windowBackgroundDark);
+        int colorRed = ContextCompat.getColor(ctx, R.color.material_red_500);
 
         if (opening)
         {
-            output.setSpan(new ForegroundColorSpan(ContextCompat.getColor(ctx, R.color.material_red_500)), len, len, Spanned.SPAN_MARK_MARK);
+            output.setSpan(new ForegroundColorSpan(colorRed), len, len, Spanned.SPAN_MARK_MARK);
             output.setSpan(new BackgroundColorSpan(windowBackgroundDark), len, len, Spanned.SPAN_MARK_MARK);
-
+            output.append(" ", 0, 1);
         }
         else
         {
@@ -255,7 +261,7 @@ public class MyHtmlTagHandler implements TagHandler
 
             if (where != len)
             {
-                output.setSpan(new ForegroundColorSpan(ContextCompat.getColor(ctx, R.color.material_red_500)), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                output.setSpan(new ForegroundColorSpan(colorRed), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 output.setSpan(new BackgroundColorSpan(windowBackgroundDark), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }

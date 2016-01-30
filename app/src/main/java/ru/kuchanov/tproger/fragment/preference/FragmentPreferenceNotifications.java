@@ -1,4 +1,4 @@
-package ru.kuchanov.tproger.fragment;
+package ru.kuchanov.tproger.fragment.preference;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;

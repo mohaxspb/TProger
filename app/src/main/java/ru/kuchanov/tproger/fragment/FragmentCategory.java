@@ -115,6 +115,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //        this.categoryUrl = arr[new Random().nextInt(arr.length)];
 //        this.categoryUrl = "category/interview/";
         this.category = Category.getCategoryByUrl(categoryUrl, databaseHelper);
+        Log.i(LOG, "CategoryFragment with category: " + category.getTitle());
 
         if (savedInstanceState != null)
         {
@@ -511,7 +512,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
                 return;
             }
-            else
+            else if(articles.isContainsBottomArt())
             {
                 Log.i(LOG, "end of cats arts list reached");
                 Toast.makeText(ctx, "Все статьи раздела загружены!", Toast.LENGTH_SHORT).show();

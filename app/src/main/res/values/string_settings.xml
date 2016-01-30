@@ -87,4 +87,6 @@
     <string name="pref_system_key_autorenew">pref_system_key_autorenew</string>
     <string name="pref_system_autorenew_summary">Обновление при запуске</string>
     <string name="pref_design_key_art_card_preview_short">pref_design_key_art_card_preview_short</string>
+    <string name="pref_design_key_category_in_cats_or_tags">pref_design_key_category_in_cats_or_tags</string>
+    <string name="pref_design_main_category_key">pref_design_main_category_key</string>
 </resources>

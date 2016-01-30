@@ -1,11 +1,13 @@
-package ru.kuchanov.tproger.fragment;
+package ru.kuchanov.tproger.fragment.preference;
 
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.activity.ActivitySettings;
+import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 
 /**
  * Created by Юрий on 21.09.2015 16:36.
@@ -14,7 +16,7 @@ import ru.kuchanov.tproger.activity.ActivitySettings;
  */
 public class FragmentPreferenceDesign extends PreferenceFragment
 {
-    private final static String LOG = FragmentPreferenceDesign.class.getSimpleName();
+//    private final static String LOG = FragmentPreferenceDesign.class.getSimpleName();
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -40,5 +42,10 @@ public class FragmentPreferenceDesign extends PreferenceFragment
                 return false;
             }
         });
+
+        //hide cats or tags default
+        Preference preference = findPreference(getString(R.string.pref_design_key_category_in_cats_or_tags));
+        PreferenceCategory mCategory = (PreferenceCategory) findPreference(getString(R.string.pref_design_main_category_key));
+        mCategory.removePreference(preference);
     }
 }

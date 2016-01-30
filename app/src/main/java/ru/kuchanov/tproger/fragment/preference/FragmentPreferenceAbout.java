@@ -1,4 +1,4 @@
-package ru.kuchanov.tproger.fragment;
+package ru.kuchanov.tproger.fragment.preference;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -24,7 +24,7 @@ public class FragmentPreferenceAbout extends PreferenceFragment
         @Override
         public boolean onPreferenceClick(Preference preference)
         {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/mohaxspb/MaterialTemplate")));
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/mohaxspb/TProger")));
             return false;
         }
     };

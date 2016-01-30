@@ -50,12 +50,12 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
 
     public static final int TYPE_CATEGORY = 0;
     public static final int TYPE_TAG = 1;
-    public static final String KEY_CUR_CATEGORY_TYPE = "KEY_CUR_CATEGORY_TYPE";
+//    public static final String KEY_CUR_CATEGORY_TYPE = "KEY_CUR_CATEGORY_TYPE";
     //    public static final String KEY_IS_LOADING = "isLoading";
     protected MySpiceManager spiceManagerOffline;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
-    private int curCategoryType = 0;
+    private int curCategoryType;
     private ArrayList<Category> categories = new ArrayList<>();
     private ArrayList<Tag> tags = new ArrayList<>();
     private AppCompatActivity act;
@@ -64,14 +64,15 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
     private SharedPreferences pref;
     private int numOfColsInGridLayoutManager = 2;
 
-    public static FragmentCategories newInstance(int categoryType)
+    public static FragmentCategories newInstance(/*int categoryType*/)
     {
-        FragmentCategories frag = new FragmentCategories();
-        Bundle b = new Bundle();
-        b.putInt(KEY_CUR_CATEGORY_TYPE, categoryType);
-        frag.setArguments(b);
+//        FragmentCategories frag = new FragmentCategories();
+//        Bundle b = new Bundle();
+//        b.putInt(KEY_CUR_CATEGORY_TYPE, categoryType);
+//        frag.setArguments(b);
 
-        return frag;
+//        return frag;
+        return new FragmentCategories();
     }
 
     @Override
@@ -81,7 +82,7 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         super.onSaveInstanceState(outState);
 
 //        outState.putBoolean(KEY_IS_LOADING, isLoading);
-        outState.putInt(KEY_CUR_CATEGORY_TYPE, curCategoryType);
+//        outState.putInt(KEY_CUR_CATEGORY_TYPE, curCategoryType);
         outState.putParcelableArrayList(Category.LOG, categories);
         outState.putParcelableArrayList(Tag.LOG, tags);
     }
@@ -92,8 +93,8 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
 //        Log.i(LOG, "onCreate called");
         super.onCreate(savedInstanceState);
 
-        Bundle args = this.getArguments();
-        this.curCategoryType = args.getInt(KEY_CUR_CATEGORY_TYPE);
+//        Bundle args = this.getArguments();
+//        this.curCategoryType = args.getInt(KEY_CUR_CATEGORY_TYPE);
 
         MyRoboSpiceDatabaseHelper databaseHelper;
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
@@ -101,12 +102,13 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         if (savedInstanceState != null)
         {
 //            this.isLoading = savedInstanceState.getBoolean(KEY_IS_LOADING);
-            this.curCategoryType = savedInstanceState.getInt(KEY_CUR_CATEGORY_TYPE);
+//            this.curCategoryType = savedInstanceState.getInt(KEY_CUR_CATEGORY_TYPE);
             this.categories = savedInstanceState.getParcelableArrayList(Category.LOG);
             this.tags = savedInstanceState.getParcelableArrayList(Tag.LOG);
         }
 
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        this.curCategoryType = pref.getBoolean(getString(R.string.pref_design_key_category_in_cats_or_tags), true) ? TYPE_CATEGORY : TYPE_TAG;
         this.numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(this.getString(R.string.pref_design_key_col_num), "2"));
         this.pref.registerOnSharedPreferenceChangeListener(this);
     }
@@ -307,6 +309,8 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
                 RecyclerAdapterCatsTags.TYPE_TAG : RecyclerAdapterCatsTags.TYPE_CATEGORY;
         ((RecyclerAdapterCatsTags) recyclerView.getAdapter()).setDataType(curCategoryType);
         recyclerView.getAdapter().notifyDataSetChanged();
+
+//        ((FabUpdater) act).updateFAB(1, curCategoryType);
     }
 
     private class TagsCategoriesRequestListener implements PendingRequestListener<TagsCategories>

@@ -15,10 +15,10 @@ import android.view.MenuItem;
 import java.util.List;
 
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.fragment.FragmentPreferenceAbout;
-import ru.kuchanov.tproger.fragment.FragmentPreferenceDesign;
-import ru.kuchanov.tproger.fragment.FragmentPreferenceNotifications;
-import ru.kuchanov.tproger.fragment.FragmentPreferenceSystem;
+import ru.kuchanov.tproger.fragment.preference.FragmentPreferenceAbout;
+import ru.kuchanov.tproger.fragment.preference.FragmentPreferenceDesign;
+import ru.kuchanov.tproger.fragment.preference.FragmentPreferenceNotifications;
+import ru.kuchanov.tproger.fragment.preference.FragmentPreferenceSystem;
 
 
 /**

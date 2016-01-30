@@ -30,6 +30,8 @@
     <!--icons for FAB. White-->
     <attr name="downloadIconWhite" format="reference"/>
     <attr name="importExportIconWhite" format="reference"/>
+    <attr name="formatIndentDecreaseIconWhite" format="reference"/>
+    <attr name="formatIndentIncreaseIconWhite" format="reference"/>
 
     <attr name="downloadIcon" format="reference"/>
     <attr name="downloadIconSmall" format="reference"/>

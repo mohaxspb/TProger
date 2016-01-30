@@ -32,7 +32,6 @@ public class OnPageChangeListenerMain implements ViewPager.OnPageChangeListener
                 break;
             case 1:
                 checkedDrawerItemId = R.id.tab_2;
-
                 break;
             case 2:
                 checkedDrawerItemId = R.id.tab_3;
@@ -40,7 +39,7 @@ public class OnPageChangeListenerMain implements ViewPager.OnPageChangeListener
         }
         drawerUpdateSelected.updateNavigationViewState(checkedDrawerItemId);
         imageChanger.updateImage(position);
-        fabUpdater.updateFAB(position);
+        fabUpdater.updateFAB(position/*, -1*/);
     }
 
     @Override

@@ -17,7 +17,7 @@
 
         <item name="actionMenuTextColor">@color/my_material_grey_800</item>
         <item name="android:windowBackground">@color/my_material_grey_100</item>
-        <item name="windowBackgroundDark">@color/material_grey_300</item>
+        <item name="windowBackgroundDark">@color/my_material_grey_300</item>
         <!--custom colors-->
         <item name="myCardBackgroundColor">@color/my_material_grey_50</item>
         <item name="myCardBackgroundColorDark">@color/my_material_grey_300</item>
@@ -59,6 +59,9 @@
         <!--for FAB-->
         <item name="downloadIconWhite">@drawable/ic_file_download_white_48dp</item>
         <item name="importExportIconWhite">@drawable/ic_import_export_white_48dp</item>
+        <item name="formatIndentDecreaseIconWhite">@drawable/ic_format_indent_decrease_white_48dp</item>
+        <item name="formatIndentIncreaseIconWhite">@drawable/ic_format_indent_increase_white_48dp</item>
+
         <item name="saveIcon">@drawable/ic_save_grey600_48dp</item>
         <item name="articleIcon">@drawable/ic_my_library_books_grey600_48dp</item>
         <item name="categoryIcon">@drawable/ic_subject_grey600_48dp</item>
@@ -112,7 +115,7 @@
     </style>
 
     <!--for popup of toolbar-->
-    <style name="ActionBarPopupThemeOverlay.Light" parent="My.Theme.Light" >
+    <style name="ActionBarPopupThemeOverlay.Light" parent="My.Theme.Light">
         <!--<item name="android:background">@android:color/white</item>-->
         <!--<item name="android:textColor">#000</item>-->
         <!---->
@@ -121,7 +124,8 @@
         <!--for ripple effects on toolbars btns-->
         <!--<item name="colorControlHighlight">@color/material_amber_500</item>-->
     </style>
-    <style name="ActionBarPopupThemeOverlay.Dark" parent="My.Theme.Dark" />
+
+    <style name="ActionBarPopupThemeOverlay.Dark" parent="My.Theme.Dark"/>
 
     <!--<style name="DrawerIconStyleLight" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">true</item>
@@ -158,7 +162,7 @@
         <item name="android:textColorSecondary">@color/material_grey_400</item>
         <item name="actionMenuTextColor">@color/material_grey_400</item>
         <item name="android:windowBackground">@color/my_material_grey_900</item>
-        <item name="windowBackgroundDark">@color/my_material_grey_800</item>
+        <item name="windowBackgroundDark">@color/material_grey_700</item>
 
         <!--toolbar-->
         <item name="myToolbarStyle">@style/ToolBarStyle.Dark</item>
@@ -202,6 +206,9 @@
         <!--for FAB-->
         <item name="downloadIconWhite">@drawable/ic_file_download_white_48dp</item>
         <item name="importExportIconWhite">@drawable/ic_import_export_white_48dp</item>
+        <item name="formatIndentDecreaseIconWhite">@drawable/ic_format_indent_decrease_white_48dp</item>
+        <item name="formatIndentIncreaseIconWhite">@drawable/ic_format_indent_increase_white_48dp</item>
+
         <item name="saveIcon">@drawable/ic_save_white_48dp</item>
         <item name="articleIcon">@drawable/ic_my_library_books_white_48dp</item>
         <item name="categoryIcon">@drawable/ic_subject_white_48dp</item>

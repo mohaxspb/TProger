@@ -1,5 +1,6 @@
 package ru.kuchanov.tproger.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,6 +39,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ru.kuchanov.tproger.R;
+import ru.kuchanov.tproger.RecyclerAdapterCatsTags;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
@@ -748,8 +750,9 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         }
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
-    public void updateFAB(final int positionInViewPager)
+    public void updateFAB(final int positionInViewPager/*, int typeOfDataInCatsTagsFrag*/)
     {
         switch (positionInViewPager)
         {
@@ -766,14 +769,30 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 });
                 break;
             case 1:
-                fab.setImageResource(AttributeGetter.getDrawableId(ctx, R.attr.importExportIconWhite));
+                final String key = getString(R.string.pref_design_key_category_in_cats_or_tags);
+                final boolean showCategories = pref.getBoolean(key, true);
+                int attr = showCategories ? R.attr.formatIndentIncreaseIconWhite : R.attr.formatIndentDecreaseIconWhite;
+                int imgId = AttributeGetter.getDrawableId(ctx, attr);
+                fab.setImageResource(imgId);
                 fab.setOnClickListener(new View.OnClickListener()
                 {
                     @Override
                     public void onClick(View v)
                     {
                         Log.d(LOG, "FAB clicked for show tags/cats with pagers position: " + positionInViewPager);
-                        //TODO change type in recyclers adapter
+
+                        //change image
+                        String key = getString(R.string.pref_design_key_category_in_cats_or_tags);
+                        boolean showCategories = pref.getBoolean(key, true);
+                        int attr = !showCategories ? R.attr.formatIndentIncreaseIconWhite : R.attr.formatIndentDecreaseIconWhite;
+                        int imgId = AttributeGetter.getDrawableId(ctx, attr);
+                        fab.setImageResource(imgId);
+
+                        //update pref value
+                        pref.edit().putBoolean(key, !showCategories).commit();
+
+
+                        //change type in recyclers adapter
                         BusProvider.getInstance().post(new EventCatsTagsShow());
                     }
                 });

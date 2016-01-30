@@ -1,6 +1,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
+        android:key="@string/pref_design_main_category_key"
         android:title="@string/pref_design_main_category_title">
         <SwitchPreference
             android:defaultValue="false"
@@ -21,14 +22,14 @@
             android:switchTextOn="@string/pref_key_on"/>
 
         <ListPreference
-            android:icon="?viewModuleIcon"
-            android:key="@string/pref_design_key_col_num"
-            android:title="@string/pref_design_title_col_num"
+            android:defaultValue="2"
             android:entries="@array/pref_design_col_num_entries"
             android:entryValues="@array/pref_design_col_num_values"
-            android:defaultValue="2"
+            android:icon="?viewModuleIcon"
+            android:key="@string/pref_design_key_col_num"
             android:negativeButtonText="@null"
-            android:positiveButtonText="@null" />
+            android:positiveButtonText="@null"
+            android:title="@string/pref_design_title_col_num"/>
 
         <SwitchPreference
             android:defaultValue="@bool/isTablet"
@@ -38,6 +39,10 @@
             android:summaryOn="@string/pref_design_title_tablet_mode"
             android:switchTextOff="@string/pref_key_off"
             android:switchTextOn="@string/pref_key_on"/>
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_design_key_category_in_cats_or_tags"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Размер текста">
