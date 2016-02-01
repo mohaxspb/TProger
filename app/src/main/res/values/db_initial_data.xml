@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="categories_title" formatted="false">
-        <item><![CDATA[Главная]]></item>
+        <item><![CDATA[Свежее]]></item>
         <item><![CDATA[Вопросы к экспертам]]></item>
         <item><![CDATA[Еженедельная подборка]]></item>
         <item><![CDATA[Задачки]]></item>

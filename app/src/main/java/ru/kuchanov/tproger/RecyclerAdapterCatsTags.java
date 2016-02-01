@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import ru.kuchanov.tproger.activity.ActivityCategoriesAndTags;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.db.Tag;
 
@@ -50,7 +51,7 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
         final Category category;
         final Tag tag;
 
-        HolderTitle holderTitle = (HolderTitle) holder;
+        final HolderTitle holderTitle = (HolderTitle) holder;
 
         switch (dataType)
         {
@@ -63,8 +64,8 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
                     @Override
                     public void onClick(View v)
                     {
-                        //TODO onClick
                         Log.d(LOG, category.getTitle());
+                        ActivityCategoriesAndTags.startActivityCatsAndTags(holderTitle.title.getContext(), cats, tags, TYPE_CATEGORY);
                     }
                 });
                 break;
@@ -76,8 +77,8 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
                     @Override
                     public void onClick(View v)
                     {
-                        //TODO onClick
                         Log.d(LOG, tag.getTitle());
+                        ActivityCategoriesAndTags.startActivityCatsAndTags(holderTitle.title.getContext(), cats, tags, TYPE_TAG);
                     }
                 });
                 break;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
@@ -11,6 +12,9 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -30,25 +34,26 @@ import java.util.TimerTask;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.SingltonRoboSpice;
+import ru.kuchanov.tproger.fragment.FragmentCategories;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
-import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
-import ru.kuchanov.tproger.navigation.NavigationViewOnNavigationItemSelectedListener;
 import ru.kuchanov.tproger.navigation.OnPageChangeListenerMain;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
+import ru.kuchanov.tproger.robospice.db.Category;
+import ru.kuchanov.tproger.robospice.db.Tag;
+import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.anim.ChangeImageWithAlpha;
 
 /**
  * Created by Юрий on 01.02.2016 17:16.
  * For TProger.
  */
-public class ActivityCategoriesAndTags extends AppCompatActivity implements DrawerUpdateSelected
+public class ActivityCategoriesAndTags extends AppCompatActivity
 {
     private static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
     private static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
     private final static String LOG = ActivityCategoriesAndTags.class.getSimpleName();
-    private static final String NAV_ITEM_ID = "NAV_ITEM_ID";
     private Toolbar toolbar;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private NavigationView navigationView;
@@ -57,14 +62,12 @@ public class ActivityCategoriesAndTags extends AppCompatActivity implements Draw
     private boolean drawerOpened;
     private ViewPager pager;
     private CoordinatorLayout coordinatorLayout;
-    private int checkedDrawerItemId = R.id.tab_1;
     private boolean isCollapsed = true;
     private View cover2Border;
     private AppBarLayout appBar;
 
     private MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
     private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
-    private NavigationViewOnNavigationItemSelectedListener navigationViewOnNavigationItemSelectedListener;
     private FloatingActionButton fab;
     //listeners for navView and pager
     private OnPageChangeListenerMain onPageChangeListenerMain;
@@ -82,6 +85,26 @@ public class ActivityCategoriesAndTags extends AppCompatActivity implements Draw
 
     private ChangeImageWithAlpha cr;
 
+    private ArrayList<Category> categories = new ArrayList<>();
+    private ArrayList<Tag> tags = new ArrayList<>();
+    private int curDataType;
+    private int numOfColsInGridLayoutManager;
+
+    private boolean isTabletMode;
+
+    public static void startActivityCatsAndTags(Context ctx, ArrayList<Category> cats, ArrayList<Tag> tags, int curDataType)
+    {
+        Intent intent = new Intent(ctx, ActivityCategoriesAndTags.class);
+        Bundle b = new Bundle();
+        b.putParcelableArrayList(Category.LOG, cats);
+        b.putParcelableArrayList(Tag.LOG, tags);
+        b.putInt(FragmentCategories.KEY_CATS_OR_TAGS_DATA_TYPE, curDataType);
+
+        intent.putExtras(b);
+
+        ctx.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -94,6 +117,9 @@ public class ActivityCategoriesAndTags extends AppCompatActivity implements Draw
         PreferenceManager.setDefaultValues(this, R.xml.pref_notification, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_about, true);
         this.pref = PreferenceManager.getDefaultSharedPreferences(this);
+        //get if isTabetMode
+        this.isTabletMode = this.pref.getBoolean(getString(R.string.pref_design_key_tablet_mode), false);
+
         //set theme before super and set content to apply it
         int themeId = (pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false)) ? R.style.My_Theme_Dark : R.style.My_Theme_Light;
         this.setTheme(themeId);
@@ -102,8 +128,40 @@ public class ActivityCategoriesAndTags extends AppCompatActivity implements Draw
 
         setContentView(R.layout.activity_cats__and_tags_tablet);
 
+        this.restoreState(savedInstanceState, getIntent().getExtras());
+
         this.initializeViews();
         this.setUpNavigationDrawer();
+
+        //add fragCatsAndTags in left contatiner
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        Fragment fragCatsAndTags = manager.findFragmentById(R.id.container_left);
+        switch (curDataType)
+        {
+            case FragmentCategories.TYPE_CATEGORY:
+                if (isTabletMode)
+                {
+                    if (fragCatsAndTags == null)
+                    {
+                        fragCatsAndTags = FragmentCategories.newInstance(FragmentCategories.TYPE_CATEGORY, categories, tags);
+                        transaction.add(R.id.container_left, fragCatsAndTags);
+                        transaction.commit();
+                    }
+                }
+                break;
+            case FragmentCategories.TYPE_TAG:
+                if (isTabletMode)
+                {
+                    if (fragCatsAndTags == null)
+                    {
+                        fragCatsAndTags = FragmentCategories.newInstance(FragmentCategories.TYPE_TAG, categories, tags);
+                        transaction.add(R.id.container_left, fragCatsAndTags);
+                        transaction.commit();
+                    }
+                }
+                break;
+        }
     }
 
     private void initializeViews()
@@ -127,6 +185,12 @@ public class ActivityCategoriesAndTags extends AppCompatActivity implements Draw
 
     protected void setUpNavigationDrawer()
     {
+        //changing statusBarColor
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            getWindow().setStatusBarColor(AttributeGetter.getColor(ctx, R.attr.colorPrimaryDark));
+        }
+
         setSupportActionBar(toolbar);
 
         final ActionBar actionBar = getSupportActionBar();
@@ -147,18 +211,25 @@ public class ActivityCategoriesAndTags extends AppCompatActivity implements Draw
                 public void onDrawerOpened(View drawerView)
                 {
                     drawerOpened = true;
-                    updateNavigationViewState(checkedDrawerItemId);
                 }
             };
-            mDrawerToggle.setDrawerIndicatorEnabled(true);
+            //show arrow instead of hamburger
+            mDrawerToggle.setDrawerIndicatorEnabled(false);
 
             drawerLayout.setDrawerListener(mDrawerToggle);
         }
-        navigationViewOnNavigationItemSelectedListener = new NavigationViewOnNavigationItemSelectedListener(this, drawerLayout, pager);
-
+        NavigationView.OnNavigationItemSelectedListener navigationViewOnNavigationItemSelectedListener = new NavigationView.OnNavigationItemSelectedListener()
+        {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item)
+            {
+                //TODO
+                Log.d(LOG, "onNavigationItemSelected called");
+                return false;
+            }
+        };
         navigationView.setNavigationItemSelectedListener(navigationViewOnNavigationItemSelectedListener);
 
-        updateNavigationViewState(this.checkedDrawerItemId);
     }
 
     @Override
@@ -216,7 +287,6 @@ public class ActivityCategoriesAndTags extends AppCompatActivity implements Draw
         }
     }
 
-
     @Override
     protected void onStop()
     {
@@ -236,7 +306,6 @@ public class ActivityCategoriesAndTags extends AppCompatActivity implements Draw
             timerTask = null;
         }
     }
-
 
     @Override
     protected void onPause()
@@ -265,7 +334,6 @@ public class ActivityCategoriesAndTags extends AppCompatActivity implements Draw
         navigationView.getMenu().findItem(R.id.tab_1).setChecked(false);
         navigationView.getMenu().findItem(R.id.tab_2).setChecked(false);
         navigationView.getMenu().findItem(R.id.tab_3).setChecked(false);
-        navigationView.setCheckedItem(checkedDrawerItemId);
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -345,16 +413,68 @@ public class ActivityCategoriesAndTags extends AppCompatActivity implements Draw
     protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        outState.putInt(NAV_ITEM_ID, this.checkedDrawerItemId);
         outState.putBoolean(KEY_IS_COLLAPSED, isCollapsed);
         outState.putInt(KEY_PREV_COVER_SOURCE, this.prevPosOfImage);
         outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE, artsWithImage);
+        outState.putParcelableArrayList(Category.LOG, categories);
+        outState.putParcelableArrayList(Tag.LOG, tags);
+        outState.putInt(FragmentCategories.KEY_CATS_OR_TAGS_DATA_TYPE, curDataType);
     }
 
-    @Override
-    public void updateNavigationViewState(int checkedDrawerItemId)
+    private void restoreState(Bundle savedInstanceState, Bundle args)
     {
-        this.checkedDrawerItemId = checkedDrawerItemId;
-        supportInvalidateOptionsMenu();
+        this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        this.numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(this.getString(R.string.pref_design_key_col_num), "2"));
+
+        if (savedInstanceState == null)
+        {
+            this.curDataType = args.getInt(FragmentCategories.KEY_CATS_OR_TAGS_DATA_TYPE);
+
+            if (args.containsKey(Category.LOG))
+            {
+                this.categories.clear();
+                ArrayList<Category> catsFromArgs = args.getParcelableArrayList(Category.LOG);
+                if (catsFromArgs != null)
+                {
+                    this.categories.addAll(catsFromArgs);
+                }
+            }
+            if (args.containsKey(Tag.LOG))
+            {
+                this.tags.clear();
+                ArrayList<Tag> tagsFromArgs = args.getParcelableArrayList(Tag.LOG);
+                if (tagsFromArgs != null)
+                {
+                    this.tags.addAll(tagsFromArgs);
+                }
+            }
+        }
+        else
+        {
+            isCollapsed = savedInstanceState.getBoolean(KEY_IS_COLLAPSED, false);
+            prevPosOfImage = savedInstanceState.getInt(KEY_PREV_COVER_SOURCE, -1);
+            artsWithImage = savedInstanceState.getParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE);
+
+
+            this.curDataType = savedInstanceState.getInt(FragmentCategories.KEY_CATS_OR_TAGS_DATA_TYPE);
+            if (savedInstanceState.containsKey(Category.LOG))
+            {
+                this.categories.clear();
+                ArrayList<Category> catsFromArgs = savedInstanceState.getParcelableArrayList(Category.LOG);
+                if (catsFromArgs != null)
+                {
+                    this.categories.addAll(catsFromArgs);
+                }
+            }
+            if (savedInstanceState.containsKey(Tag.LOG))
+            {
+                this.tags.clear();
+                ArrayList<Tag> tagsFromArgs = savedInstanceState.getParcelableArrayList(Tag.LOG);
+                if (tagsFromArgs != null)
+                {
+                    this.tags.addAll(tagsFromArgs);
+                }
+            }
+        }
     }
 }

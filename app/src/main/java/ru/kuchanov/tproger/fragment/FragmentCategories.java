@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -14,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
@@ -25,14 +25,14 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
+import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.RecyclerAdapterCatsTags;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventCatsTagsShow;
-import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.db.Tag;
@@ -50,7 +50,8 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
 
     public static final int TYPE_CATEGORY = 0;
     public static final int TYPE_TAG = 1;
-//    public static final String KEY_CUR_CATEGORY_TYPE = "KEY_CUR_CATEGORY_TYPE";
+    public static final String KEY_CATS_OR_TAGS_DATA_TYPE = "KEY_CATS_OR_TAGS_DATA_TYPE";
+    //    public static final String KEY_CUR_CATEGORY_TYPE = "KEY_CUR_CATEGORY_TYPE";
     //    public static final String KEY_IS_LOADING = "isLoading";
     protected MySpiceManager spiceManagerOffline;
     protected SwipeRefreshLayout swipeRefreshLayout;
@@ -58,21 +59,32 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
     private int curCategoryType;
     private ArrayList<Category> categories = new ArrayList<>();
     private ArrayList<Tag> tags = new ArrayList<>();
-    private AppCompatActivity act;
+    //    private AppCompatActivity act;
     private Context ctx;
     //    private boolean isLoading = false;
     private SharedPreferences pref;
     private int numOfColsInGridLayoutManager = 2;
 
-    public static FragmentCategories newInstance(/*int categoryType*/)
+    public static FragmentCategories newInstance(int categoryType)
     {
-//        FragmentCategories frag = new FragmentCategories();
-//        Bundle b = new Bundle();
-//        b.putInt(KEY_CUR_CATEGORY_TYPE, categoryType);
-//        frag.setArguments(b);
+        FragmentCategories frag = new FragmentCategories();
+        Bundle b = new Bundle();
+        b.putInt(KEY_CATS_OR_TAGS_DATA_TYPE, categoryType);
+        frag.setArguments(b);
 
-//        return frag;
-        return new FragmentCategories();
+        return frag;
+    }
+
+    public static FragmentCategories newInstance(int categoryType, ArrayList<Category> cats, ArrayList<Tag> tags)
+    {
+        FragmentCategories frag = new FragmentCategories();
+        Bundle b = new Bundle();
+        b.putInt(KEY_CATS_OR_TAGS_DATA_TYPE, categoryType);
+        b.putParcelableArrayList(Category.LOG, cats);
+        b.putParcelableArrayList(Tag.LOG, tags);
+        frag.setArguments(b);
+
+        return frag;
     }
 
     @Override
@@ -81,8 +93,7 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
 //        Log.i(LOG, "onSaveInstanceState called");
         super.onSaveInstanceState(outState);
 
-//        outState.putBoolean(KEY_IS_LOADING, isLoading);
-//        outState.putInt(KEY_CUR_CATEGORY_TYPE, curCategoryType);
+        outState.putInt(KEY_CATS_OR_TAGS_DATA_TYPE, curCategoryType);
         outState.putParcelableArrayList(Category.LOG, categories);
         outState.putParcelableArrayList(Tag.LOG, tags);
     }
@@ -93,24 +104,61 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
 //        Log.i(LOG, "onCreate called");
         super.onCreate(savedInstanceState);
 
-//        Bundle args = this.getArguments();
-//        this.curCategoryType = args.getInt(KEY_CUR_CATEGORY_TYPE);
-
-        MyRoboSpiceDatabaseHelper databaseHelper;
-        databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
-
-        if (savedInstanceState != null)
-        {
-//            this.isLoading = savedInstanceState.getBoolean(KEY_IS_LOADING);
-//            this.curCategoryType = savedInstanceState.getInt(KEY_CUR_CATEGORY_TYPE);
-            this.categories = savedInstanceState.getParcelableArrayList(Category.LOG);
-            this.tags = savedInstanceState.getParcelableArrayList(Tag.LOG);
-        }
+        this.restoreData(savedInstanceState, getArguments());
 
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
-        this.curCategoryType = pref.getBoolean(getString(R.string.pref_design_key_category_in_cats_or_tags), true) ? TYPE_CATEGORY : TYPE_TAG;
+//        this.curCategoryType = pref.getBoolean(getString(R.string.pref_design_key_category_in_cats_or_tags), true) ? TYPE_CATEGORY : TYPE_TAG;
         this.numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(this.getString(R.string.pref_design_key_col_num), "2"));
         this.pref.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    private void restoreData(Bundle savedInstanceState, Bundle args)
+    {
+        if (savedInstanceState == null)
+        {
+            this.curCategoryType = args.getInt(KEY_CATS_OR_TAGS_DATA_TYPE);
+
+            if (args.containsKey(Category.LOG))
+            {
+                this.categories.clear();
+                ArrayList<Category> catsFromArgs = args.getParcelableArrayList(Category.LOG);
+                if (catsFromArgs != null)
+                {
+                    this.categories.addAll(catsFromArgs);
+                }
+            }
+            if (args.containsKey(Tag.LOG))
+            {
+                this.tags.clear();
+                ArrayList<Tag> tagsFromArgs = args.getParcelableArrayList(Tag.LOG);
+                if (tagsFromArgs != null)
+                {
+                    this.tags.addAll(tagsFromArgs);
+                }
+            }
+        }
+        else
+        {
+            this.curCategoryType = savedInstanceState.getInt(KEY_CATS_OR_TAGS_DATA_TYPE);
+            if (savedInstanceState.containsKey(Category.LOG))
+            {
+                this.categories.clear();
+                ArrayList<Category> catsFromArgs = savedInstanceState.getParcelableArrayList(Category.LOG);
+                if (catsFromArgs != null)
+                {
+                    this.categories.addAll(catsFromArgs);
+                }
+            }
+            if (savedInstanceState.containsKey(Tag.LOG))
+            {
+                this.tags.clear();
+                ArrayList<Tag> tagsFromArgs = savedInstanceState.getParcelableArrayList(Tag.LOG);
+                if (tagsFromArgs != null)
+                {
+                    this.tags.addAll(tagsFromArgs);
+                }
+            }
+        }
     }
 
     @Override
@@ -134,11 +182,7 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
             recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
         }
 
-        recyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f)));
-        recyclerView.getItemAnimator().setAddDuration(500);
-        recyclerView.getItemAnimator().setRemoveDuration(500);
-        recyclerView.getItemAnimator().setMoveDuration(500);
-        recyclerView.getItemAnimator().setChangeDuration(500);
+        this.setItemAnimatorForRecyclerView();
 
         //fill recycler with data of make request for it
         switch (curCategoryType)
@@ -172,13 +216,25 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         return v;
     }
 
+    private void setItemAnimatorForRecyclerView()
+    {
+        RecyclerView.ItemAnimator animator;
+        Interpolator interpolator = new OvershootInterpolator(1f);
+        animator = (curCategoryType == TYPE_CATEGORY) ? new SlideInLeftAnimator(interpolator) : new SlideInRightAnimator(interpolator);
+        recyclerView.setItemAnimator(animator);
+        recyclerView.getItemAnimator().setAddDuration(500);
+        recyclerView.getItemAnimator().setRemoveDuration(500);
+        recyclerView.getItemAnimator().setMoveDuration(500);
+        recyclerView.getItemAnimator().setChangeDuration(500);
+    }
+
     @Override
     public void onAttach(Context context)
     {
 //        Log.i(LOG, "onAttach called");
         super.onAttach(context);
         this.ctx = this.getActivity();
-        this.act = (AppCompatActivity) this.getActivity();
+//        this.act = (AppCompatActivity) this.getActivity();
     }
 
     @Override
@@ -305,10 +361,19 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
     @Subscribe
     public void onTypeChange(EventCatsTagsShow eventCatsTagsShow)
     {
-        curCategoryType = (curCategoryType == RecyclerAdapterCatsTags.TYPE_CATEGORY) ?
-                RecyclerAdapterCatsTags.TYPE_TAG : RecyclerAdapterCatsTags.TYPE_CATEGORY;
+        int type = eventCatsTagsShow.getDataType();
+        String newType = (type == TYPE_CATEGORY) ? "TYPE_CATEGORY" : "TYPE_TAG";
+        Log.d(LOG, "onTypeChange with type: " + newType);
+//        curCategoryType = (curCategoryType == RecyclerAdapterCatsTags.TYPE_CATEGORY) ?
+//                RecyclerAdapterCatsTags.TYPE_TAG : RecyclerAdapterCatsTags.TYPE_CATEGORY;
+        curCategoryType = type;
+
+        setItemAnimatorForRecyclerView();
+
+        recyclerView.getAdapter().notifyItemRangeRemoved(0, recyclerView.getAdapter().getItemCount());
         ((RecyclerAdapterCatsTags) recyclerView.getAdapter()).setDataType(curCategoryType);
-        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.getAdapter().notifyItemRangeInserted(0, recyclerView.getAdapter().getItemCount());
+//        recyclerView.getAdapter().notifyDataSetChanged();
 
 //        ((FabUpdater) act).updateFAB(1, curCategoryType);
     }

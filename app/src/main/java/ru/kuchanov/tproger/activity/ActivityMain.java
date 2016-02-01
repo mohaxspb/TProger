@@ -40,6 +40,7 @@ import java.util.TimerTask;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.SingltonRoboSpice;
+import ru.kuchanov.tproger.fragment.FragmentCategories;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
 import ru.kuchanov.tproger.navigation.FabUpdater;
@@ -221,7 +222,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
     private void setUpPagerAndTabs()
     {
-        pager.setAdapter(new PagerAdapterMain(this.getSupportFragmentManager(), 3));
+        pager.setAdapter(new PagerAdapterMain(this.getSupportFragmentManager(), 3, ctx));
 
         onPageChangeListenerMain = new OnPageChangeListenerMain(this, this, this);
 
@@ -792,7 +793,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
 
                         //change type in recyclers adapter
-                        BusProvider.getInstance().post(new EventCatsTagsShow());
+                        int dataType = pref.getBoolean(key, true) ? FragmentCategories.TYPE_CATEGORY : FragmentCategories.TYPE_TAG;
+                        BusProvider.getInstance().post(new EventCatsTagsShow(dataType));
                     }
                 });
                 break;
