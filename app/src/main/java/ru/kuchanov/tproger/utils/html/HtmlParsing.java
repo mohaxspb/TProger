@@ -19,7 +19,8 @@ import ru.kuchanov.tproger.robospice.db.Article;
 
 /**
  * Created by Юрий on 19.10.2015 23:06.
- * For ExpListTest.
+ *
+ *
  */
 public class HtmlParsing
 {

@@ -39,7 +39,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.RecyclerAdapterCatsTags;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
@@ -90,7 +89,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     ///////////
     protected MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
     protected MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
-    NavigationViewOnNavigationItemSelectedListener navigationViewOnNavigationItemSelectedListener;
+    private NavigationViewOnNavigationItemSelectedListener navigationViewOnNavigationItemSelectedListener;
     private FloatingActionButton fab;
     //listeners for navView and pager
     private OnPageChangeListenerMain onPageChangeListenerMain;
@@ -184,7 +183,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         this.startAnimation();
     }
 
-    protected void setUpNavigationDrawer()
+    private void setUpNavigationDrawer()
     {
         setSupportActionBar(toolbar);
 
@@ -302,7 +301,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 return true;
             case R.id.night_mode_switcher:
                 this.pref.edit().putBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, !nightModeIsOn).commit();
-                this.recreate();
+//                this.recreate();
                 return true;
             case R.id.list_style_switcher:
                 this.pref.edit().putBoolean(ctx.getString(R.string.pref_design_key_list_style), !isGridManager).commit();

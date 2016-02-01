@@ -30,7 +30,20 @@
 
         <activity
             android:name=".activity.ActivityArticle"
-            android:label="@string/title_activity_activity_article"
+            android:label="@string/title_activity_article"
+            android:launchMode="singleTask"
+            android:parentActivityName="ru.kuchanov.tproger.activity.ActivityMain"
+            tools:ignore="UnusedAttribute">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ru.kuchanov.tproger.activity.ActivityMain" />
+        </activity>
+
+
+        <activity
+            android:name=".activity.ActivityCategoriesAndTags"
+            android:label="@string/title_activity_cats_and_tags"
             android:launchMode="singleTask"
             android:parentActivityName="ru.kuchanov.tproger.activity.ActivityMain"
             tools:ignore="UnusedAttribute">
@@ -42,7 +55,7 @@
 
         <activity
             android:name=".activity.ActivitySettings"
-            android:label="@string/title_activity_activity_settings"/>
+            android:label="@string/title_activity_settings"/>
 
         <service
             android:name=".robospice.HtmlSpiceService"
