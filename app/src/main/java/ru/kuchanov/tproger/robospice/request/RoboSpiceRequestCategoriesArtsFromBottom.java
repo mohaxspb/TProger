@@ -7,14 +7,19 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.util.ArrayList;
 
 import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
+import ru.kuchanov.tproger.robospice.db.ArticleTag;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
+import ru.kuchanov.tproger.robospice.db.Tag;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
 
 /**
@@ -25,40 +30,59 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
 {
     public static final String LOG = RoboSpiceRequestCategoriesArtsFromBottom.class.getSimpleName();
 
-    Context ctx;
-    MyRoboSpiceDatabaseHelper databaseHelper;
-    String url;
-    String category;
-    int page;
+//    private Context ctx;
+    private MyRoboSpiceDatabaseHelper databaseHelper;
+    private String url;
+    private String categoryOrTagUrl;
+    private int page;
 
-    public RoboSpiceRequestCategoriesArtsFromBottom(Context ctx, String category, int page)
+    private int categoryId;
+    private int tagId;
+
+    public RoboSpiceRequestCategoriesArtsFromBottom(Context ctx, String categoryOrTagUrl, int page)
     {
         super(Articles.class);
 
-        this.ctx = ctx;
-        this.category = category;
+//        this.ctx = ctx;
+        this.categoryOrTagUrl = categoryOrTagUrl;
         this.page = page;
 
-        this.url = Const.DOMAIN_MAIN + category + Const.SLASH + "page" + Const.SLASH + page + Const.SLASH;
+        this.url = Const.DOMAIN_MAIN + categoryOrTagUrl + Const.SLASH + "page" + Const.SLASH + page + Const.SLASH;
 
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
-
     }
 
     @Override
     public Articles loadDataFromNetwork() throws Exception
     {
 //        Log.i(LOG, "loadDataFromNetwork() called");
-
-        ArrayList<Article> list;
-
-        int categoryId = Category.getCategoryIdByUrl(this.category, databaseHelper);
+        ArrayList<Article> listOfArticles;
 
         String responseBody = makeRequest();
+        Document document = Jsoup.parse(responseBody);
+
+        Boolean isCategoryOrTagOrDoNotExists = MyRoboSpiceDatabaseHelper.isCategoryOrTagOrDoNotExists(databaseHelper, this.categoryOrTagUrl);
+        if (isCategoryOrTagOrDoNotExists == null)
+        {
+            throw new Exception("I cant imaging how it can be...");
+        }
+
+
+        boolean isCategory = isCategoryOrTagOrDoNotExists;
+        if (isCategory)
+        {
+            Category category = Category.getCategoryByUrl(categoryOrTagUrl, databaseHelper);
+            categoryId = category.getId();
+        }
+        else
+        {
+            Tag tag = Tag.getTagByUrl(categoryOrTagUrl, databaseHelper);
+            tagId = tag.getId();
+        }
 
         try
         {
-            list = HtmlParsing.parseForArticlesList(responseBody, databaseHelper);
+            listOfArticles = HtmlParsing.parseForArticlesList(document, databaseHelper);
         }
         catch (Exception e)
         {
@@ -68,11 +92,22 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
                 {
                     //here can be only one artCat with nextArtId = -1
                     //so get it and set it's isBottom to true;
-                    ArticleCategory bottomArtCat = databaseHelper.getDao(ArticleCategory.class).queryBuilder().
-                            where().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).
-                            and().eq(ArticleCategory.FIELD_NEXT_ARTICLE_ID, -1).queryForFirst();
-                    bottomArtCat.setInitialInCategory(true);
-                    databaseHelper.getDao(ArticleCategory.class).createOrUpdate(bottomArtCat);
+                    if (isCategory)
+                    {
+                        ArticleCategory bottomArtCat = databaseHelper.getDaoArtCat().queryBuilder().
+                                where().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).
+                                and().eq(ArticleCategory.FIELD_NEXT_ARTICLE_ID, -1).queryForFirst();
+                        bottomArtCat.setInitialInCategory(true);
+                        databaseHelper.getDaoArtCat().createOrUpdate(bottomArtCat);
+                    }
+                    else
+                    {
+                        ArticleTag bottomArtTag = databaseHelper.getDaoArtTag().queryBuilder().
+                                where().eq(ArticleTag.FIELD_TAG_ID, tagId).
+                                and().eq(ArticleTag.FIELD_NEXT_ARTICLE_ID, -1).queryForFirst();
+                        bottomArtTag.setInitialInTag(true);
+                        databaseHelper.getDaoArtTag().createOrUpdate(bottomArtTag);
+                    }
                 }
             }
             e.printStackTrace();
@@ -80,12 +115,19 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
         }
 
         //write to DB
-        list = Article.writeArtsList(list, databaseHelper);
+        listOfArticles = Article.writeArtsList(listOfArticles, databaseHelper);
 
-        ArticleCategory.writeArtsListToArtCatFromBottom(list, categoryId, page, databaseHelper);
+        if (isCategory)
+        {
+            ArticleCategory.writeArtsListToArtCatFromBottom(listOfArticles, categoryId, page, databaseHelper);
+        }
+        else
+        {
+            ArticleTag.writeArtsListToArtCatFromBottom(listOfArticles, tagId, page, databaseHelper);
+        }
 
         Articles articles = new Articles();
-        articles.setResult(list);
+        articles.setResult(listOfArticles);
 
         return articles;
     }

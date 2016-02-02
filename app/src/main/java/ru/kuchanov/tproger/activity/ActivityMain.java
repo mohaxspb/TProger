@@ -794,6 +794,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
                         //change type in recyclers adapter
                         int dataType = pref.getBoolean(key, true) ? FragmentCategories.TYPE_CATEGORY : FragmentCategories.TYPE_TAG;
+                        String newType = (dataType == FragmentCategories.TYPE_CATEGORY) ? "TYPE_CATEGORY" : "TYPE_TAG";
+                        Log.d(LOG, "FAB clicked type: " + newType);
                         BusProvider.getInstance().post(new EventCatsTagsShow(dataType));
                     }
                 });

@@ -1,10 +1,8 @@
 package ru.kuchanov.tproger.robospice.db;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.preference.PreferenceManager;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -16,8 +14,8 @@ import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 
 /**
- * Created by Юрий on 20.10.2015 0:48.
- * For ExpListTest.
+ * Created by Юрий on 20.10.2015 0:48 0:47.
+ * For TProger.
  */
 @DatabaseTable(tableName = "tag")
 public class Tag implements Parcelable
@@ -77,7 +75,7 @@ public class Tag implements Parcelable
     /**
      * @return id of category by url or -1 id can't find or on SQLException
      */
-    public static int getCategoryIdByUrl(String url, MyRoboSpiceDatabaseHelper h)
+    public static int getTagIdByUrl(String url, MyRoboSpiceDatabaseHelper h)
     {
         int id = -1;
 
@@ -98,7 +96,7 @@ public class Tag implements Parcelable
         return id;
     }
 
-    public static Tag getCategoryByUrl(String url, MyRoboSpiceDatabaseHelper h)
+    public static Tag getTagByUrl(String url, MyRoboSpiceDatabaseHelper h)
     {
         Tag c = null;
         try
@@ -116,16 +114,29 @@ public class Tag implements Parcelable
     /**
      * @return true if lastRefreshedDate was more than refreshPeriod mills ago from now;
      */
-    public static boolean refreshDateExpired(Tag category, Context ctx)
+    public static boolean refreshDateExpired(Tag tag, Context ctx)
     {
-        long currentTimeInMills = System.currentTimeMillis();
+        //        Calendar calendar = Calendar.getInstance();
+//        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy 'в' HH:mm", Locale.getDefault());
+//        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        long currentTimeInMills = System.currentTimeMillis();
+//        Log.d(LOG, "currentTimeInMills: " + currentTimeInMills);
+//        calendar.setTimeInMillis(currentTimeInMills);
+//        Log.d(LOG, sdf.format(calendar.getTime()));
 
         int refreshPeriodInHours = ctx.getResources().getInteger(R.integer.refresh_period_hours);
         long millsInRefreshPeriod = refreshPeriodInHours * 60 * 60 * 1000;
 
-        long millsFromLastRefresh = currentTimeInMills - category.getRefreshed().getTime();
+        long categoryWasRefreshedAtInMills = tag.getRefreshed().getTime();
+//        Log.d(LOG, "millsFromLastRefresh: " + categoryWasRefreshedAtInMills);
+//        calendar.setTimeInMillis(categoryWasRefreshedAtInMills);
+//        Log.d(LOG, sdf.format(calendar.getTime()));
+
+        long millsFromLastRefresh = currentTimeInMills - categoryWasRefreshedAtInMills;
+//        Log.d(LOG, "millsFromLastRefresh: " + millsFromLastRefresh);
+//        calendar.setTimeInMillis(millsFromLastRefresh);
+//        Log.d(LOG, sdf.format(calendar.getTime()));
 
         return millsFromLastRefresh > millsInRefreshPeriod;
     }
@@ -137,7 +148,7 @@ public class Tag implements Parcelable
      */
     public static void deleteFirstInCatAndUpdateSecond(MyRoboSpiceDatabaseHelper h, String categoryUrl)
     {
-        Tag category = Tag.getCategoryByUrl(categoryUrl, h);
+        Tag category = Tag.getTagByUrl(categoryUrl, h);
         ArticleCategory topArtCat = ArticleCategory.getTopArtCat(category.getId(), h);
         ArticleCategory secondArtCat = ArticleCategory.getNextArtCat(h, topArtCat);
 

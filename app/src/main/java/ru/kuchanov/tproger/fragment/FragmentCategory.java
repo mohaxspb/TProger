@@ -39,6 +39,7 @@ import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
+import ru.kuchanov.tproger.robospice.db.Tag;
 import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArts;
 import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArtsFromBottom;
 import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArtsFromBottomOffline;
@@ -52,36 +53,34 @@ import ru.kuchanov.tproger.utils.ScreenProperties;
  */
 public class FragmentCategory extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener
 {
-    public static final String LOG = FragmentCategory.class.getSimpleName();
-    public static final String KEY_CATEGORY = "keyCategory";
-    public static final String KEY_CURRENT_PAGE_TO_LOAD = "keyCurrentPageToLoad";
-    public static final String KEY_IS_LOADING = "isLoading";
-    public static final String KEY_IS_LOADING_FROM_TOP = "isLoadingFromTop";
-
+    public static final String KEY_CATEGORY_OR_TAG_URL = "KEY_CATEGORY_OR_TAG_URL";
+    public static final String KEY_CURRENT_PAGE_TO_LOAD = "KEY_CURRENT_PAGE_TO_LOAD";
+    public static final String KEY_IS_LOADING = "KEY_IS_LOADING";
+    public static final String KEY_IS_LOADING_FROM_TOP = "KEY_IS_LOADING_FROM_TOP";
     protected MySpiceManager spiceManager;
     protected MySpiceManager spiceManagerOffline;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
-    private String categoryUrl;
-
+    MyRoboSpiceDatabaseHelper databaseHelper;
+    private String LOG = FragmentCategory.class.getSimpleName();
+    private String categoryOrTagUrl;
     private Category category;
+    private Tag tag;
+    private boolean isCategoryOrTag;
     private AppCompatActivity act;
     private Context ctx;
     private int currentPageToLoad = 1;
     private boolean isLoading = false;
     private boolean isLoadingFromTop = true;
-
     private SharedPreferences pref;
-
     private int numOfColsInGridLayoutManager = 2;
-
     private ArrayList<Article> artsList = new ArrayList<>();
 
     public static FragmentCategory newInstance(String category)
     {
         FragmentCategory frag = new FragmentCategory();
         Bundle b = new Bundle();
-        b.putString(KEY_CATEGORY, category);
+        b.putString(KEY_CATEGORY_OR_TAG_URL, category);
         frag.setArguments(b);
 
         return frag;
@@ -106,16 +105,36 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         super.onCreate(savedInstanceState);
 
         Bundle args = this.getArguments();
-        this.categoryUrl = args.getString(KEY_CATEGORY);
+        this.categoryOrTagUrl = args.getString(KEY_CATEGORY_OR_TAG_URL);
+        this.LOG += "#" + this.categoryOrTagUrl;
+//        Log.d(LOG, this.categoryOrTagUrl);
 
-        MyRoboSpiceDatabaseHelper databaseHelper;
+
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
-        //TODO test
-//        String[] arr = getResources().getStringArray(R.array.categories_url);
-//        this.categoryUrl = arr[new Random().nextInt(arr.length)];
-//        this.categoryUrl = "category/interview/";
-        this.category = Category.getCategoryByUrl(categoryUrl, databaseHelper);
-        Log.i(LOG, "CategoryFragment with category: " + category.getTitle());
+        Boolean isCategoryOrTagOrDoNotExists = MyRoboSpiceDatabaseHelper.isCategoryOrTagOrDoNotExists(databaseHelper, this.categoryOrTagUrl);
+        if (isCategoryOrTagOrDoNotExists == null)
+        {
+            //seems to be, that we must create it...
+            //and we'll create it while parsing html)
+            Log.e(LOG, this.categoryOrTagUrl + " DOES NOT EXISTS IN DB! SO WE'LL CREATE IT WHILE PARSING!");
+        }
+        else
+        {
+            this.isCategoryOrTag = isCategoryOrTagOrDoNotExists;
+//            String title = "not found";
+            if (isCategoryOrTag)
+            {
+                this.category = Category.getCategoryByUrl(categoryOrTagUrl, databaseHelper);
+//                title = category.getTitle();
+            }
+            else
+            {
+                this.tag = Tag.getTagByUrl(categoryOrTagUrl, databaseHelper);
+//                title = tag.getTitle();
+            }
+//            Log.i(LOG, "CategoryFragment with category: " + title);
+        }
+
 
         if (savedInstanceState != null)
         {
@@ -393,17 +412,17 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             //if !forceRefresh we must load arts from DB
             if (!forceRefresh)
             {
-                RoboSpiceRequestCategoriesArtsOffline requestFromDB = new RoboSpiceRequestCategoriesArtsOffline(ctx, categoryUrl);
-                spiceManagerOffline.execute(requestFromDB, "unused", DurationInMillis.ALWAYS_EXPIRED, new CategoriesArtsRequestListener());
+                RoboSpiceRequestCategoriesArtsOffline requestFromDB = new RoboSpiceRequestCategoriesArtsOffline(ctx, categoryOrTagUrl);
+                spiceManagerOffline.execute(requestFromDB, LOG, DurationInMillis.ALWAYS_EXPIRED, new CategoriesArtsRequestListener());
             }
             else
             {
-                RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, categoryUrl);
+                RoboSpiceRequestCategoriesArts request = new RoboSpiceRequestCategoriesArts(ctx, categoryOrTagUrl);
                 if (resetCategoryInDB)
                 {
                     request.setResetCategoryInDB();
                 }
-                spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new CategoriesArtsRequestListener());
+                spiceManager.execute(request, LOG, DurationInMillis.ALWAYS_EXPIRED, new CategoriesArtsRequestListener());
             }
         }
         else
@@ -412,13 +431,13 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             this.setLoading(true);
             if (!forceRefresh)
             {
-                RoboSpiceRequestCategoriesArtsFromBottomOffline request = new RoboSpiceRequestCategoriesArtsFromBottomOffline(ctx, categoryUrl, page);
-                spiceManagerOffline.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new CategoriesArtsRequestListener());
+                RoboSpiceRequestCategoriesArtsFromBottomOffline request = new RoboSpiceRequestCategoriesArtsFromBottomOffline(ctx, categoryOrTagUrl, page);
+                spiceManagerOffline.execute(request, LOG, DurationInMillis.ALWAYS_EXPIRED, new CategoriesArtsRequestListener());
             }
             else
             {
-                RoboSpiceRequestCategoriesArtsFromBottom request = new RoboSpiceRequestCategoriesArtsFromBottom(ctx, categoryUrl, page);
-                spiceManager.execute(request, "unused", DurationInMillis.ALWAYS_EXPIRED, new CategoriesArtsRequestListener());
+                RoboSpiceRequestCategoriesArtsFromBottom request = new RoboSpiceRequestCategoriesArtsFromBottom(ctx, categoryOrTagUrl, page);
+                spiceManager.execute(request, LOG, DurationInMillis.ALWAYS_EXPIRED, new CategoriesArtsRequestListener());
             }
         }
     }
@@ -490,6 +509,18 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 performRequest(currentPageToLoad, true, false);
                 return;
             }
+            //update category or tag obj, as we update it if receive arts from top
+            if (currentPageToLoad == 1)
+            {
+                if (isCategoryOrTag)
+                {
+                    category = Category.getCategoryByUrl(categoryOrTagUrl, databaseHelper);
+                }
+                else
+                {
+                    tag = Tag.getTagByUrl(categoryOrTagUrl, databaseHelper);
+                }
+            }
 
             ArrayList<Article> list = new ArrayList<>(articles.getResult());
 
@@ -506,13 +537,14 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 {
                     recyclerView.getAdapter().notifyItemRangeRemoved(0, prevSize);
                 }
-                artsList = new ArrayList<>();
+//                artsList = new ArrayList<>();
+                artsList.clear();
                 currentPageToLoad = 1;
                 performRequest(currentPageToLoad, true, true);
 
                 return;
             }
-            else if(articles.isContainsBottomArt())
+            else if (articles.isContainsBottomArt())
             {
                 Log.i(LOG, "end of cats arts list reached");
                 Toast.makeText(ctx, "Все статьи раздела загружены!", Toast.LENGTH_SHORT).show();
@@ -574,11 +606,24 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                         }
                         else
                         {
-                            if (Category.refreshDateExpired(category, ctx))
+                            //TODO think about it
+                            if (isCategoryOrTag)
                             {
-                                Log.i(LOG, "autoRefreshIs OFF but refreshDate expired so start loading from web");
-                                currentPageToLoad = 1;
-                                performRequest(currentPageToLoad, true, false);
+                                if (Category.refreshDateExpired(category, ctx))
+                                {
+                                    Log.i(LOG, "autoRefreshIs OFF but refreshDate expired so start loading from web");
+                                    currentPageToLoad = 1;
+                                    performRequest(currentPageToLoad, true, false);
+                                }
+                            }
+                            else
+                            {
+                                if (Tag.refreshDateExpired(tag, ctx))
+                                {
+                                    Log.i(LOG, "autoRefreshIs OFF but refreshDate expired so start loading from web");
+                                    currentPageToLoad = 1;
+                                    performRequest(currentPageToLoad, true, false);
+                                }
                             }
                         }
                         break;

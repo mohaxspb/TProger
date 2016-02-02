@@ -37,6 +37,7 @@ import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.fragment.FragmentCategories;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.OnPageChangeListenerMain;
+import ru.kuchanov.tproger.navigation.PagerAdapterCatsAndTags;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
@@ -51,9 +52,13 @@ import ru.kuchanov.tproger.utils.anim.ChangeImageWithAlpha;
  */
 public class ActivityCategoriesAndTags extends AppCompatActivity
 {
+    //constants
+    private static final String KEY_POSITION = "KEY_POSITION";
     private static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
     private static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
-    private final static String LOG = ActivityCategoriesAndTags.class.getSimpleName();
+    private static final String LOG = ActivityCategoriesAndTags.class.getSimpleName();
+    int positionInList;
+    ////////
     private Toolbar toolbar;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private NavigationView navigationView;
@@ -65,7 +70,6 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
     private boolean isCollapsed = true;
     private View cover2Border;
     private AppBarLayout appBar;
-
     private MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
     private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
     private FloatingActionButton fab;
@@ -82,24 +86,23 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
     private int prevPosOfImage = -1;
     private Timer timer;
     private TimerTask timerTask;
-
     private ChangeImageWithAlpha cr;
-
     private ArrayList<Category> categories = new ArrayList<>();
     private ArrayList<Tag> tags = new ArrayList<>();
     private int curDataType;
+    //
     private int numOfColsInGridLayoutManager;
 
     private boolean isTabletMode;
 
-    public static void startActivityCatsAndTags(Context ctx, ArrayList<Category> cats, ArrayList<Tag> tags, int curDataType)
+    public static void startActivityCatsAndTags(Context ctx, ArrayList<Category> cats, ArrayList<Tag> tags, int curDataType, int positionInList)
     {
         Intent intent = new Intent(ctx, ActivityCategoriesAndTags.class);
         Bundle b = new Bundle();
         b.putParcelableArrayList(Category.LOG, cats);
         b.putParcelableArrayList(Tag.LOG, tags);
         b.putInt(FragmentCategories.KEY_CATS_OR_TAGS_DATA_TYPE, curDataType);
-
+        b.putInt(KEY_POSITION, positionInList);
         intent.putExtras(b);
 
         ctx.startActivity(intent);
@@ -162,6 +165,31 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
                 }
                 break;
         }
+
+        //setup pager
+        this.pager.setAdapter(new PagerAdapterCatsAndTags(manager, ctx, categories, tags, curDataType));
+        this.pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener()
+        {
+            @Override
+            public void onPageSelected(int position)
+            {
+                super.onPageSelected(position);
+                positionInList = position;
+
+                String title = "";
+                switch (curDataType)
+                {
+                    case FragmentCategories.TYPE_CATEGORY:
+                        title = categories.get(positionInList).getTitle();
+                        break;
+                    case FragmentCategories.TYPE_TAG:
+                        title = tags.get(positionInList).getTitle();
+                        break;
+                }
+                collapsingToolbarLayout.setTitle(title);
+            }
+        });
+        this.pager.setCurrentItem(positionInList, true);
     }
 
     private void initializeViews()
@@ -419,6 +447,7 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
         outState.putParcelableArrayList(Category.LOG, categories);
         outState.putParcelableArrayList(Tag.LOG, tags);
         outState.putInt(FragmentCategories.KEY_CATS_OR_TAGS_DATA_TYPE, curDataType);
+        outState.putInt(KEY_POSITION, positionInList);
     }
 
     private void restoreState(Bundle savedInstanceState, Bundle args)
@@ -429,7 +458,7 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
         if (savedInstanceState == null)
         {
             this.curDataType = args.getInt(FragmentCategories.KEY_CATS_OR_TAGS_DATA_TYPE);
-
+            this.positionInList = args.getInt(KEY_POSITION);
             if (args.containsKey(Category.LOG))
             {
                 this.categories.clear();
@@ -455,7 +484,7 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
             prevPosOfImage = savedInstanceState.getInt(KEY_PREV_COVER_SOURCE, -1);
             artsWithImage = savedInstanceState.getParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE);
 
-
+            this.positionInList = args.getInt(KEY_POSITION);
             this.curDataType = savedInstanceState.getInt(FragmentCategories.KEY_CATS_OR_TAGS_DATA_TYPE);
             if (savedInstanceState.containsKey(Category.LOG))
             {

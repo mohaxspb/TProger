@@ -21,6 +21,7 @@ import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
+import ru.kuchanov.tproger.robospice.db.ArticleTag;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.db.Tag;
@@ -34,24 +35,28 @@ import ru.kuchanov.tproger.utils.html.HtmlParsing;
 public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
 {
     public static final String LOG = RoboSpiceRequestCategoriesArts.class.getSimpleName();
-
-    Context ctx;
-    MyRoboSpiceDatabaseHelper databaseHelper;
-    String url;
-    String category;
-
     boolean resetCategoryInDB = false;
+    private Context ctx;
+    private MyRoboSpiceDatabaseHelper databaseHelper;
+    private String url;
+    private String categoryOrTagUrl;
 
-    public RoboSpiceRequestCategoriesArts(Context ctx, String category)
+    public RoboSpiceRequestCategoriesArts(Context ctx, String categoryOrTagUrl)
     {
         super(Articles.class);
 
         this.ctx = ctx;
-        this.category = category;
+        this.categoryOrTagUrl = categoryOrTagUrl;
 
 //        this.url = "http://tproger.ru/page/1/";
-        this.url = Const.DOMAIN_MAIN + category /*+ Const.SLASH*/ + "page" + Const.SLASH + 1;// + Const.SLASH;
-
+        if (categoryOrTagUrl.startsWith("http"))
+        {
+            this.url = categoryOrTagUrl;
+        }
+        else
+        {
+            this.url = Const.DOMAIN_MAIN + categoryOrTagUrl;// /*+ Const.SLASH*/ + "page" + Const.SLASH + 1;// + Const.SLASH;
+        }
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
 
     }
@@ -65,47 +70,138 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
     public Articles loadDataFromNetwork() throws Exception
     {
 //        Log.i(LOG, "loadDataFromNetwork called");
-
-        Category cat = Category.getCategoryByUrl(this.category, databaseHelper);
-        if (cat == null)
-        {
-            //TODO need to think can we create new one here
-            throw new NullPointerException("no such category in DB!");
-        }
-
-        if (resetCategoryInDB)
-        {
-            Log.i(LOG, "resetCategoryInDB");
-            //all we need - is to delete all artCat by category...
-            ArrayList<ArticleCategory> allArtCatList = (ArrayList<ArticleCategory>) databaseHelper.getDaoArtCat().queryBuilder().
-                    where().eq(ArticleCategory.FIELD_CATEGORY_ID, cat.getId()).query();
-            databaseHelper.getDaoArtCat().delete(allArtCatList);
-        }
-
         String responseBody = makeRequest();
+        Document document = Jsoup.parse(responseBody);
 
-        ArrayList<Article> list = HtmlParsing.parseForArticlesList(responseBody, databaseHelper);
+        ArrayList<Article> list = HtmlParsing.parseForArticlesList(document, databaseHelper);
         //write to DB
         list = Article.writeArtsList(list, databaseHelper);
+        int newArtsQuont;
 
-        int newArtsQuont = ArticleCategory.writeArtsListToArtCatFromTop(list, cat.getId(), databaseHelper);
-        //we can pass quont through Articles class via field...
-        Log.i(LOG, "newArtsQuont: " + newArtsQuont);
+        Boolean isCategoryOrTagOrDoNotExists = MyRoboSpiceDatabaseHelper.isCategoryOrTagOrDoNotExists(databaseHelper, this.categoryOrTagUrl);
+        if (isCategoryOrTagOrDoNotExists == null)
+        {
+            Log.i(LOG, "NO such cat/tag in DB, so crete new one!");
+            //seems to be, that we must create it...
+            String title;
+            String urlOfCatOrTag;
 
-        //update refreshed date of category to currentTimeInMills
-//        cat.setRefreshed(Calendar.getInstance(TimeZone.getTimeZone("GMT+00:00")).getTime());
-        cat.setRefreshed(Calendar.getInstance().getTime());
-        databaseHelper.getDaoCategory().createOrUpdate(cat);
+            if (url.contains("/category/"))
+            {
+                isCategoryOrTagOrDoNotExists = true;
 
+                title = document.head().getElementsByAttributeValue("og:title", "content").first().attr("content");
+                if (categoryOrTagUrl.startsWith("http"))
+                {
+                    int indexOfCategory = categoryOrTagUrl.indexOf("/category/");
+                    urlOfCatOrTag = categoryOrTagUrl.substring(indexOfCategory);
+                }
+                else
+                {
+                    urlOfCatOrTag = categoryOrTagUrl;
+                }
+                Category category = new Category();
+                category.setTitle(title);
+                category.setUrl(urlOfCatOrTag);
+                databaseHelper.getDaoCategory().createOrUpdate(category);
+
+            }
+            else if (url.contains("/tag/"))
+            {
+                isCategoryOrTagOrDoNotExists = false;
+
+                title = document.head().getElementsByAttributeValue("og:title", "content").first().attr("content");
+                if (categoryOrTagUrl.startsWith("http"))
+                {
+                    int indexOfTag = categoryOrTagUrl.indexOf("/tag/");
+                    urlOfCatOrTag = categoryOrTagUrl.substring(indexOfTag);
+                }
+                else
+                {
+                    urlOfCatOrTag = categoryOrTagUrl;
+                }
+                Tag tag = new Tag();
+                tag.setTitle(title);
+                tag.setUrl(urlOfCatOrTag);
+                databaseHelper.getDaoTag().createOrUpdate(tag);
+            }
+            else
+            {
+                throw new NullPointerException("can't figure out if it's category or tag...");
+            }
+        }
+
+        boolean isCategoryOrTag = isCategoryOrTagOrDoNotExists;
+        if (isCategoryOrTag)
+        {
+            Category category = Category.getCategoryByUrl(categoryOrTagUrl, databaseHelper);
+
+            if (resetCategoryInDB)
+            {
+                Log.i(LOG, "resetCategoryInDB");
+                //all we need - is to delete all artCat by category...
+                ArrayList<ArticleCategory> allArtCatList = (ArrayList<ArticleCategory>) databaseHelper.getDaoArtCat().queryBuilder().
+                        where().eq(ArticleCategory.FIELD_CATEGORY_ID, category.getId()).query();
+                databaseHelper.getDaoArtCat().delete(allArtCatList);
+            }
+
+            newArtsQuont = ArticleCategory.writeArtsListToArtCatFromTop(list, category.getId(), databaseHelper);
+            //we can pass quont through Articles class via field...
+
+            //update refreshed date of category to currentTimeInMills
+//            Log.d(LOG, "category refreshed: " + category.getRefreshed());
+            category.setRefreshed(Calendar.getInstance().getTime());
+            /*boolean isUpdated =*/
+            databaseHelper.getDaoCategory().createOrUpdate(category).isUpdated();
+//            Log.d(LOG, "update status is: " + isUpdated);
+//            Category updated = Category.getCategoryByUrl(categoryOrTagUrl, databaseHelper);
+//            Log.d(LOG, "category refreshed: " + updated.getRefreshed());
+        }
+        else
+        {
+            Tag tag = Tag.getTagByUrl(categoryOrTagUrl, databaseHelper);
+
+            if (resetCategoryInDB)
+            {
+                Log.i(LOG, "resetCategoryInDB");
+                //all we need - is to delete all artCat by category...
+                ArrayList<ArticleTag> allArtCatList = (ArrayList<ArticleTag>) databaseHelper.getDaoArtTag().queryBuilder().
+                        where().eq(ArticleTag.FIELD_TAG_ID, tag.getId()).query();
+                databaseHelper.getDaoArtTag().delete(allArtCatList);
+            }
+
+            newArtsQuont = ArticleTag.writeArtsListToArtCatFromTop(list, tag.getId(), databaseHelper);
+            //we can pass quont through Articles class via field...
+
+            //update refreshed date of category to currentTimeInMills
+//            tag.setRefreshed(Calendar.getInstance().getTime());
+//            databaseHelper.getDaoTag().createOrUpdate(tag);
+//            Log.d(LOG, "tag refreshed: " + tag.getRefreshed());
+            tag.setRefreshed(Calendar.getInstance().getTime());
+            /*boolean isUpdated = */
+            databaseHelper.getDaoTag().createOrUpdate(tag).isUpdated();
+//            Log.d(LOG, "update status is: " + isUpdated);
+//            Tag updated = Tag.getTagByUrl(categoryOrTagUrl, databaseHelper);
+//            Log.d(LOG, "tag refreshed: " + updated.getRefreshed());
+        }
+        ///////////////////////////////////
         Articles articles = new Articles();
         articles.setNumOfNewArts(newArtsQuont);
         articles.setResult(list);
+        //check if we receive less then Const.NUM_OF_ARTS_ON_PAGE, and if so make last artCat/artTag isBottom
+        //and set value to Articles obj
+        if (list.size() < Const.NUM_OF_ARTS_ON_PAGE)
+        {
+            articles.setContainsBottomArt(true);
+        }
 
         //TODO if need
         //parse and write new categories and tags to DB
-        this.updateTagsAndCategoriesIfNeed(responseBody);
+//        this.updateTagsAndCategoriesIfNeed(responseBody);
 
-        return articles;
+        {
+            return articles;
+        }
     }
 
     private String makeRequest() throws Exception
@@ -205,6 +301,9 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         }
     }
 
+    /**
+     * Used to create initial data for filling data base tables via copying writened data from result file to res/values
+     */
     private void createInitialTagCategoriesInfoFile(ArrayList<Category> cats, ArrayList<Tag> tags)
     {
         StringBuilder builder = new StringBuilder();

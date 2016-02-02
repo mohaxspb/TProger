@@ -6,7 +6,6 @@ import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.util.TypedValue;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
@@ -21,13 +20,14 @@ import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.UILImageGetter;
 
 /**
- * Created by Юрий on 03.11.2015 17:35.
- * For ExpListTest.
+ * Created by Юрий on 03.11.2015 17:35 4:16.
+ * For TProger.
  */
 public class HtmlToView
 {
-    protected static final String LOG = HtmlToView.class.getSimpleName();
+//    private static final String LOG = HtmlToView.class.getSimpleName();
 
+    //// TODO: 02.02.2016 remove it and replace with code for recycler of Article
     public static void add(LinearLayout lin, ArrayList<Element> list)
     {
         Context ctx = lin.getContext();

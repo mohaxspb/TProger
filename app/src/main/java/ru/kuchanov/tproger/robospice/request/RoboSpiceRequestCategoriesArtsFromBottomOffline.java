@@ -42,6 +42,7 @@ public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceReques
 
     }
 
+    //TODO update as now we have ArtTag table!!!
     @Override
     public Articles loadDataFromNetwork() throws Exception
     {

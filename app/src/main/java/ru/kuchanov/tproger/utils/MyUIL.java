@@ -19,8 +19,10 @@ public class MyUIL
 {
     public static ImageLoader get(Context act)
     {
+        int roundedCornersInPX = (int) DipToPx.convert(3, act);
+
         DisplayImageOptions options = new DisplayImageOptions.Builder()
-                .displayer(new RoundedBitmapDisplayer(10))
+                .displayer(new RoundedBitmapDisplayer(roundedCornersInPX))
 //                .showImageOnLoading(R.drawable.ic_refresh_grey600_48dp)
                 .showImageForEmptyUri(R.drawable.ic_crop_original_grey600_48dp)
                 .showImageOnFail(R.drawable.ic_crop_original_grey600_48dp)

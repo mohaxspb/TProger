@@ -17,8 +17,8 @@ import java.util.Date;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 
 /**
- * Created by Юрий on 16.10.2015 16:47.
- * For ExpListTest.
+ * Created by Юрий on 16.10.2015 16:47 0:47.
+ * For TProger.
  */
 @DatabaseTable(tableName = "article")
 public class Article implements Parcelable
@@ -178,9 +178,7 @@ public class Article implements Parcelable
         try
         {
             Dao<Article, Integer> daoArt = h.getDao(Article.class);
-
 //            Log.i(LOG, "artCatList.size(): " + artCatList.size());
-
             for (ArticleCategory artCat : artCatList)
             {
                 Article a = daoArt.queryBuilder().where().eq(Article.FIELD_ID, artCat.getArticleId()).queryForFirst();
@@ -192,6 +190,25 @@ public class Article implements Parcelable
             e.printStackTrace();
         }
 
+        return artsList;
+    }
+
+    public static ArrayList<Article> getArticleListFromArtTagList(ArrayList<ArticleTag> artCatList, MyRoboSpiceDatabaseHelper h)
+    {
+        ArrayList<Article> artsList = new ArrayList<>();
+        try
+        {
+            Dao<Article, Integer> daoArt = h.getDao(Article.class);
+            for (ArticleTag artCat : artCatList)
+            {
+                Article a = daoArt.queryBuilder().where().eq(Article.FIELD_ID, artCat.getArticleId()).queryForFirst();
+                artsList.add(a);
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
         return artsList;
     }
 

@@ -14,10 +14,10 @@ import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 
 /**
- * Created by Юрий on 20.10.2015 0:48.
- * For ExpListTest.
+ * Created by Юрий on 20.10.2015 0:48 3:03.
+ * For TProger.
  */
-@DatabaseTable(tableName = "table_article_category")
+@DatabaseTable(tableName = "article_category")
 public class ArticleCategory
 {
     public static final String LOG = ArticleCategory.class.getSimpleName();
@@ -361,7 +361,7 @@ public class ArticleCategory
                     artCatToWrite.setArticleId(a.getId());
                     artCatToWrite.setCategoryId(categoryId);
                     //check if there is such entry in DB and set it's id to artCat obj
-                    ArticleCategory artCatInDB = ArticleCategory.getIdByArticleAndCategoryIds(h, artCatToWrite.getArticleId(), artCatToWrite.getCategoryId());
+                    ArticleCategory artCatInDB = ArticleCategory.getByArticleAndCategoryIds(h, artCatToWrite.getArticleId(), artCatToWrite.getCategoryId());
                     if (artCatInDB != null)
                     {
                         artCatToWrite.setId(artCatInDB.getId());
@@ -395,6 +395,14 @@ public class ArticleCategory
             {
                 daoArtCat.createOrUpdate(artCat);
             }
+
+            //write initial artTag if it is
+            if (arts.size() > 0 && arts.size() < Const.NUM_OF_ARTS_ON_PAGE)
+            {
+                ArticleCategory initialArtCat = ArticleCategory.getByArticleAndCategoryIds(h, arts.get(arts.size() - 1).getId(), categoryId);
+                initialArtCat.setInitialInCategory(true);
+                h.getDaoArtCat().createOrUpdate(initialArtCat);
+            }
         }
         catch (SQLException e)
         {
@@ -404,7 +412,7 @@ public class ArticleCategory
         return quontOfNewArtsInCategory;
     }
 
-    public static ArticleCategory getIdByArticleAndCategoryIds(MyRoboSpiceDatabaseHelper h, int articleId, int category_id)
+    public static ArticleCategory getByArticleAndCategoryIds(MyRoboSpiceDatabaseHelper h, int articleId, int category_id)
     {
         ArticleCategory artCat = null;
         try

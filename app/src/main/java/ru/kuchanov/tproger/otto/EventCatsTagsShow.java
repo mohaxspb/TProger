@@ -8,7 +8,6 @@ public class EventCatsTagsShow
 {
     private int dataType;
 
-
     public EventCatsTagsShow(int dataType)
     {
         this.dataType = dataType;

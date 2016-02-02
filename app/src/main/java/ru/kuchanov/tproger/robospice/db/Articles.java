@@ -14,7 +14,7 @@ import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
  * Created by Юрий on 16.10.2015 18:45.
  * For ExpListTest.
  */
-@DatabaseTable
+@DatabaseTable(tableName = "articles")
 public class Articles
 {
     public static final String LOG = Articles.class.getSimpleName();

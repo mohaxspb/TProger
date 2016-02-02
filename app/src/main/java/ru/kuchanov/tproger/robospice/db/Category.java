@@ -14,8 +14,8 @@ import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 
 /**
- * Created by Юрий on 20.10.2015 0:48.
- * For ExpListTest.
+ * Created by Юрий on 20.10.2015 0:48 23:57.
+ * For TProger.
  */
 @DatabaseTable(tableName = "category")
 public class Category implements Parcelable
@@ -27,7 +27,6 @@ public class Category implements Parcelable
     //    Parcel implementation/////////////////////////////
     public static final Parcelable.Creator<Category> CREATOR = new Parcelable.Creator<Category>()
     {
-
         @Override
         public Category createFromParcel(Parcel source)
         {
@@ -116,14 +115,27 @@ public class Category implements Parcelable
      */
     public static boolean refreshDateExpired(Category category, Context ctx)
     {
-        long currentTimeInMills = System.currentTimeMillis();
+//        Calendar calendar = Calendar.getInstance();
+//        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy 'в' HH:mm", Locale.getDefault());
+//        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        long currentTimeInMills = System.currentTimeMillis();
+//        Log.d(LOG, "currentTimeInMills: " + currentTimeInMills);
+//        calendar.setTimeInMillis(currentTimeInMills);
+//        Log.d(LOG, "currentTimeInMills: " + sdf.format(calendar.getTime()));
 
         int refreshPeriodInHours = ctx.getResources().getInteger(R.integer.refresh_period_hours);
         long millsInRefreshPeriod = refreshPeriodInHours * 60 * 60 * 1000;
 
-        long millsFromLastRefresh = currentTimeInMills - category.getRefreshed().getTime();
+        long categoryWasRefreshedAtInMills = category.getRefreshed().getTime();
+//        Log.d(LOG, "millsFromLastRefresh: " + categoryWasRefreshedAtInMills);
+//        calendar.setTimeInMillis(categoryWasRefreshedAtInMills);
+//        Log.d(LOG, "categoryWasRefreshedAtInMills: " + sdf.format(calendar.getTime()));
+
+        long millsFromLastRefresh = currentTimeInMills - categoryWasRefreshedAtInMills;
+//        Log.d(LOG, "millsFromLastRefresh: " + millsFromLastRefresh);
+//        calendar.setTimeInMillis(millsFromLastRefresh);
+//        Log.d(LOG, "millsFromLastRefresh: " + sdf.format(calendar.getTime()));
 
         return millsFromLastRefresh > millsInRefreshPeriod;
     }

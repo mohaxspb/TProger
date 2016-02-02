@@ -266,7 +266,7 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
 //        Log.i(LOG, "onResume called from activity: " + getActivity().getClass().getSimpleName());
         super.onResume();
 
-        spiceManagerOffline.addListenerIfPending(TagsCategories.class, "unused", new TagsCategoriesRequestListener());
+        spiceManagerOffline.addListenerIfPending(TagsCategories.class, TagsCategories.LOG, new TagsCategoriesRequestListener());
         //make request for it
         if (tags.size() == 0 && categories.size() == 0)
         {
@@ -415,44 +415,16 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
                 return;
             }
 
-//            ArrayList<Article> list = new ArrayList<>(t.getResult());
-
             setLoading(false);
 
-            //TODO test
             tags.clear();
             tags.addAll(tagsCategories.getTags());
             categories.clear();
             categories.addAll(tagsCategories.getCategories());
 
-//            ArrayList<String> dummyData = new ArrayList<>();
-//            for (Category c : categories)
-//            {
-//                dummyData.add(c.getTitle());
-//            }
-//
-//            recyclerView.setAdapter(new RecyclerAdapter(dummyData));
             RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories);
-            adapterCatsTags.setDataType(RecyclerAdapterCatsTags.TYPE_TAG);
+            adapterCatsTags.setDataType(curCategoryType);
             recyclerView.setAdapter(adapterCatsTags);
-
-
-//            Log.i(LOG, "RECEIVE " + list.size() + " categories or tags");
-
-            //TODO
-//            int prevSize = artsList.size();
-//            artsList.clear();
-//            artsList.addAll(list);
-//            if (recyclerView.getAdapter() == null)
-//            {
-//                recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
-//                recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
-//            }
-//            else
-//            {
-//                recyclerView.getAdapter().notifyItemRangeRemoved(0, prevSize);
-//            }
-
         }
 
         @Override

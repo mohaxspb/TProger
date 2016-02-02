@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
+import ru.kuchanov.tproger.robospice.db.ArticleTag;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.db.Tag;
@@ -39,6 +40,28 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
         this.context = context;
     }
 
+    /**
+     * @return true if it is category, false is it's tag or null if cant find this url in DB
+     */
+    public static Boolean isCategoryOrTagOrDoNotExists(MyRoboSpiceDatabaseHelper h, String url)
+    {
+        if (Category.getCategoryByUrl(url, h) == null)
+        {
+            if (Tag.getTagByUrl(url, h) == null)
+            {
+                return null;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return true;
+        }
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion)
     {
@@ -50,6 +73,7 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
             TableUtils.dropTable(connectionSource, ArticleCategory.class, true);
             TableUtils.dropTable(connectionSource, Articles.class, true);
             TableUtils.dropTable(connectionSource, Tag.class, true);
+            TableUtils.dropTable(connectionSource, ArticleTag.class, true);
             TableUtils.dropTable(connectionSource, TagsCategories.class, true);
 
             this.onCreate(database, connectionSource);
@@ -71,6 +95,7 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
             TableUtils.createTableIfNotExists(connectionSource, ArticleCategory.class);
             TableUtils.createTableIfNotExists(connectionSource, Articles.class);
             TableUtils.createTableIfNotExists(connectionSource, Tag.class);
+            TableUtils.createTableIfNotExists(connectionSource, ArticleTag.class);
             TableUtils.createTableIfNotExists(connectionSource, TagsCategories.class);
             Log.i(LOG, "all tables have been created");
 
@@ -164,6 +189,20 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
         try
         {
             daoArtCat = this.getDao(ArticleCategory.class);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return daoArtCat;
+    }
+
+    public Dao<ArticleTag, Integer> getDaoArtTag()
+    {
+        Dao<ArticleTag, Integer> daoArtCat = null;
+        try
+        {
+            daoArtCat = this.getDao(ArticleTag.class);
         }
         catch (SQLException e)
         {

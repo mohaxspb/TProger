@@ -4,18 +4,13 @@ import android.content.Context;
 import android.util.Log;
 
 import com.octo.android.robospice.request.SpiceRequest;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import java.util.ArrayList;
 
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
-import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.db.Tag;
 import ru.kuchanov.tproger.robospice.db.TagsCategories;
-import ru.kuchanov.tproger.utils.html.HtmlParsing;
 
 /**
  * Created by Юрий on 16.10.2015 16:43 18:06.

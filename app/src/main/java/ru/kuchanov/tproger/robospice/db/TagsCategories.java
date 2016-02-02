@@ -14,7 +14,7 @@ import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
  * Created by Юрий on 16.10.2015 18:45 17:10.
  * For TProger.
  */
-@DatabaseTable
+@DatabaseTable(tableName = "tags_categories")
 public class TagsCategories
 {
     public static final String LOG = TagsCategories.class.getSimpleName();

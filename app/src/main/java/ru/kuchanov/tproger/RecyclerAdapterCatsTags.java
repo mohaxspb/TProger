@@ -65,7 +65,7 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
                     public void onClick(View v)
                     {
                         Log.d(LOG, category.getTitle());
-                        ActivityCategoriesAndTags.startActivityCatsAndTags(holderTitle.title.getContext(), cats, tags, TYPE_CATEGORY);
+                        ActivityCategoriesAndTags.startActivityCatsAndTags(holderTitle.title.getContext(), cats, tags, TYPE_CATEGORY, position);
                     }
                 });
                 break;
@@ -78,7 +78,7 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
                     public void onClick(View v)
                     {
                         Log.d(LOG, tag.getTitle());
-                        ActivityCategoriesAndTags.startActivityCatsAndTags(holderTitle.title.getContext(), cats, tags, TYPE_TAG);
+                        ActivityCategoriesAndTags.startActivityCatsAndTags(holderTitle.title.getContext(), cats, tags, TYPE_TAG, position);
                     }
                 });
                 break;
