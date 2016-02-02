@@ -117,7 +117,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_title, parent, false);
                 vh = new ViewHolderTitle(itemLayoutView);
                 break;
-
             case TYPE_CODE:
                 itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_code_representer_main, parent, false);
                 vh = new ViewHolderCode(itemLayoutView);
@@ -183,7 +182,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         if (position < textTypes.size() + 1)
         {
             int positionInTypesList = position - 1;
-
 
             HtmlToView.TextType curType = this.textTypes.get(positionInTypesList);
             switch (curType)
@@ -545,8 +543,8 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
     public static class ViewHolderWell extends RecyclerView.ViewHolder
     {
-        CardView card;
-        TextView textView;
+        public CardView card;
+        public TextView textView;
 
         public ViewHolderWell(View v)
         {

@@ -1,23 +1,41 @@
 package ru.kuchanov.tproger.utils.html;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.util.TypedValue;
-import android.webkit.WebView;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.interfaces.DraweeController;
 
 import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
 
 import ru.kuchanov.tproger.R;
+import ru.kuchanov.tproger.fragment.FragmentDialogCodeRepresenter;
 import ru.kuchanov.tproger.utils.AttributeGetter;
+import ru.kuchanov.tproger.utils.DipToPx;
 import ru.kuchanov.tproger.utils.UILImageGetter;
+
+import static ru.kuchanov.tproger.RecyclerAdapterArticle.ViewHolderAccordeon;
+import static ru.kuchanov.tproger.RecyclerAdapterArticle.ViewHolderCode;
+import static ru.kuchanov.tproger.RecyclerAdapterArticle.ViewHolderPoll;
+import static ru.kuchanov.tproger.RecyclerAdapterArticle.ViewHolderText;
+import static ru.kuchanov.tproger.RecyclerAdapterArticle.ViewHolderWell;
 
 /**
  * Created by Юрий on 03.11.2015 17:35 4:16.
@@ -25,165 +43,353 @@ import ru.kuchanov.tproger.utils.UILImageGetter;
  */
 public class HtmlToView
 {
-//    private static final String LOG = HtmlToView.class.getSimpleName();
+    private static final String LOG = HtmlToView.class.getSimpleName();
 
-    //// TODO: 02.02.2016 remove it and replace with code for recycler of Article
-    public static void add(LinearLayout lin, ArrayList<Element> list)
+    public static void add(LinearLayout parent, ArrayList<Element> elements)
     {
-        Context ctx = lin.getContext();
+        parent.removeAllViews();
+
+        final Context ctx = parent.getContext();
+
+        ArrayList<TextType> textTypes = getTextPartSummary(elements);
+        ArrayList<String> textParts = getTextPartsList(elements);
+
+        int windowBackgroundColor = AttributeGetter.getColor(ctx, android.R.attr.windowBackground);
+        int colorAccent = AttributeGetter.getColor(ctx, android.R.attr.colorAccent);
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        final boolean isTabletMode = pref.getBoolean(ctx.getResources().getString(R.string.pref_design_key_tablet_mode), false);
+
         float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
 
-        int textColorPrimary = AttributeGetter.getColor(ctx, android.R.attr.textColorPrimary);
+        int textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
+        int textSizeSecondary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_secondary);
 
-        LinearLayout.LayoutParams linParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        float scaledTextSizePrimary = uiTextScale * textSizePrimary;
+        float scaledTextSizeSecondary = uiTextScale * textSizeSecondary;
 
-        lin.removeAllViews();
-
-        boolean previousTagIsUnsupported = false;
-        String prevHtml = "";
-
-        for (int i = 0; i < list.size(); i++)
+        for (int i = 0; i < textParts.size(); i++)
         {
-            Element el = list.get(i);
-//            Log.i(LOG, el.toString());
+            View itemLayoutView;
 
-            if (HtmlTextFormatting.isUnsupportedTag(el) || HtmlTextFormatting.hasInnerUnsupportedTags(el))
+            String curHtml = textParts.get(i);
+            TextType curType = textTypes.get(i);
+
+            switch (curType)
             {
-                WebView webView;
-                String html = prevHtml + ((i != 0 && !previousTagIsUnsupported)
-                        ? el.toString() : list.get(i - 1).toString() + el.toString());
-                if (previousTagIsUnsupported)
-                {
-                    webView = (WebView) lin.getChildAt(lin.getChildCount() - 1);
-                }
-                else
-                {
-                    webView = new WebView(ctx);
-                    webView.setLayoutParams(linParams);
-                    lin.addView(webView);
-                }
-                if (i == list.size() - 1)
-                {
-                    webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
-                    break;
-                }
-                Element nextEl = list.get(i + 1);
-                if (HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl))
-                {
-                    prevHtml += html;
-                    continue;
-                }
-                else
-                {
-                    webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
-                    prevHtml = "";
-                }
-            }
-            else
-            {
-                TextView textView;
-                String html;
+                case Accordion:
+                    itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_accordeon, parent, false);
+                    final ViewHolderAccordeon holderAccordeon = new ViewHolderAccordeon(itemLayoutView);
+//                    String accrodionHtml = this.listOfParts.get(position - 1);
+                    final HtmlParsing.AccordionContent accordionContent = HtmlParsing.parseAccordion(curHtml);
 
-                if (previousTagIsUnsupported)
-                {
-                    if (i == list.size() - 1)
+                    int windowBackgroundDark = AttributeGetter.getColor(ctx, R.attr.windowBackgroundDark);
+                    holderAccordeon.title.setBackgroundColor(windowBackgroundDark);
+                    holderAccordeon.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledTextSizePrimary);
+                    holderAccordeon.title.setText(accordionContent.getTitle());
+
+                    final int arrowDown = AttributeGetter.getDrawableId(ctx, R.attr.arrowDownIcon);
+                    final int arrowUp = AttributeGetter.getDrawableId(ctx, R.attr.arrowUpIcon);
+
+                    final LinearLayout.LayoutParams paramsImage = (LinearLayout.LayoutParams) holderAccordeon.image.getLayoutParams();
+
+                    float recyclerWidth = ctx.getResources().getDisplayMetrics().widthPixels;
+                    int paddingsInDp = 5;
+                    if (isTabletMode)
                     {
-                        textView = new TextView(ctx);
-                        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
-                        textView.setTextColor(textColorPrimary);
-                        textView.setLayoutParams(linParams);
-                        lin.addView(textView);
-
-                        html = el.toString();
-
-                        setTextToTextView(textView, html, ctx);
-                        break;
+                        //here we mast change width as there will be a drawer in left part of screen
+                        recyclerWidth = recyclerWidth / 3 * 2;
                     }
-                    Element nextEl = list.get(i + 1);
-                    if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
-                    {
-                        textView = new TextView(ctx);
-                        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
-                        textView.setTextColor(textColorPrimary);
-                        textView.setLayoutParams(linParams);
-                        lin.addView(textView);
+                    //minusing paddings
+                    recyclerWidth -= DipToPx.convert(paddingsInDp * 2, ctx);
 
-                        html = el.toString();
-                        setTextToTextView(textView, html, ctx);
-                        prevHtml = "";
-                    }
-                }
-                else
-                {
-                    //prev is TExtView
-                    if (i == 0)
-                    {
-                        html = prevHtml + el.toString();
+                    final float finalRecyclerWidth = recyclerWidth;
 
-                        if (list.size() != i + 1)
+                    holderAccordeon.title.setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
                         {
-                            Element nextEl = list.get(i + 1);
-                            if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
+                            if (paramsImage.height == 0)
                             {
-                                textView = new TextView(ctx);
-                                textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
-                                textView.setTextColor(textColorPrimary);
-                                textView.setLayoutParams(linParams);
-                                lin.addView(textView);
 
-                                setTextToTextView(textView, html, ctx);
-                                prevHtml = "";
+                                float scale = finalRecyclerWidth / accordionContent.getImgWidth();
+                                float height = scale * accordionContent.getImgHeight();
+                                paramsImage.height = (int) height;
+                                holderAccordeon.image.setLayoutParams(paramsImage);
+
+                                holderAccordeon.title.setCompoundDrawablesWithIntrinsicBounds(0, 0, arrowUp, 0);
                             }
                             else
                             {
-                                textView = new TextView(ctx);
-                                textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
-                                textView.setTextColor(textColorPrimary);
-                                textView.setLayoutParams(linParams);
-                                lin.addView(textView);
+                                paramsImage.height = 0;
+                                holderAccordeon.image.setLayoutParams(paramsImage);
 
-                                prevHtml = html;
+                                holderAccordeon.title.setCompoundDrawablesWithIntrinsicBounds(0, 0, arrowDown, 0);
                             }
                         }
-                        else
-                        {
-                            textView = new TextView(ctx);
-                            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
-                            textView.setTextColor(textColorPrimary);
-                            textView.setLayoutParams(linParams);
-                            lin.addView(textView);
+                    });
+                    //fresco gif
+                    Uri uri = Uri.parse(accordionContent.getImageUrl());
+                    final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) recyclerWidth, 0);
 
-                            setTextToTextView(textView, html, ctx);
-                            break;
-                        }
-                    }
-                    else
+                    holderAccordeon.image.setLayoutParams(params);
+                    DraweeController controller = Fresco.newDraweeControllerBuilder()
+                            .setUri(uri)
+                            .setAutoPlayAnimations(true)
+                            .build();
+                    holderAccordeon.image.setController(controller);
+                    break;
+                case Table:
+                    itemLayoutView = new TextView(ctx);
+                    //TODO
+                    break;
+                case Well:
+                    itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_well, parent, false);
+                    ViewHolderWell holderWell = new ViewHolderWell(itemLayoutView);
+                    holderWell.textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
+                    holderWell.textView.setText(Html.fromHtml(curHtml,
+                            new UILImageGetter(holderWell.textView, ctx),
+                            new MyHtmlTagHandler(ctx)));
+                    break;
+                case Code:
+                    itemLayoutView = LayoutInflater.from(ctx).inflate(R.layout.recycler_item_code_representer_main, parent, false);
+                    ViewHolderCode holderCode = new ViewHolderCode(itemLayoutView);
+
+                    holderCode.content.removeAllViews();
+
+                    final CodeRepresenter codeRepresenter = CodeRepresenter.parseTableForCodeLines(ctx, curHtml);
+
+                    for (int countenr = 0; countenr < codeRepresenter.getLines().size(); countenr++)
                     {
-                        textView = (TextView) lin.getChildAt(lin.getChildCount() - 1);
-                        html = prevHtml + el.toString();
-                        if (i == list.size() - 1)
+                        String codeLine = codeRepresenter.getLines().get(countenr);
+//                    Log.i(LOG, codeLine);
+                        LinearLayout codeLineLayout = (LinearLayout) LayoutInflater.from(ctx).inflate(R.layout.recycler_item_code_representer_code_line, holderCode.content, false);
+
+                        TextView lineNumber = (TextView) codeLineLayout.findViewById(R.id.line_number);
+                        String number = " " + countenr + " ";
+                        lineNumber.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledTextSizeSecondary);
+                        lineNumber.setText(number);
+
+                        TextView lineCode = (TextView) codeLineLayout.findViewById(R.id.line_code);
+                        lineCode.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledTextSizeSecondary);
+                        lineCode.setText(Html.fromHtml(codeLine));
+
+                        //each second line must have darker color
+                        if (countenr % 2 != 0)
                         {
-                            setTextToTextView(textView, html, ctx);
-                            break;
+                            codeLineLayout.setBackgroundResource(R.color.material_teal_200);
+                            lineNumber.setBackgroundResource(R.color.material_teal_400);
+                            lineCode.setBackgroundResource(R.color.material_teal_200);
                         }
-                        Element nextEl = list.get(i + 1);
-                        if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
-                        {
-                            setTextToTextView(textView, html, ctx);
-                            prevHtml = "";
-                        }
-                        else
-                        {
-                            prevHtml = html;
-                        }
+
+                        holderCode.content.addView(codeLineLayout);
                     }
-                }
+                    //add clickListener to btns
+                    holderCode.copy.setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            StringBuilder builder = new StringBuilder();
+                            for (String codeLine : codeRepresenter.getLines())
+                            {
+                                builder.append(Html.fromHtml(codeLine).toString()).append("\n");
+                            }
+                            ClipboardManager clipboard = (ClipboardManager) ctx.getSystemService(Context.CLIPBOARD_SERVICE);
+                            ClipData clip = ClipData.newPlainText("code", builder.toString());
+                            clipboard.setPrimaryClip(clip);
+                        }
+                    });
+                    holderCode.show.setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            ArrayList<String> lines = codeRepresenter.getLines();
+                            FragmentDialogCodeRepresenter fragmentDialogCodeRepresenter = FragmentDialogCodeRepresenter.newInstance(lines);
+                            fragmentDialogCodeRepresenter.show(((AppCompatActivity) ctx).getFragmentManager(), FragmentDialogCodeRepresenter.LOG);
+                        }
+                    });
+                    break;
+                case Poll:
+                    //TODO
+                    itemLayoutView = LayoutInflater.from(ctx).inflate(R.layout.article_poll, parent, false);
+                    ViewHolderPoll holderPoll = new ViewHolderPoll(itemLayoutView);
+                    Log.d(LOG, "type POLL!");
+                    break;
+                default:
+                case Text:
+                    TextView textView = new TextView(ctx);
+                    int padding = (int) DipToPx.convert(3, ctx);
+                    textView.setPadding(padding, 0, padding, 0);
+                    textView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+                    itemLayoutView = textView;
+                    ViewHolderText holderText = new ViewHolderText(itemLayoutView);
+                    holderText.text.setText(Html.fromHtml(curHtml, new UILImageGetter(holderText.text, ctx), new MyHtmlTagHandler(ctx)));
+                    break;
             }
-            previousTagIsUnsupported = (HtmlTextFormatting.isUnsupportedTag(el) || HtmlTextFormatting.hasInnerUnsupportedTags(el));
+            parent.addView(itemLayoutView);
         }
     }
+
+    //// TODO: 02.02.2016 remove it and replace with code for recycler of Article
+//    public static void add(LinearLayout lin, ArrayList<Element> list)
+//    {
+//        Context ctx = lin.getContext();
+//
+//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+//        float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
+//
+//        int textColorPrimary = AttributeGetter.getColor(ctx, android.R.attr.textColorPrimary);
+//
+//        LinearLayout.LayoutParams linParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//
+//        lin.removeAllViews();
+//
+//        boolean previousTagIsUnsupported = false;
+//        String prevHtml = "";
+//
+//        for (int i = 0; i < list.size(); i++)
+//        {
+//            Element el = list.get(i);
+////            Log.i(LOG, el.toString());
+//
+//            if (HtmlTextFormatting.isUnsupportedTag(el) || HtmlTextFormatting.hasInnerUnsupportedTags(el))
+//            {
+//                WebView webView;
+//                String html = prevHtml + ((i != 0 && !previousTagIsUnsupported)
+//                        ? el.toString() : list.get(i - 1).toString() + el.toString());
+//                if (previousTagIsUnsupported)
+//                {
+//                    webView = (WebView) lin.getChildAt(lin.getChildCount() - 1);
+//                }
+//                else
+//                {
+//                    webView = new WebView(ctx);
+//                    webView.setLayoutParams(linParams);
+//                    lin.addView(webView);
+//                }
+//                if (i == list.size() - 1)
+//                {
+//                    webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
+//                    break;
+//                }
+//                Element nextEl = list.get(i + 1);
+//                if (HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl))
+//                {
+//                    prevHtml += html;
+//                    continue;
+//                }
+//                else
+//                {
+//                    webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
+//                    prevHtml = "";
+//                }
+//            }
+//            else
+//            {
+//                TextView textView;
+//                String html;
+//
+//                if (previousTagIsUnsupported)
+//                {
+//                    if (i == list.size() - 1)
+//                    {
+//                        textView = new TextView(ctx);
+//                        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
+//                        textView.setTextColor(textColorPrimary);
+//                        textView.setLayoutParams(linParams);
+//                        lin.addView(textView);
+//
+//                        html = el.toString();
+//
+//                        setTextToTextView(textView, html, ctx);
+//                        break;
+//                    }
+//                    Element nextEl = list.get(i + 1);
+//                    if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
+//                    {
+//                        textView = new TextView(ctx);
+//                        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
+//                        textView.setTextColor(textColorPrimary);
+//                        textView.setLayoutParams(linParams);
+//                        lin.addView(textView);
+//
+//                        html = el.toString();
+//                        setTextToTextView(textView, html, ctx);
+//                        prevHtml = "";
+//                    }
+//                }
+//                else
+//                {
+//                    //prev is TExtView
+//                    if (i == 0)
+//                    {
+//                        html = prevHtml + el.toString();
+//
+//                        if (list.size() != i + 1)
+//                        {
+//                            Element nextEl = list.get(i + 1);
+//                            if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
+//                            {
+//                                textView = new TextView(ctx);
+//                                textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
+//                                textView.setTextColor(textColorPrimary);
+//                                textView.setLayoutParams(linParams);
+//                                lin.addView(textView);
+//
+//                                setTextToTextView(textView, html, ctx);
+//                                prevHtml = "";
+//                            }
+//                            else
+//                            {
+//                                textView = new TextView(ctx);
+//                                textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
+//                                textView.setTextColor(textColorPrimary);
+//                                textView.setLayoutParams(linParams);
+//                                lin.addView(textView);
+//
+//                                prevHtml = html;
+//                            }
+//                        }
+//                        else
+//                        {
+//                            textView = new TextView(ctx);
+//                            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary));
+//                            textView.setTextColor(textColorPrimary);
+//                            textView.setLayoutParams(linParams);
+//                            lin.addView(textView);
+//
+//                            setTextToTextView(textView, html, ctx);
+//                            break;
+//                        }
+//                    }
+//                    else
+//                    {
+//                        textView = (TextView) lin.getChildAt(lin.getChildCount() - 1);
+//                        html = prevHtml + el.toString();
+//                        if (i == list.size() - 1)
+//                        {
+//                            setTextToTextView(textView, html, ctx);
+//                            break;
+//                        }
+//                        Element nextEl = list.get(i + 1);
+//                        if ((HtmlTextFormatting.isUnsupportedTag(nextEl) || HtmlTextFormatting.hasInnerUnsupportedTags(nextEl)))
+//                        {
+//                            setTextToTextView(textView, html, ctx);
+//                            prevHtml = "";
+//                        }
+//                        else
+//                        {
+//                            prevHtml = html;
+//                        }
+//                    }
+//                }
+//            }
+//            previousTagIsUnsupported = (HtmlTextFormatting.isUnsupportedTag(el) || HtmlTextFormatting.hasInnerUnsupportedTags(el));
+//        }
+//    }
 
     /**
      * sets text to TextView via Html.fromHtml <br>
