@@ -112,6 +112,18 @@ public class MyHtmlTagHandler implements TagHandler
             case "li":
                 processUlOlLi(opening, tag, output);
                 break;
+            case "img":
+                //this must be handled by imageGetter;
+                break;
+//            case "hr":
+//                Log.e(LOG, "hr tag!!!!");
+////                if (!opening)
+////                {
+////                    String aaa = "aaaaaaaaaaaaaaaa";
+////                    output.append(aaa, 0, aaa.length());
+////                }
+//                processStrike(opening, output);
+//                break;
             default:
                 Log.e(LOG, "Unknown tag in TagHandler with name: " + tag);
                 break;

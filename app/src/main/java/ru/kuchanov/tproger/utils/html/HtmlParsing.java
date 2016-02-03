@@ -18,9 +18,8 @@ import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
 
 /**
- * Created by Юрий on 19.10.2015 23:06.
- *
- *
+ * Created by Юрий on 19.10.2015 23:06 19:21.
+ * For TProger.
  */
 public class HtmlParsing
 {

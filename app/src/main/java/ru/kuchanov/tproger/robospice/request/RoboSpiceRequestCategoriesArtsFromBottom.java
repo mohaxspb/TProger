@@ -30,7 +30,7 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
 {
     public static final String LOG = RoboSpiceRequestCategoriesArtsFromBottom.class.getSimpleName();
 
-//    private Context ctx;
+    //    private Context ctx;
     private MyRoboSpiceDatabaseHelper databaseHelper;
     private String url;
     private String categoryOrTagUrl;
@@ -117,6 +117,7 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
         //write to DB
         listOfArticles = Article.writeArtsList(listOfArticles, databaseHelper);
 
+
         if (isCategory)
         {
             ArticleCategory.writeArtsListToArtCatFromBottom(listOfArticles, categoryId, page, databaseHelper);
@@ -128,6 +129,11 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
 
         Articles articles = new Articles();
         articles.setResult(listOfArticles);
+
+        if (listOfArticles.size() < Const.NUM_OF_ARTS_ON_PAGE)
+        {
+            articles.setContainsBottomArt(true);
+        }
 
         return articles;
     }

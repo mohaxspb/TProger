@@ -70,6 +70,8 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
     public Articles loadDataFromNetwork() throws Exception
     {
 //        Log.i(LOG, "loadDataFromNetwork called");
+        Articles articles = new Articles();
+
         String responseBody = makeRequest();
         Document document = Jsoup.parse(responseBody);
 
@@ -185,23 +187,24 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
 //            Log.d(LOG, "tag refreshed: " + updated.getRefreshed());
         }
         ///////////////////////////////////
-        Articles articles = new Articles();
+
         articles.setNumOfNewArts(newArtsQuont);
         articles.setResult(list);
         //check if we receive less then Const.NUM_OF_ARTS_ON_PAGE, and if so make last artCat/artTag isBottom
         //and set value to Articles obj
+        //TODO test
+        Log.d(LOG, "list.size(): " + list.size());
+
         if (list.size() < Const.NUM_OF_ARTS_ON_PAGE)
         {
             articles.setContainsBottomArt(true);
         }
-
+        Log.d(LOG, "articles.isContainsBottomArt(): " + articles.isContainsBottomArt());
         //TODO if need
         //parse and write new categories and tags to DB
 //        this.updateTagsAndCategoriesIfNeed(responseBody);
 
-        {
-            return articles;
-        }
+        return articles;
     }
 
     private String makeRequest() throws Exception

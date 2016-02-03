@@ -11,8 +11,10 @@ import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
+import ru.kuchanov.tproger.robospice.db.ArticleTag;
 import ru.kuchanov.tproger.robospice.db.Articles;
 import ru.kuchanov.tproger.robospice.db.Category;
+import ru.kuchanov.tproger.robospice.db.Tag;
 
 /**
  * Created by Юрий on 16.10.2015 16:43 20:06.
@@ -25,7 +27,7 @@ public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceReques
     Context ctx;
     MyRoboSpiceDatabaseHelper databaseHelper;
     String url;
-    String category;
+    String categoryOrTagUrl;
     int page;
 
     public RoboSpiceRequestCategoriesArtsFromBottomOffline(Context ctx, String category, int page)
@@ -33,7 +35,7 @@ public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceReques
         super(Articles.class);
 
         this.ctx = ctx;
-        this.category = category;
+        this.categoryOrTagUrl = category;
         this.page = page;
 
         this.url = Const.DOMAIN_MAIN + category + Const.SLASH + "page" + Const.SLASH + page + Const.SLASH;
@@ -50,64 +52,140 @@ public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceReques
 
         ArrayList<Article> list = new ArrayList<>();
 
-        int categoryId = Category.getCategoryIdByUrl(this.category, databaseHelper);
-
-        //try getting arts from DB
-        Dao<ArticleCategory, Integer> daoArtCat = databaseHelper.getDao(ArticleCategory.class);
-        Dao<Article, Integer> daoArt = databaseHelper.getDao(Article.class);
-
-        //0.
-        ArticleCategory topArtCat = daoArtCat.queryBuilder().
-                where().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).
-                and().eq(ArticleCategory.FIELD_IS_TOP_IN_CATEGORY, true).queryForFirst();
-
-//        Log.i(LOG, "page: " + page);
-//        Log.i(LOG, "get arts for 1 page");
-        ArrayList<ArticleCategory> artCatListFromDBFromGivenPage = ArticleCategory.getArtCatListFromGivenArticleId(topArtCat.getArticleId(), categoryId, databaseHelper, true);
-
-        ArticleCategory lastArtCatByPage = artCatListFromDBFromGivenPage.get(artCatListFromDBFromGivenPage.size() - 1);
-        int lastArticleIdInPreviousIteration = lastArtCatByPage.getArticleId();
-        for (int i = 1; i < page; i++)
+//        int categoryId = Category.getCategoryIdByUrl(this.category, databaseHelper);
+        int categoryId;
+        int tagId;
+        Boolean isCategoryOrTagOrDoNotExists = MyRoboSpiceDatabaseHelper.isCategoryOrTagOrDoNotExists(databaseHelper, this.categoryOrTagUrl);
+        if (isCategoryOrTagOrDoNotExists == null)
         {
-//            Log.i(LOG, "get arts for " + String.valueOf(i + 1) + " page");
-            artCatListFromDBFromGivenPage = ArticleCategory.getArtCatListFromGivenArticleId(lastArticleIdInPreviousIteration, categoryId, databaseHelper, false);
-            if (artCatListFromDBFromGivenPage.size() == 0)
-            {
-                break;
-            }
-            lastArtCatByPage = artCatListFromDBFromGivenPage.get(artCatListFromDBFromGivenPage.size() - 1);
-            lastArticleIdInPreviousIteration = lastArtCatByPage.getArticleId();
+            throw new IllegalStateException("I cant imaging how it can be...");
         }
 
-        boolean isLastArtCatByPageIsBottom = lastArtCatByPage.isInitialInCategory();
+
+        boolean isCategory = isCategoryOrTagOrDoNotExists;
+        if (isCategory)
+        {
+            Category category = Category.getCategoryByUrl(categoryOrTagUrl, databaseHelper);
+            categoryId = category.getId();
+
+            //try getting arts from DB
+            Dao<ArticleCategory, Integer> daoArtCat = databaseHelper.getDao(ArticleCategory.class);
+            Dao<Article, Integer> daoArt = databaseHelper.getDao(Article.class);
+
+            //0.
+            ArticleCategory topArtCat = daoArtCat.queryBuilder().
+                    where().eq(ArticleCategory.FIELD_CATEGORY_ID, categoryId).
+                    and().eq(ArticleCategory.FIELD_IS_TOP_IN_CATEGORY, true).queryForFirst();
+
+//        Log.i(LOG, "page: " + page);
+            ArrayList<ArticleCategory> artCatListFromDBFromGivenPage = ArticleCategory.getArtCatListFromGivenArticleId(topArtCat.getArticleId(), categoryId, databaseHelper, true);
+
+            ArticleCategory lastArtCatByPage = artCatListFromDBFromGivenPage.get(artCatListFromDBFromGivenPage.size() - 1);
+            int lastArticleIdInPreviousIteration = lastArtCatByPage.getArticleId();
+            for (int i = 1; i < page; i++)
+            {
+//            Log.i(LOG, "get arts for " + String.valueOf(i + 1) + " page");
+                artCatListFromDBFromGivenPage = ArticleCategory.getArtCatListFromGivenArticleId(lastArticleIdInPreviousIteration, categoryId, databaseHelper, false);
+                if (artCatListFromDBFromGivenPage.size() == 0)
+                {
+                    break;
+                }
+                lastArtCatByPage = artCatListFromDBFromGivenPage.get(artCatListFromDBFromGivenPage.size() - 1);
+                lastArticleIdInPreviousIteration = lastArtCatByPage.getArticleId();
+            }
+
+            boolean isLastArtCatByPageIsBottom = lastArtCatByPage.isInitialInCategory();
 //        Log.i(LOG, "isLastArtCatByPageIsBottom: "+String.valueOf(isLastArtCatByPageIsBottom));
 //        Log.i(LOG, "artCatListFromDBFromGivenPage.size(): "+artCatListFromDBFromGivenPage.size());
 
-        if ((artCatListFromDBFromGivenPage.size() == Const.NUM_OF_ARTS_ON_PAGE) || isLastArtCatByPageIsBottom)
-        {
-//            Log.i(LOG, "(artCatListFromDBFromGivenPage.size() == Const.NUM_OF_ARTS_ON_PAGE) || isLastArtCatByPageIsBottom");
-            for (ArticleCategory artCat : artCatListFromDBFromGivenPage)
+            if ((artCatListFromDBFromGivenPage.size() == Const.NUM_OF_ARTS_ON_PAGE) || isLastArtCatByPageIsBottom)
             {
-                Article a = daoArt.queryBuilder().where().eq(Article.FIELD_ID, artCat.getArticleId()).queryForFirst();
-                list.add(a);
-            }
+//            Log.i(LOG, "(artCatListFromDBFromGivenPage.size() == Const.NUM_OF_ARTS_ON_PAGE) || isLastArtCatByPageIsBottom");
+                for (ArticleCategory artCat : artCatListFromDBFromGivenPage)
+                {
+                    Article a = daoArt.queryBuilder().where().eq(Article.FIELD_ID, artCat.getArticleId()).queryForFirst();
+                    list.add(a);
+                }
 //            Article.printListInLog(list);
 
-            Articles articles = new Articles();
-            articles.setResult(list);
+                Articles articles = new Articles();
+                articles.setResult(list);
 
-            if(isLastArtCatByPageIsBottom)
-            {
-                articles.setContainsBottomArt(true);
+                if (isLastArtCatByPageIsBottom)
+                {
+                    articles.setContainsBottomArt(true);
+                }
+
+                return articles;
             }
-
-            return articles;
+            else
+            {
+//            Log.i(LOG, "else");
+                //so less than default num of art by page in DB, so start loading from network;
+                return null;
+            }
         }
         else
         {
+            Tag tag = Tag.getTagByUrl(categoryOrTagUrl, databaseHelper);
+            tagId = tag.getId();
+
+            //try getting arts from DB
+
+            //0.
+            ArticleTag topArtCat = databaseHelper.getDaoArtTag().queryBuilder().
+                    where().eq(ArticleTag.FIELD_TAG_ID, tagId).
+                    and().eq(ArticleTag.FIELD_IS_TOP_IN_TAG, true).queryForFirst();
+
+//        Log.i(LOG, "page: " + page);
+            ArrayList<ArticleTag> artCatListFromDBFromGivenPage = ArticleTag.getArtCatListFromGivenArticleId(topArtCat.getArticleId(), tagId, databaseHelper, true);
+
+            ArticleTag lastArtCatByPage = artCatListFromDBFromGivenPage.get(artCatListFromDBFromGivenPage.size() - 1);
+            int lastArticleIdInPreviousIteration = lastArtCatByPage.getArticleId();
+            for (int i = 1; i < page; i++)
+            {
+//            Log.i(LOG, "get arts for " + String.valueOf(i + 1) + " page");
+                artCatListFromDBFromGivenPage = ArticleTag.getArtCatListFromGivenArticleId(lastArticleIdInPreviousIteration, tagId, databaseHelper, false);
+                if (artCatListFromDBFromGivenPage.size() == 0)
+                {
+                    break;
+                }
+                lastArtCatByPage = artCatListFromDBFromGivenPage.get(artCatListFromDBFromGivenPage.size() - 1);
+                lastArticleIdInPreviousIteration = lastArtCatByPage.getArticleId();
+            }
+
+            boolean isLastArtCatByPageIsBottom = lastArtCatByPage.isInitialInTag();
+//        Log.i(LOG, "isLastArtCatByPageIsBottom: "+String.valueOf(isLastArtCatByPageIsBottom));
+//        Log.i(LOG, "artCatListFromDBFromGivenPage.size(): "+artCatListFromDBFromGivenPage.size());
+
+            if ((artCatListFromDBFromGivenPage.size() == Const.NUM_OF_ARTS_ON_PAGE) || isLastArtCatByPageIsBottom)
+            {
+//            Log.i(LOG, "(artCatListFromDBFromGivenPage.size() == Const.NUM_OF_ARTS_ON_PAGE) || isLastArtCatByPageIsBottom");
+                for (ArticleTag artCat : artCatListFromDBFromGivenPage)
+                {
+                    Article a = databaseHelper.getDaoArticle().queryBuilder().where().eq(Article.FIELD_ID, artCat.getArticleId()).queryForFirst();
+                    list.add(a);
+                }
+//            Article.printListInLog(list);
+
+                Articles articles = new Articles();
+                articles.setResult(list);
+
+                if (isLastArtCatByPageIsBottom)
+                {
+                    articles.setContainsBottomArt(true);
+                }
+
+                return articles;
+            }
+            else
+            {
 //            Log.i(LOG, "else");
-            //so less than default num of art by page in DB, so start loading from network;
-            return null;
+                //so less than default num of art by page in DB, so start loading from network;
+                return null;
+            }
         }
+
+
     }
 }

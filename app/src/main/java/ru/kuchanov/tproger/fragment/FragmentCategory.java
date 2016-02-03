@@ -530,7 +530,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             if (list.size() != Const.NUM_OF_ARTS_ON_PAGE && !articles.isContainsBottomArt())
             {
                 //error in DB - need to reset category;
-                Log.i(LOG, "error in DB - need to reset category;");
+                Log.e(LOG, "error in DB - need to reset category;");
+                Log.d(LOG, "list.size(): " + list.size() + " AND articles.isContainsBottomArt(): " + articles.isContainsBottomArt());
                 int prevSize = artsList.size();
 
                 if (recyclerView.getAdapter() != null)
@@ -549,10 +550,10 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 Log.i(LOG, "end of cats arts list reached");
                 Toast.makeText(ctx, "Все статьи раздела загружены!", Toast.LENGTH_SHORT).show();
                 //here we must reduce pageNumber if it was more than 1
-                if (currentPageToLoad != 1)
-                {
-                    currentPageToLoad--;
-                }
+//                if (currentPageToLoad != 1)
+//                {
+//                    currentPageToLoad--;
+//                }
                 recyclerView.clearOnScrollListeners();
             }
 

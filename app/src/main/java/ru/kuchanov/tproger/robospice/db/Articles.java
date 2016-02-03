@@ -11,8 +11,8 @@ import java.util.Collection;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 
 /**
- * Created by Юрий on 16.10.2015 18:45.
- * For ExpListTest.
+ * Created by Юрий on 16.10.2015 18:45 19:45.
+ * For TProger.
  */
 @DatabaseTable(tableName = "articles")
 public class Articles
