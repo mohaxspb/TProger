@@ -59,8 +59,9 @@ import ru.kuchanov.tproger.utils.anim.ChangeImageWithAlpha;
 public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdateSelected,*/ ImageChanger, SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String KEY_CURRENT_ARTICLE_POSITION_IN_LIST = "KEY_CURRENT_ARTICLE_POSITION_IN_LIST";
-    protected static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
-    protected static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
+    public static final String KEY_CURRENT_CATEGORY_OR_TAG_URL = "KEY_CURRENT_CATEGORY_OR_TAG_URL";
+    private static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
+    private static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
     private final static String LOG = ActivityArticle.class.getSimpleName();
 
     protected final int[] coverImgsIds = {R.drawable.tproger_small, R.drawable.cremlin, R.drawable.petergof};
@@ -92,16 +93,15 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     protected AppBarLayout appBar;
     protected boolean fullyExpanded = true;
     ///////////
-
+    /////////////
+//    ChangeImageWithAlpha changeImageWithAlpha;
+    ChangeImageWithAlpha changeImageWithAlphaLeft;
+    ImageLoader imageLoader;
     ///////////
 //    protected MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
 //    protected MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
     private MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
     private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
-    /////////////
-//    ChangeImageWithAlpha changeImageWithAlpha;
-    ChangeImageWithAlpha changeImageWithAlphaLeft;
-    ImageLoader imageLoader;
     /**
      * list of articles to show in pager and recyclerView
      */
@@ -116,6 +116,8 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     private Timer timer;
     private TimerTask timerTask;
     private boolean isTabletMode;
+
+    private String categoryOrTagUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -168,7 +170,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
             fragmentCategory = (FragmentCategory) getSupportFragmentManager().findFragmentById(R.id.container_left);
             if (fragmentCategory == null)
             {
-                fragmentCategory = FragmentCategory.newInstance("");
+                fragmentCategory = FragmentCategory.newInstance(categoryOrTagUrl);
 
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.add(R.id.container_left, fragmentCategory);
@@ -235,8 +237,9 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
 
     private void setUpPager()
     {
-        //TODO make adapter for articles;
+        //make adapter for articles;
         pager.setAdapter(new PagerAdapterArticle(this.getSupportFragmentManager(), this.artsList));
+        //TODO
 //        pager.addOnPageChangeListener(new OnPageChangeListenerMain(this, this));
     }
 
@@ -391,6 +394,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
 
         outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
         outState.putInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, currentPositionOfArticleInList);
+        outState.putString(KEY_CURRENT_CATEGORY_OR_TAG_URL, categoryOrTagUrl);
     }
 
     @Override
@@ -409,19 +413,13 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
 
     private void restoreState(Bundle state)
     {
-//        if (state != null)
-//        {
         isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
         prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
         artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE);
 
         artsList = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
         currentPositionOfArticleInList = state.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
-//        }
-//        else
-//        {
-//            Log.e(LOG, "state is null while restoring it from bundle");
-//        }
+        this.categoryOrTagUrl = state.getString(KEY_CURRENT_CATEGORY_OR_TAG_URL);
     }
 
     private void restoreStateFromIntent(Bundle stateFromIntent)
@@ -430,6 +428,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         {
             artsList = stateFromIntent.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
             currentPositionOfArticleInList = stateFromIntent.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
+            this.categoryOrTagUrl = stateFromIntent.getString(KEY_CURRENT_CATEGORY_OR_TAG_URL);
         }
     }
 

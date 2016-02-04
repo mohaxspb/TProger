@@ -188,7 +188,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         //fill recycler with data of make request for it
         if (artsList.size() != 0)
         {
-            recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
+            recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList, categoryOrTagUrl));
 
             recyclerView.clearOnScrollListeners();
             recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
@@ -554,6 +554,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //                {
 //                    currentPageToLoad--;
 //                }
+                //actually we must NOT do it as if we load second page this
+                //will change page to 1 and we'll so reset adapter;
                 recyclerView.clearOnScrollListeners();
             }
 
@@ -577,7 +579,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 artsList.addAll(list);
                 if (recyclerView.getAdapter() == null)
                 {
-                    recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList));
+                    recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList, categoryOrTagUrl));
                     recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
                 }
                 else
@@ -607,7 +609,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                         }
                         else
                         {
-                            //TODO think about it
                             if (isCategoryOrTag)
                             {
                                 if (Category.refreshDateExpired(category, ctx))

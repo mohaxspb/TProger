@@ -1,8 +1,8 @@
 package ru.kuchanov.tproger;
 
 /**
- * Created by Юрий on 18.10.2015 17:43.
- * For ExpListTest.
+ * Created by Юрий on 18.10.2015 17:43 13:34.
+ * For TProger.
  */
 public class Const
 {
@@ -18,5 +18,6 @@ public class Const
         public final static String GALLERY = "http://tproger.ru/articles/particle-acceleration-on-gpu/";
         public final static String POLL = "http://tproger.ru/news/windows-10-over-200-million-devices/";
         public final static String WELL = "http://tproger.ru/translations/how-to-start-android/";
+        public final static String GIF_WITHOUT_SPOILER = "http://tproger.ru/articles/google-chrome-49-beta/";
     }
 }

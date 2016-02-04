@@ -27,7 +27,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import ru.kuchanov.tproger.activity.ActivityArticle;
-import ru.kuchanov.tproger.activity.ActivityMain;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DipToPx;
@@ -49,7 +48,9 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     private boolean isTabletMode;
     private boolean isOnArticleActivity;
 
-    public RecyclerAdapterArtsList(Context ctx, ArrayList<Article> dataset)
+    private String categoryOrTagUrl;
+
+    public RecyclerAdapterArtsList(Context ctx, ArrayList<Article> dataset, String categoryOrTagUrl)
     {
         this.ctx = ctx;
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -59,6 +60,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         imageLoader = MyUIL.get(ctx);
 
         artsList = dataset;
+        this.categoryOrTagUrl = categoryOrTagUrl;
 
         textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
         textSizeSecondary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_secondary);
@@ -124,7 +126,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                 }
                 else if (isTabletMode)
                 {
-                    //TODO here we mast change width as there will be a drawer in left part of screen
+                    //here we mast change width as there will be a drawer in left part of screen
                     width = width / 3 * 2;
                 }
 
@@ -325,23 +327,25 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         @Override
         public void onClick(View v)
         {
-            //TODO need to switch by host activity and start Article activity or select art in ViewPager
+            //need to switch by host activity and start Article activity or select art in ViewPager if we are on Article activity;
             Log.i(LOG, "title clicked: " + a.getUrl());
-            if (ctx instanceof ActivityMain)
+            if (!(ctx instanceof ActivityArticle))
             {
-                Log.i(LOG, "clicked from Main activity");
+                Log.i(LOG, "clicked from activity: " + ctx.getClass().getSimpleName());
                 Intent intent = new Intent(ctx, ActivityArticle.class);
                 //paste arts and currently selected to intents extras
                 Bundle b = new Bundle();
                 b.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
                 b.putInt(ActivityArticle.KEY_CURRENT_ARTICLE_POSITION_IN_LIST, position);
+                b.putString(ActivityArticle.KEY_CURRENT_CATEGORY_OR_TAG_URL, categoryOrTagUrl);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 intent.putExtras(b);
                 ctx.startActivity(intent);
             }
             else
             {
-                Log.i(LOG, "clicked from activity: " + ctx.getClass().getSimpleName());
+                Log.i(LOG, "clicked from Article activity");
+                //TODO
             }
         }
     }
