@@ -239,8 +239,27 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     {
         //make adapter for articles;
         pager.setAdapter(new PagerAdapterArticle(this.getSupportFragmentManager(), this.artsList));
-        //TODO
-//        pager.addOnPageChangeListener(new OnPageChangeListenerMain(this, this));
+        ViewPager.SimpleOnPageChangeListener onPageChangeListener = new ViewPager.SimpleOnPageChangeListener()
+        {
+            @Override
+            public void onPageSelected(int position)
+            {
+                super.onPageSelected(position);
+                currentPositionOfArticleInList = position;
+
+                collapsingToolbarLayout.setTitle(artsList.get(currentPositionOfArticleInList).getTitle());
+            }
+        };
+        pager.addOnPageChangeListener(onPageChangeListener);
+        //fix not calling to onPageSelected if need to select first page
+        if (currentPositionOfArticleInList == 0)
+        {
+            onPageChangeListener.onPageSelected(currentPositionOfArticleInList);
+        }
+        else
+        {
+            this.pager.setCurrentItem(currentPositionOfArticleInList, true);
+        }
     }
 
     protected void setUpNavigationDrawer()

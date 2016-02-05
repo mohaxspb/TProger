@@ -1,8 +1,10 @@
 package ru.kuchanov.tproger.utils.html;
 
+import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ClickableSpan;
+import android.text.style.QuoteSpan;
 import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +12,62 @@ import android.view.View;
 public class MakeLinksClicable
 {
     private final static String LOG = MakeLinksClicable.class.getSimpleName();
+
+    public static SpannableStringBuilder reformatText(CharSequence text)
+    {
+        int end = text.length();
+        Spannable sp = (Spannable) text;
+
+        //TODO test restyling quotes
+        replaceQuoteSpans(sp);
+
+        URLSpan[] urls = sp.getSpans(0, end, URLSpan.class);
+        SpannableStringBuilder style = new SpannableStringBuilder(text);
+        //					style.clearSpans();//should clear old spans
+        for (URLSpan url : urls)
+        {
+            style.removeSpan(url);
+            MakeLinksClicable.CustomerTextClick click = new MakeLinksClicable.CustomerTextClick(url.getURL());
+            style.setSpan(click, sp.getSpanStart(url), sp.getSpanEnd(url),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+
+//        QuoteSpan[] quots = sp.getSpans(0, end, QuoteSpan.class);
+//        for (QuoteSpan quoteSpan : quots)
+//        {
+//            style.removeSpan(quoteSpan);
+////            MakeLinksClicable.CustomerTextClick click = new MakeLinksClicable.CustomerTextClick(quoteSpan.getURL());
+//            BackgroundColorSpan span = new BackgroundColorSpan(Color.BLUE);
+//            span
+//            style.setSpan(click, sp.getSpanStart(quoteSpan), sp.getSpanEnd(quoteSpan),
+//                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//        }
+
+        return style;
+    }
+
+    //TODO test quotes
+    private static void replaceQuoteSpans(Spannable spannable)
+    {
+        QuoteSpan[] quoteSpans = spannable.getSpans(0, spannable.length(), QuoteSpan.class);
+
+        for (QuoteSpan quoteSpan : quoteSpans)
+        {
+            int start = spannable.getSpanStart(quoteSpan);
+            int end = spannable.getSpanEnd(quoteSpan);
+            int flags = spannable.getSpanFlags(quoteSpan);
+            spannable.removeSpan(quoteSpan);
+            spannable.setSpan(new CustomQuoteSpan(
+                            Color.CYAN,
+                            Color.GREEN,
+                            20,
+                            40),
+                    start,
+                    end,
+                    flags);
+        }
+    }
 
     public static class CustomerTextClick extends ClickableSpan
     {
@@ -25,7 +83,7 @@ public class MakeLinksClicable
         {
             Log.i(LOG, "url clicked: " + this.mUrl);
 //        }
-        //TODO add check by url
+            //TODO add check by url
 //            if (this.mUrl.contains("odnako.org/blogs/"))
 //            {
 //                final AppCompatActivity act = (AppCompatActivity) widget.getContext();
@@ -76,25 +134,7 @@ public class MakeLinksClicable
 //                Intent i = new Intent(Intent.ACTION_VIEW);
 //                i.setData(Uri.parse(mUrl));
 //                widget.getContext().startActivity(i);
-            }
-//            			Toast.makeText(widget.getContext(), mUrl, Toast.LENGTH_LONG).show();
-    }
-
-    public static SpannableStringBuilder reformatText(CharSequence text)
-    {
-        int end = text.length();
-        Spannable sp = (Spannable) text;
-        URLSpan[] urls = sp.getSpans(0, end, URLSpan.class);
-        SpannableStringBuilder style = new SpannableStringBuilder(text);
-        //					style.clearSpans();//should clear old spans
-        for (URLSpan url : urls)
-        {
-            style.removeSpan(url);
-            MakeLinksClicable.CustomerTextClick click = new MakeLinksClicable.CustomerTextClick(url.getURL());
-            style.setSpan(click, sp.getSpanStart(url), sp.getSpanEnd(url),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-
-        return style;
+//            			Toast.makeText(widget.getContext(), mUrl, Toast.LENGTH_LONG).show();
     }
 }

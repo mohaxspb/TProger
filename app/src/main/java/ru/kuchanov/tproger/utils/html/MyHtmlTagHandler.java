@@ -1,6 +1,7 @@
 package ru.kuchanov.tproger.utils.html;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.Html.TagHandler;
@@ -115,6 +116,9 @@ public class MyHtmlTagHandler implements TagHandler
             case "img":
                 //this must be handled by imageGetter;
                 break;
+//            case "upgradedquote":
+//                processUpgradedQuote(opening, output);
+//                break;
 //            case "hr":
 //                Log.e(LOG, "hr tag!!!!");
 ////                if (!opening)
@@ -274,6 +278,39 @@ public class MyHtmlTagHandler implements TagHandler
             if (where != len)
             {
                 output.setSpan(new ForegroundColorSpan(colorRed), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                output.setSpan(new BackgroundColorSpan(windowBackgroundDark), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+        }
+    }
+
+    private void processUpgradedQuote(boolean opening, Editable output)
+    {
+//        if (!opening)
+//        {
+//            output.append(" ");
+//        }
+
+        int len = output.length();
+
+        int windowBackgroundDark = Color.GREEN;//AttributeGetter.getColor(ctx, R.attr.windowBackgroundDark);
+//        int colorRed = ContextCompat.getColor(ctx, R.color.material_red_500);
+
+        if (opening)
+        {
+//            output.setSpan(new ForegroundColorSpan(colorRed), len, len, Spanned.SPAN_MARK_MARK);
+            output.setSpan(new BackgroundColorSpan(windowBackgroundDark), len, len, Spanned.SPAN_MARK_MARK);
+//            output.append(" ", 0, 1);
+        }
+        else
+        {
+            Object obj = getLast(output, BackgroundColorSpan.class);
+            int where = output.getSpanStart(obj);
+
+            output.removeSpan(obj);
+
+            if (where != len)
+            {
+//                output.setSpan(new ForegroundColorSpan(colorRed), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 output.setSpan(new BackgroundColorSpan(windowBackgroundDark), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }

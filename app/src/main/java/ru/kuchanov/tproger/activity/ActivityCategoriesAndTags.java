@@ -168,7 +168,7 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
 
         //setup pager
         this.pager.setAdapter(new PagerAdapterCatsAndTags(manager, ctx, categories, tags, curDataType));
-        this.pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener()
+        ViewPager.SimpleOnPageChangeListener onPageChangeListener = new ViewPager.SimpleOnPageChangeListener()
         {
             @Override
             public void onPageSelected(int position)
@@ -188,8 +188,18 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
                 }
                 collapsingToolbarLayout.setTitle(title);
             }
-        });
-        this.pager.setCurrentItem(positionInList, true);
+        };
+        this.pager.addOnPageChangeListener(onPageChangeListener);
+        //fix not calling to onPageSelected if need to select first page
+        if (positionInList == 0)
+        {
+            onPageChangeListener.onPageSelected(positionInList);
+        }
+        else
+        {
+            this.pager.setCurrentItem(positionInList, true);
+        }
+
     }
 
     private void initializeViews()

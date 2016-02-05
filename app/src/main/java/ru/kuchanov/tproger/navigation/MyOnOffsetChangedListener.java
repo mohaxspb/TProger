@@ -79,6 +79,10 @@ public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedLi
             int rightPadding = (screenWidth - lastTabWidth) / 2;
 
             viewInTabsScrollView.setPadding(leftPadding, 0, rightPadding, 0);
+//            TabLayout.LayoutParams params = (TabLayout.LayoutParams) viewInTabsScrollView.getLayoutParams();
+//            params.leftMargin = 300;
+//            params.rightMargin = 300;
+//            viewInTabsScrollView.setLayoutParams(params);
 
             //TEST!!!!!!!!!!!
 //            scroll tabs to center selected
