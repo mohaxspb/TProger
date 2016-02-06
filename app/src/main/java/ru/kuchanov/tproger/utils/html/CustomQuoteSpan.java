@@ -8,6 +8,7 @@ import android.text.style.LineBackgroundSpan;
 
 /**
  * android.text.style.QuoteSpan hard-codes the strip color and gap. :(
+ * @see  <a href="http://stackoverflow.com/a/29114976/3212712">en-SO</a>
  */
 public class CustomQuoteSpan implements LeadingMarginSpan, LineBackgroundSpan
 {

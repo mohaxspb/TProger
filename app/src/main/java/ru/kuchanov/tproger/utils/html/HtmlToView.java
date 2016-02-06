@@ -9,7 +9,6 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.Spannable;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -74,13 +73,6 @@ public class HtmlToView
             View itemLayoutView;
 
             String curHtml = textParts.get(i);
-            //TODO test
-//            curHtml = "<upgradedquote><blockquote>upgradedquoteupgradedquoteupgradedquoteupgradedquoteupgradedquoteupgradedquote\n" +
-//                    "upgradedquoteupgradedquoteupgradedquoteupgradedquoteupgradedquoteupgradedquote</blockquote></upgradedquote>";
-            curHtml = "<blockquote>upgradedquoteupgradedquoteupgradedq\n" +
-                    "uoteupgradedquoteupgradedquoteupgradedquote\n" +
-                    "upgradedquoteupgradedquoteupgradedquoteupgradedq\n" +
-                    "uoteupgradedquoteupgradedquote</blockquote>";
             TextType curType = textTypes.get(i);
 
             switch (curType)
@@ -233,11 +225,8 @@ public class HtmlToView
                     textView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
                     itemLayoutView = textView;
                     ViewHolderText holderText = new ViewHolderText(itemLayoutView);
-                    //TODO test quotes
-                    Spanned spanned = Html.fromHtml(curHtml, new UILImageGetter(holderText.text, ctx), new MyHtmlTagHandler(ctx));
-                    MakeLinksClicable.reformatText(spanned);
-                    holderText.text.setText(spanned);
-//                    holderText.text.setText(Html.fromHtml(curHtml, new UILImageGetter(holderText.text, ctx), new MyHtmlTagHandler(ctx)));
+                    Spanned spanned = Html.fromHtml(curHtml, new UILImageGetter(holderText.text, ctx), new MyHtmlTagHandler(ctx));                    ;
+                    holderText.text.setText(MakeLinksClicable.reformatText(holderText.text.getContext(), spanned));
                     break;
             }
             parent.addView(itemLayoutView);
@@ -257,7 +246,7 @@ public class HtmlToView
         textView.setMovementMethod(LinkMovementMethod.getInstance());
         //TODO test qoute
         Spanned spannable = Html.fromHtml(textToSet, new UILImageGetter(textView, ctx), new MyHtmlTagHandler(ctx));
-        MakeLinksClicable.reformatText(spannable);
+        MakeLinksClicable.reformatText(textView.getContext(), spannable);
 
         textView.setText(spannable);
 

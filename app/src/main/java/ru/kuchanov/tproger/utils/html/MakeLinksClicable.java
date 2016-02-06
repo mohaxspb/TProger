@@ -1,6 +1,6 @@
 package ru.kuchanov.tproger.utils.html;
 
-import android.graphics.Color;
+import android.content.Context;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ClickableSpan;
@@ -9,17 +9,20 @@ import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.View;
 
+import ru.kuchanov.tproger.R;
+import ru.kuchanov.tproger.utils.AttributeGetter;
+
 public class MakeLinksClicable
 {
     private final static String LOG = MakeLinksClicable.class.getSimpleName();
 
-    public static SpannableStringBuilder reformatText(CharSequence text)
+    public static SpannableStringBuilder reformatText(Context ctx, CharSequence text)
     {
         int end = text.length();
         Spannable sp = (Spannable) text;
 
-        //TODO test restyling quotes
-        replaceQuoteSpans(sp);
+        //restyling quotes
+        replaceQuoteSpans(ctx, sp);
 
         URLSpan[] urls = sp.getSpans(0, end, URLSpan.class);
         SpannableStringBuilder style = new SpannableStringBuilder(text);
@@ -32,24 +35,16 @@ public class MakeLinksClicable
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
-
-//        QuoteSpan[] quots = sp.getSpans(0, end, QuoteSpan.class);
-//        for (QuoteSpan quoteSpan : quots)
-//        {
-//            style.removeSpan(quoteSpan);
-////            MakeLinksClicable.CustomerTextClick click = new MakeLinksClicable.CustomerTextClick(quoteSpan.getURL());
-//            BackgroundColorSpan span = new BackgroundColorSpan(Color.BLUE);
-//            span
-//            style.setSpan(click, sp.getSpanStart(quoteSpan), sp.getSpanEnd(quoteSpan),
-//                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//        }
-
         return style;
     }
 
-    //TODO test quotes
-    private static void replaceQuoteSpans(Spannable spannable)
+    //quotes
+    //see http://stackoverflow.com/a/29114976/3212712
+    private static void replaceQuoteSpans(Context ctx, Spannable spannable)
     {
+        int colorBackground = AttributeGetter.getColor(ctx, R.attr.windowBackgroundDark);
+        int colorStripe = AttributeGetter.getColor(ctx, R.attr.colorAccent);
+
         QuoteSpan[] quoteSpans = spannable.getSpans(0, spannable.length(), QuoteSpan.class);
 
         for (QuoteSpan quoteSpan : quoteSpans)
@@ -59,10 +54,10 @@ public class MakeLinksClicable
             int flags = spannable.getSpanFlags(quoteSpan);
             spannable.removeSpan(quoteSpan);
             spannable.setSpan(new CustomQuoteSpan(
-                            Color.CYAN,
-                            Color.GREEN,
-                            20,
-                            40),
+                            colorBackground,
+                            colorStripe,
+                            5,
+                            10),
                     start,
                     end,
                     flags);

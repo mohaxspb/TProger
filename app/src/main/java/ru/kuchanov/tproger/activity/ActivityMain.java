@@ -30,6 +30,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.squareup.otto.Subscribe;
 
