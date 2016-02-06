@@ -6,6 +6,7 @@ import com.octo.android.robospice.request.SpiceRequest;
 
 import java.util.ArrayList;
 
+import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
@@ -22,9 +23,9 @@ public class RoboSpiceRequestCategoriesArtsOffline extends SpiceRequest<Articles
 {
     public static final String LOG = RoboSpiceRequestCategoriesArtsOffline.class.getSimpleName();
 
-//    private Context ctx;
+    //    private Context ctx;
     private MyRoboSpiceDatabaseHelper databaseHelper;
-//    private String url;
+    //    private String url;
     private String categoryOrTagUrl;
 
     public RoboSpiceRequestCategoriesArtsOffline(Context ctx, String categoryOrTagUrl)
@@ -70,6 +71,13 @@ public class RoboSpiceRequestCategoriesArtsOffline extends SpiceRequest<Articles
                     list = Article.getArticleListFromArtCatList(artCatList, databaseHelper);
                     Articles articles = new Articles();
                     articles.setResult(list);
+
+                    ArticleCategory lastArtCat = artCatList.get(artCatList.size() - 1);
+                    if (lastArtCat.isInitialInCategory())
+                    {
+                        articles.setContainsBottomArt(true);
+                    }
+
                     return articles;
                 }
                 else
@@ -91,6 +99,13 @@ public class RoboSpiceRequestCategoriesArtsOffline extends SpiceRequest<Articles
                     list = Article.getArticleListFromArtTagList(artCatList, databaseHelper);
                     Articles articles = new Articles();
                     articles.setResult(list);
+
+                    ArticleTag lastArtCat = artCatList.get(artCatList.size() - 1);
+                    if (lastArtCat.isInitialInTag())
+                    {
+                        articles.setContainsBottomArt(true);
+                    }
+
                     return articles;
                 }
                 else

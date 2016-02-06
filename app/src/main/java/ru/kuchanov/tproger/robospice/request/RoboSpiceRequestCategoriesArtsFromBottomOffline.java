@@ -1,6 +1,7 @@
 package ru.kuchanov.tproger.robospice.request;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.octo.android.robospice.request.SpiceRequest;
@@ -22,13 +23,13 @@ import ru.kuchanov.tproger.robospice.db.Tag;
  */
 public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceRequest<Articles>
 {
-    public static final String LOG = RoboSpiceRequestCategoriesArtsFromBottomOffline.class.getSimpleName();
+    private String LOG = RoboSpiceRequestCategoriesArtsFromBottomOffline.class.getSimpleName();
 
-    Context ctx;
-    MyRoboSpiceDatabaseHelper databaseHelper;
-    String url;
-    String categoryOrTagUrl;
-    int page;
+    private Context ctx;
+    private MyRoboSpiceDatabaseHelper databaseHelper;
+    private String url;
+    private String categoryOrTagUrl;
+    private int page;
 
     public RoboSpiceRequestCategoriesArtsFromBottomOffline(Context ctx, String category, int page)
     {
@@ -36,6 +37,7 @@ public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceReques
 
         this.ctx = ctx;
         this.categoryOrTagUrl = category;
+        this.LOG = categoryOrTagUrl + "#" + LOG;
         this.page = page;
 
         this.url = Const.DOMAIN_MAIN + category + Const.SLASH + "page" + Const.SLASH + page + Const.SLASH;
@@ -44,11 +46,10 @@ public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceReques
 
     }
 
-    //TODO update as now we have ArtTag table!!!
     @Override
     public Articles loadDataFromNetwork() throws Exception
     {
-//        Log.i(LOG, "loadDataFromNetwork() called");
+        Log.d(LOG, "loadDataFromNetwork() called");
 
         ArrayList<Article> list = new ArrayList<>();
 
@@ -60,7 +61,6 @@ public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceReques
         {
             throw new IllegalStateException("I cant imaging how it can be...");
         }
-
 
         boolean isCategory = isCategoryOrTagOrDoNotExists;
         if (isCategory)
@@ -131,7 +131,6 @@ public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceReques
             tagId = tag.getId();
 
             //try getting arts from DB
-
             //0.
             ArticleTag topArtCat = databaseHelper.getDaoArtTag().queryBuilder().
                     where().eq(ArticleTag.FIELD_TAG_ID, tagId).
@@ -140,8 +139,12 @@ public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceReques
 //        Log.i(LOG, "page: " + page);
             ArrayList<ArticleTag> artCatListFromDBFromGivenPage = ArticleTag.getArtCatListFromGivenArticleId(topArtCat.getArticleId(), tagId, databaseHelper, true);
 
-            ArticleTag lastArtCatByPage = artCatListFromDBFromGivenPage.get(artCatListFromDBFromGivenPage.size() - 1);
-            int lastArticleIdInPreviousIteration = lastArtCatByPage.getArticleId();
+            ArticleTag lastArtTagByPage = artCatListFromDBFromGivenPage.get(artCatListFromDBFromGivenPage.size() - 1);
+            //TODO test
+            Article initialArt = Article.getArticleById(databaseHelper, lastArtTagByPage.getArticleId());
+            Log.d(LOG, initialArt.getTitle());
+
+            int lastArticleIdInPreviousIteration = lastArtTagByPage.getArticleId();
             for (int i = 1; i < page; i++)
             {
 //            Log.i(LOG, "get arts for " + String.valueOf(i + 1) + " page");
@@ -150,11 +153,11 @@ public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceReques
                 {
                     break;
                 }
-                lastArtCatByPage = artCatListFromDBFromGivenPage.get(artCatListFromDBFromGivenPage.size() - 1);
-                lastArticleIdInPreviousIteration = lastArtCatByPage.getArticleId();
+                lastArtTagByPage = artCatListFromDBFromGivenPage.get(artCatListFromDBFromGivenPage.size() - 1);
+                lastArticleIdInPreviousIteration = lastArtTagByPage.getArticleId();
             }
 
-            boolean isLastArtCatByPageIsBottom = lastArtCatByPage.isInitialInTag();
+            boolean isLastArtCatByPageIsBottom = lastArtTagByPage.isInitialInTag();
 //        Log.i(LOG, "isLastArtCatByPageIsBottom: "+String.valueOf(isLastArtCatByPageIsBottom));
 //        Log.i(LOG, "artCatListFromDBFromGivenPage.size(): "+artCatListFromDBFromGivenPage.size());
 
@@ -185,7 +188,5 @@ public class RoboSpiceRequestCategoriesArtsFromBottomOffline extends SpiceReques
                 return null;
             }
         }
-
-
     }
 }

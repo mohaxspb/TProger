@@ -52,10 +52,10 @@ public class ArticleTag
     private int previousArticleId = -1;
 
     @DatabaseField(dataType = DataType.BOOLEAN, columnName = FIELD_IS_INITIAL_IN_TAG)
-    private boolean isInitialInTag;
+    private boolean isInitialInTag = false;
 
     @DatabaseField(dataType = DataType.BOOLEAN, columnName = FIELD_IS_TOP_IN_TAG)
-    private boolean isTopInTag;
+    private boolean isTopInTag = false;
 
     public static void writeArtsListToArtCatFromBottom(ArrayList<Article> arts, int categoryId, int page, MyRoboSpiceDatabaseHelper h)
     {
