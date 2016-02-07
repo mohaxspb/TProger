@@ -13,8 +13,8 @@ import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
 
 /**
- * Created by Юрий on 16.10.2015 16:43.
- * For ExpListTest.
+ * Created by Юрий on 16.10.2015 16:43 20:51.
+ * For TProger.
  */
 public class RoboSpiceRequestArticle extends SpiceRequest<Article>
 {
@@ -39,12 +39,19 @@ public class RoboSpiceRequestArticle extends SpiceRequest<Article>
 
         String responseBody = makeRequest();
 
-        //TODO
         Article loadedArticle = HtmlParsing.parseArticle(responseBody, article.getUrl());
         //write to DB
-//        Article artWritenToDB = Article.writeArtsList(list, databaseHelper);
+        Article artinDB = Article.getArticleByUrl(databaseHelper, loadedArticle.getUrl());
+        if (artinDB != null)
+        {
+            boolean isRead = artinDB.isRead();
+            //TODO add tags comments and other info from article html
+            int id = artinDB.getId();
+            loadedArticle.setIsRead(isRead);
+            loadedArticle.setId(id);
+            databaseHelper.getDaoArticle().createOrUpdate(loadedArticle);
+        }
 
-        //TODO
         return loadedArticle;
     }
 

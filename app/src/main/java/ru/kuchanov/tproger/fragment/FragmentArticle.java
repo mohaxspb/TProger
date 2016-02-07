@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -28,19 +27,20 @@ import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestArticle;
+import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestArticleOffline;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.SpacesItemDecoration;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
 import ru.kuchanov.tproger.utils.html.HtmlToView;
 
 /**
- * Created by Юрий on 17.09.2015 17:20.
- * For ExpListTest.
+ * Created by Юрий on 17.09.2015 17:20 21:23.
+ * For TProger.
  */
 public class FragmentArticle extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String KEY_IS_LOADING = "isLoading";
-    public static final String KEY_ = "isLoading";
+    //    public static final String KEY_ = "isLoading";
     //    public static final String KEY_ARTICLE_URL = "KEY_ARTICLE_URL";
     public String LOG = FragmentArticle.class.getSimpleName();
     protected MySpiceManager spiceManager;
@@ -49,11 +49,8 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
     protected RecyclerView recyclerView;
 
     private Article article;
-    private AppCompatActivity act;
     private Context ctx;
     private boolean isLoading = false;
-
-    private SharedPreferences pref;
 
     public static FragmentArticle newInstance(Article article)
     {
@@ -81,11 +78,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 //        Log.i(LOG, "onCreate called");
         super.onCreate(savedInstanceState);
 
-
-//        MyRoboSpiceDatabaseHelper databaseHelper;
-//        databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
-//        this.category = Category.getCategoryByUrl(categoryUrl, databaseHelper);
-
         if (savedInstanceState != null)
         {
             this.isLoading = savedInstanceState.getBoolean(KEY_IS_LOADING);
@@ -102,11 +94,11 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 
         if (article != null)
         {
-            LOG = FragmentArticle.class.getSimpleName() + " - " + article.getUrl();
+            LOG = FragmentArticle.class.getSimpleName() + "#" + article.getUrl();
         }
 
-        this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
-        this.pref.registerOnSharedPreferenceChangeListener(this);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        pref.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -125,7 +117,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
             @Override
             public void onRefresh()
             {
-                performRequest();
+                performRequest(true);
             }
         });
 
@@ -141,8 +133,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         recyclerView.getItemAnimator().setMoveDuration(500);
         recyclerView.getItemAnimator().setChangeDuration(500);
 
-        //fill recycler with data of make request for it
-        //TODO
+        //fill recycler with data
         if (article.getText() != null)
         {
             recyclerView.setAdapter(new RecyclerAdapterArticle(ctx, article));
@@ -157,7 +148,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 //        Log.i(LOG, "onAttach called");
         super.onAttach(context);
         this.ctx = this.getActivity();
-        this.act = (AppCompatActivity) this.getActivity();
     }
 
 
@@ -200,7 +190,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         //TODO
         if (article.getText() == null)
         {
-            performRequest();
+            performRequest(false);
         }
     }
 
@@ -246,14 +236,22 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         });
     }
 
-    private void performRequest()
+    private void performRequest(boolean forceRefresh)
     {
         Log.i(LOG, "performRequest");
 
         this.setLoading(true);
 
-        RoboSpiceRequestArticle request = new RoboSpiceRequestArticle(ctx, article);
-        spiceManager.execute(request, LOG, DurationInMillis.ALWAYS_EXPIRED, new ArticleRequestListener());
+        if (forceRefresh)
+        {
+            RoboSpiceRequestArticle request = new RoboSpiceRequestArticle(ctx, article);
+            spiceManager.execute(request, LOG, DurationInMillis.ALWAYS_EXPIRED, new ArticleRequestListener());
+        }
+        else
+        {
+            RoboSpiceRequestArticleOffline requestArticleOffline = new RoboSpiceRequestArticleOffline(ctx, article);
+            spiceManagerOffline.execute(requestArticleOffline, LOG, DurationInMillis.ALWAYS_EXPIRED, new ArticleRequestListener());
+        }
     }
 
     //inner class of your spiced Activity
@@ -294,9 +292,16 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
             }
             setLoading(false);
 
+            if (loadedArticle == null)
+            {
+                //so, maybe, we have article but it has no text;
+                //so we must start lading from web;
+                performRequest(true);
+                return;
+            }
+
             article = loadedArticle;
 
-//            recyclerView.setAdapter(new RecyclerAdapterArticle(ctx, loadedArticle));
             //show animation on articles text updating
             int prevSize = HtmlToView.getTextPartsList(HtmlParsing.getElementListFromHtml(article.getText())).size();
             if (recyclerView.getAdapter() == null)
@@ -312,19 +317,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 //                //update cover
 //                BusProvider.getInstance().post(new EventArtsReceived(artsList));
 //            }
-
-            //////////////////////
-//            ArrayList<HtmlToView.TextType> types = HtmlToView.getTextPartSummary(HtmlParsing.getElementListFromHtml(article.getText()));
-//            ArrayList<String> listOfParts = HtmlToView.getTextPartsList(HtmlParsing.getElementListFromHtml(article.getText()));
-
-//            Log.i(LOG, "types size: " + types.size());
-//            Log.i(LOG, "listOfParts size: " + listOfParts.size());
-//            Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!");
-//            for (String s : listOfParts)
-//            {
-//                Log.i(LOG, s.substring(0));
-//            }
-//            Log.i(LOG, "!!!!!!!!!!!!!!!!!!!!!!!");
         }
 
         @Override
