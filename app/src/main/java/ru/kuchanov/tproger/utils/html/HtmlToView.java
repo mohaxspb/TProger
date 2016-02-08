@@ -166,7 +166,17 @@ public class HtmlToView
                         LinearLayout codeLineLayout = (LinearLayout) LayoutInflater.from(ctx).inflate(R.layout.recycler_item_code_representer_code_line, holderCode.content, false);
 
                         TextView lineNumber = (TextView) codeLineLayout.findViewById(R.id.line_number);
-                        String number = " " + countenr + " ";
+                        String lineNumberString = String.valueOf(countenr + 1);
+                        String additionalSpacesAfterLineNumber = "";
+                        String finalLineNumber = String.valueOf(codeRepresenter.getLines().size());
+                        for (int u = lineNumberString.length(); u < finalLineNumber.length(); u++)
+                        {
+                            if (additionalSpacesAfterLineNumber.length() < finalLineNumber.length())
+                            {
+                                additionalSpacesAfterLineNumber += "  ";
+                            }
+                        }
+                        String number = " " + lineNumberString + " " + additionalSpacesAfterLineNumber;
                         lineNumber.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledTextSizeSecondary);
                         lineNumber.setText(number);
 
@@ -225,7 +235,8 @@ public class HtmlToView
                     textView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
                     itemLayoutView = textView;
                     ViewHolderText holderText = new ViewHolderText(itemLayoutView);
-                    Spanned spanned = Html.fromHtml(curHtml, new UILImageGetter(holderText.text, ctx), new MyHtmlTagHandler(ctx));                    ;
+                    Spanned spanned = Html.fromHtml(curHtml, new UILImageGetter(holderText.text, ctx), new MyHtmlTagHandler(ctx));
+                    ;
                     holderText.text.setText(MakeLinksClicable.reformatText(holderText.text.getContext(), spanned));
                     break;
             }
@@ -249,7 +260,6 @@ public class HtmlToView
         MakeLinksClicable.reformatText(textView.getContext(), spannable);
 
         textView.setText(spannable);
-
 
 
 //        CharSequence text = textView.getText();

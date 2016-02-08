@@ -113,7 +113,17 @@ public class FragmentDialogCodeRepresenter extends DialogFragment
             LinearLayout codeLineLayout = (LinearLayout) LayoutInflater.from(ctx).inflate(R.layout.recycler_item_code_representer_code_line, content, false);
 
             TextView lineNumber = (TextView) codeLineLayout.findViewById(R.id.line_number);
-            String number = " " + i + " ";
+            String lineNumberString = String.valueOf(i + 1);
+            String additionalSpacesAfterLineNumber = "";
+            String finalLineNumber = String.valueOf(tableContent.getLines().size());
+            for (int u = lineNumberString.length(); u < finalLineNumber.length(); u++)
+            {
+                if (additionalSpacesAfterLineNumber.length() < finalLineNumber.length())
+                {
+                    additionalSpacesAfterLineNumber += "  ";
+                }
+            }
+            String number = " " + lineNumberString + " " + additionalSpacesAfterLineNumber;
             lineNumber.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledTextSizePrimary);
             lineNumber.setText(number);
 
