@@ -116,6 +116,11 @@ public class HtmlParsing
             String preview;
             Element previewDiv = article.getElementsByClass("entry-content").first();
             previewDiv.select("footer").remove();
+            //remove scripts
+            for (Element script : previewDiv.getElementsByTag("script"))
+            {
+                script.remove();
+            }
             preview = previewDiv.html();
 
             Article a = new Article();
@@ -207,6 +212,11 @@ public class HtmlParsing
         //article text
         String text;
         Element textDiv = doc.getElementsByClass("entry-content").first();
+        //remove scripts
+        for (Element script : textDiv.getElementsByTag("script"))
+        {
+            script.remove();
+        }
         textDiv.select("footer").remove();
         text = textDiv.html();
 
