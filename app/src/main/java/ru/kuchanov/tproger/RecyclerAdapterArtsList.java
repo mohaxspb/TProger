@@ -147,6 +147,8 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
 
                 maxHolder.img.setLayoutParams(paramsImg);
 
+                //fix runtime chnging images while scrolling
+                maxHolder.img.setImageDrawable(null);
                 imageLoader.displayImage(a.getImageUrl(), maxHolder.img);
             }
             else
@@ -338,7 +340,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                 b.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
                 b.putInt(ActivityArticle.KEY_CURRENT_ARTICLE_POSITION_IN_LIST, position);
                 b.putString(ActivityArticle.KEY_CURRENT_CATEGORY_OR_TAG_URL, categoryOrTagUrl);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 intent.putExtras(b);
                 ctx.startActivity(intent);
             }

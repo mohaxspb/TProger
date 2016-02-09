@@ -25,7 +25,7 @@ public class HtmlParsing
 {
 //    private static final String LOG = HtmlParsing.class.getSimpleName();
 
-    public static ArrayList<Article> parseForArticlesList(Document doc, MyRoboSpiceDatabaseHelper h) throws Exception
+    public static ArrayList<Article> parseForArticlesList(Document doc, MyRoboSpiceDatabaseHelper h/*, String html*/) throws Exception
     {
 //        Document doc = Jsoup.parse(html);
 
@@ -116,11 +116,13 @@ public class HtmlParsing
             String preview;
             Element previewDiv = article.getElementsByClass("entry-content").first();
             previewDiv.select("footer").remove();
+//            Log.d(LOG, previewDiv.html());
             //remove scripts
             for (Element script : previewDiv.getElementsByTag("script"))
             {
                 script.remove();
             }
+//            Log.d(LOG, previewDiv.html());
             preview = previewDiv.html();
 
             Article a = new Article();

@@ -30,7 +30,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.squareup.otto.Subscribe;
 
@@ -41,7 +40,7 @@ import java.util.TimerTask;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.SingltonRoboSpice;
-import ru.kuchanov.tproger.fragment.FragmentCategories;
+import ru.kuchanov.tproger.fragment.FragmentCategoriesAndTags;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
 import ru.kuchanov.tproger.navigation.FabUpdater;
@@ -794,8 +793,8 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
 
                         //change type in recyclers adapter
-                        int dataType = pref.getBoolean(key, true) ? FragmentCategories.TYPE_CATEGORY : FragmentCategories.TYPE_TAG;
-                        String newType = (dataType == FragmentCategories.TYPE_CATEGORY) ? "TYPE_CATEGORY" : "TYPE_TAG";
+                        int dataType = pref.getBoolean(key, true) ? FragmentCategoriesAndTags.TYPE_CATEGORY : FragmentCategoriesAndTags.TYPE_TAG;
+                        String newType = (dataType == FragmentCategoriesAndTags.TYPE_CATEGORY) ? "TYPE_CATEGORY" : "TYPE_TAG";
                         Log.d(LOG, "FAB clicked type: " + newType);
                         BusProvider.getInstance().post(new EventCatsTagsShow(dataType));
                     }

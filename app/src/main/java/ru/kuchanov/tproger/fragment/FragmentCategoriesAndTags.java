@@ -44,9 +44,9 @@ import ru.kuchanov.tproger.utils.AttributeGetter;
  * Created by Юрий on 17.09.2015 17:20 16:55.
  * For TProger.
  */
-public class FragmentCategories extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener
+public class FragmentCategoriesAndTags extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener
 {
-    public static final String LOG = FragmentCategories.class.getSimpleName();
+    public static final String LOG = FragmentCategoriesAndTags.class.getSimpleName();
 
     public static final int TYPE_CATEGORY = 0;
     public static final int TYPE_TAG = 1;
@@ -65,9 +65,9 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
     private SharedPreferences pref;
     private int numOfColsInGridLayoutManager = 2;
 
-    public static FragmentCategories newInstance(int categoryType)
+    public static FragmentCategoriesAndTags newInstance(int categoryType)
     {
-        FragmentCategories frag = new FragmentCategories();
+        FragmentCategoriesAndTags frag = new FragmentCategoriesAndTags();
         Bundle b = new Bundle();
         b.putInt(KEY_CATS_OR_TAGS_DATA_TYPE, categoryType);
         frag.setArguments(b);
@@ -75,9 +75,9 @@ public class FragmentCategories extends Fragment implements SharedPreferences.On
         return frag;
     }
 
-    public static FragmentCategories newInstance(int categoryType, ArrayList<Category> cats, ArrayList<Tag> tags)
+    public static FragmentCategoriesAndTags newInstance(int categoryType, ArrayList<Category> cats, ArrayList<Tag> tags)
     {
-        FragmentCategories frag = new FragmentCategories();
+        FragmentCategoriesAndTags frag = new FragmentCategoriesAndTags();
         Bundle b = new Bundle();
         b.putInt(KEY_CATS_OR_TAGS_DATA_TYPE, categoryType);
         b.putParcelableArrayList(Category.LOG, cats);

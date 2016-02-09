@@ -9,7 +9,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 
-import ru.kuchanov.tproger.fragment.FragmentCategories;
+import ru.kuchanov.tproger.fragment.FragmentCategoriesAndTags;
 import ru.kuchanov.tproger.fragment.FragmentCategory;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.db.Tag;
@@ -26,7 +26,7 @@ public class PagerAdapterCatsAndTags extends FragmentStatePagerAdapter
     private SharedPreferences pref;
     private ArrayList<Category> cats;
     private ArrayList<Tag> tags;
-    private int curType;// = FragmentCategories.TYPE_CATEGORY;
+    private int curType;// = FragmentCategoriesAndTags.TYPE_CATEGORY;
 
     public PagerAdapterCatsAndTags(FragmentManager fm, Context ctx, ArrayList<Category> cats, ArrayList<Tag> tags, int curType)
     {
@@ -44,9 +44,9 @@ public class PagerAdapterCatsAndTags extends FragmentStatePagerAdapter
     {
         switch (this.curType)
         {
-            case FragmentCategories.TYPE_CATEGORY:
+            case FragmentCategoriesAndTags.TYPE_CATEGORY:
                 return FragmentCategory.newInstance(cats.get(position).getUrl());
-            case FragmentCategories.TYPE_TAG:
+            case FragmentCategoriesAndTags.TYPE_TAG:
                 return FragmentCategory.newInstance(tags.get(position).getUrl());
             default:
                 return null;
@@ -59,9 +59,9 @@ public class PagerAdapterCatsAndTags extends FragmentStatePagerAdapter
         switch (curType)
         {
             default:
-            case FragmentCategories.TYPE_CATEGORY:
+            case FragmentCategoriesAndTags.TYPE_CATEGORY:
                 return cats.size();
-            case FragmentCategories.TYPE_TAG:
+            case FragmentCategoriesAndTags.TYPE_TAG:
                 return tags.size();
         }
     }

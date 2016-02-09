@@ -34,7 +34,7 @@ import java.util.TimerTask;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.SingltonRoboSpice;
-import ru.kuchanov.tproger.fragment.FragmentCategories;
+import ru.kuchanov.tproger.fragment.FragmentCategoriesAndTags;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.OnPageChangeListenerMain;
 import ru.kuchanov.tproger.navigation.PagerAdapterCatsAndTags;
@@ -101,7 +101,7 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
         Bundle b = new Bundle();
         b.putParcelableArrayList(Category.LOG, cats);
         b.putParcelableArrayList(Tag.LOG, tags);
-        b.putInt(FragmentCategories.KEY_CATS_OR_TAGS_DATA_TYPE, curDataType);
+        b.putInt(FragmentCategoriesAndTags.KEY_CATS_OR_TAGS_DATA_TYPE, curDataType);
         b.putInt(KEY_POSITION, positionInList);
         intent.putExtras(b);
 
@@ -142,23 +142,23 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
         Fragment fragCatsAndTags = manager.findFragmentById(R.id.container_left);
         switch (curDataType)
         {
-            case FragmentCategories.TYPE_CATEGORY:
+            case FragmentCategoriesAndTags.TYPE_CATEGORY:
                 if (isTabletMode)
                 {
                     if (fragCatsAndTags == null)
                     {
-                        fragCatsAndTags = FragmentCategories.newInstance(FragmentCategories.TYPE_CATEGORY, categories, tags);
+                        fragCatsAndTags = FragmentCategoriesAndTags.newInstance(FragmentCategoriesAndTags.TYPE_CATEGORY, categories, tags);
                         transaction.add(R.id.container_left, fragCatsAndTags);
                         transaction.commit();
                     }
                 }
                 break;
-            case FragmentCategories.TYPE_TAG:
+            case FragmentCategoriesAndTags.TYPE_TAG:
                 if (isTabletMode)
                 {
                     if (fragCatsAndTags == null)
                     {
-                        fragCatsAndTags = FragmentCategories.newInstance(FragmentCategories.TYPE_TAG, categories, tags);
+                        fragCatsAndTags = FragmentCategoriesAndTags.newInstance(FragmentCategoriesAndTags.TYPE_TAG, categories, tags);
                         transaction.add(R.id.container_left, fragCatsAndTags);
                         transaction.commit();
                     }
@@ -179,10 +179,10 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
                 String title = "";
                 switch (curDataType)
                 {
-                    case FragmentCategories.TYPE_CATEGORY:
+                    case FragmentCategoriesAndTags.TYPE_CATEGORY:
                         title = categories.get(positionInList).getTitle();
                         break;
-                    case FragmentCategories.TYPE_TAG:
+                    case FragmentCategoriesAndTags.TYPE_TAG:
                         title = tags.get(positionInList).getTitle();
                         break;
                 }
@@ -456,7 +456,7 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
         outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE, artsWithImage);
         outState.putParcelableArrayList(Category.LOG, categories);
         outState.putParcelableArrayList(Tag.LOG, tags);
-        outState.putInt(FragmentCategories.KEY_CATS_OR_TAGS_DATA_TYPE, curDataType);
+        outState.putInt(FragmentCategoriesAndTags.KEY_CATS_OR_TAGS_DATA_TYPE, curDataType);
         outState.putInt(KEY_POSITION, positionInList);
     }
 
@@ -467,7 +467,7 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
 
         if (savedInstanceState == null)
         {
-            this.curDataType = args.getInt(FragmentCategories.KEY_CATS_OR_TAGS_DATA_TYPE);
+            this.curDataType = args.getInt(FragmentCategoriesAndTags.KEY_CATS_OR_TAGS_DATA_TYPE);
             this.positionInList = args.getInt(KEY_POSITION);
             if (args.containsKey(Category.LOG))
             {
@@ -495,7 +495,7 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
             artsWithImage = savedInstanceState.getParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE);
 
             this.positionInList = args.getInt(KEY_POSITION);
-            this.curDataType = savedInstanceState.getInt(FragmentCategories.KEY_CATS_OR_TAGS_DATA_TYPE);
+            this.curDataType = savedInstanceState.getInt(FragmentCategoriesAndTags.KEY_CATS_OR_TAGS_DATA_TYPE);
             if (savedInstanceState.containsKey(Category.LOG))
             {
                 this.categories.clear();

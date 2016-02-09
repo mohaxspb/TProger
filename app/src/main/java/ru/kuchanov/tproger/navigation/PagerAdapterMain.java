@@ -9,7 +9,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.fragment.FragmentCategories;
+import ru.kuchanov.tproger.fragment.FragmentCategoriesAndTags;
 import ru.kuchanov.tproger.fragment.FragmentCategory;
 import ru.kuchanov.tproger.fragment.FragmentTab3;
 
@@ -45,8 +45,8 @@ public class PagerAdapterMain extends FragmentStatePagerAdapter
                 String key = ctx.getString(R.string.pref_design_key_category_in_cats_or_tags);
                 boolean showCategories = pref.getBoolean(key, true);
                 Log.d(LOG, "showCategories: " + showCategories);
-                int dataType = showCategories ? FragmentCategories.TYPE_CATEGORY : FragmentCategories.TYPE_TAG;
-                return FragmentCategories.newInstance(dataType);
+                int dataType = showCategories ? FragmentCategoriesAndTags.TYPE_CATEGORY : FragmentCategoriesAndTags.TYPE_TAG;
+                return FragmentCategoriesAndTags.newInstance(dataType);
             case 2:
                 //TODO add frag with saved arts
                 return new FragmentTab3();

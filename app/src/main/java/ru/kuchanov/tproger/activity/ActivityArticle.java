@@ -50,6 +50,7 @@ import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
+import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.MyColorFilter;
 import ru.kuchanov.tproger.utils.MyRandomUtil;
@@ -144,14 +145,15 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         //TODO make layout for phone
         setContentView(R.layout.activity_article_tablet);
 
-        if (savedInstanceState == null)
-        {
-            restoreStateFromIntent(this.getIntent().getExtras());
-        }
-        else
-        {
-            restoreState(savedInstanceState);
-        }
+//        if (savedInstanceState == null)
+//        {
+//            restoreStateFromIntent(this.getIntent().getExtras());
+//        }
+//        else
+//        {
+//            restoreState(savedInstanceState);
+//        }
+        restoreData(savedInstanceState, getIntent().getExtras());
 
         initializeViews();
 
@@ -430,24 +432,59 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         }
     }
 
-    private void restoreState(Bundle state)
-    {
-        isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
-        prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
-        artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE);
+//    private void restoreState(Bundle state)
+//    {
+//        isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
+//        prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
+//        artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE);
+//
+//        artsList = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
+//        currentPositionOfArticleInList = state.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
+//        this.categoryOrTagUrl = state.getString(KEY_CURRENT_CATEGORY_OR_TAG_URL);
+//    }
+//
+//    private void restoreStateFromIntent(Bundle stateFromIntent)
+//    {
+//        if (stateFromIntent != null)
+//        {
+//            artsList = stateFromIntent.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
+//            currentPositionOfArticleInList = stateFromIntent.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
+//            this.categoryOrTagUrl = stateFromIntent.getString(KEY_CURRENT_CATEGORY_OR_TAG_URL);
+//        }
+//    }
 
-        artsList = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
-        currentPositionOfArticleInList = state.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
-        this.categoryOrTagUrl = state.getString(KEY_CURRENT_CATEGORY_OR_TAG_URL);
-    }
-
-    private void restoreStateFromIntent(Bundle stateFromIntent)
+    private void restoreData(Bundle savedInstanceState, Bundle args)
     {
-        if (stateFromIntent != null)
+        if (savedInstanceState != null)
         {
-            artsList = stateFromIntent.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
-            currentPositionOfArticleInList = stateFromIntent.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
-            this.categoryOrTagUrl = stateFromIntent.getString(KEY_CURRENT_CATEGORY_OR_TAG_URL);
+            if (args.containsKey(Article.KEY_ARTICLES_LIST))
+            {
+                this.artsList.clear();
+                ArrayList<Article> articles = args.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
+                if (articles != null)
+                {
+                    this.artsList.addAll(articles);
+                }
+            }
+//            artsList.clear();
+//            artsList.addAll(savedInstanceState.<Article>getParcelableArrayList(Article.KEY_ARTICLES_LIST));
+            currentPositionOfArticleInList = savedInstanceState.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
+            this.categoryOrTagUrl = savedInstanceState.getString(KEY_CURRENT_CATEGORY_OR_TAG_URL);
+        }
+        else
+        {
+            if (args.containsKey(Article.KEY_ARTICLES_LIST))
+            {
+                this.artsList.clear();
+                ArrayList<Article> articles = args.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
+                if (articles != null)
+                {
+                    this.artsList.addAll(articles);
+                }
+            }
+            currentPositionOfArticleInList = args.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
+            this.categoryOrTagUrl = args.getString(KEY_CURRENT_CATEGORY_OR_TAG_URL);
+
         }
     }
 
