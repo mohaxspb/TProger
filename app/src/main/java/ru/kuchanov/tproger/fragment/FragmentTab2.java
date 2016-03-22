@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.RecyclerAdapter;
+import ru.kuchanov.tproger.adapter.RecyclerAdapter;
 
 public class FragmentTab2 extends Fragment
 {

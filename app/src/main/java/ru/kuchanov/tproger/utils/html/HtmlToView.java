@@ -31,11 +31,11 @@ import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DipToPx;
 import ru.kuchanov.tproger.utils.UILImageGetter;
 
-import static ru.kuchanov.tproger.RecyclerAdapterArticle.ViewHolderAccordeon;
-import static ru.kuchanov.tproger.RecyclerAdapterArticle.ViewHolderCode;
-import static ru.kuchanov.tproger.RecyclerAdapterArticle.ViewHolderPoll;
-import static ru.kuchanov.tproger.RecyclerAdapterArticle.ViewHolderText;
-import static ru.kuchanov.tproger.RecyclerAdapterArticle.ViewHolderWell;
+import static ru.kuchanov.tproger.adapter.RecyclerAdapterArticle.ViewHolderAccordeon;
+import static ru.kuchanov.tproger.adapter.RecyclerAdapterArticle.ViewHolderCode;
+import static ru.kuchanov.tproger.adapter.RecyclerAdapterArticle.ViewHolderPoll;
+import static ru.kuchanov.tproger.adapter.RecyclerAdapterArticle.ViewHolderText;
+import static ru.kuchanov.tproger.adapter.RecyclerAdapterArticle.ViewHolderWell;
 
 /**
  * Created by Юрий on 03.11.2015 17:35 4:16.

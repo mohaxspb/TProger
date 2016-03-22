@@ -392,7 +392,7 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
                 this.startActivity(intent);
                 return true;
             case android.R.id.home:
-                //TODO
+                onBackPressed();
                 return true;
             case R.id.night_mode_switcher:
                 this.pref.edit().putBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, !nightModeIsOn).commit();

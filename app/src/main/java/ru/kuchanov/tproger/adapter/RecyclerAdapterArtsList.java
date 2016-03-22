@@ -1,4 +1,4 @@
-package ru.kuchanov.tproger;
+package ru.kuchanov.tproger.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.activity.ActivityArticle;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.AttributeGetter;

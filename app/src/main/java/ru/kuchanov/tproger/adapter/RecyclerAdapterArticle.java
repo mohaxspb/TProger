@@ -1,4 +1,4 @@
-package ru.kuchanov.tproger;
+package ru.kuchanov.tproger.adapter;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.fragment.FragmentDialogCodeRepresenter;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.AttributeGetter;

@@ -1,7 +1,11 @@
-package ru.kuchanov.tproger;
+package ru.kuchanov.tproger.adapter;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +13,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.activity.ActivityCategoriesAndTags;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.db.Tag;
@@ -25,10 +30,13 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
     private ArrayList<Category> cats;
     private ArrayList<Tag> tags;
 
-    public RecyclerAdapterCatsTags(ArrayList<Tag> tags, ArrayList<Category> cats)
+    private Context ctx;
+
+    public RecyclerAdapterCatsTags(ArrayList<Tag> tags, ArrayList<Category> cats, Context ctx)
     {
         this.tags = tags;
         this.cats = cats;
+        this.ctx = ctx;
     }
 
     public void setDataType(int type)
@@ -52,6 +60,12 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
         final Tag tag;
 
         final HolderTitle holderTitle = (HolderTitle) holder;
+
+        int textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
+        float resultUiTextSizeInPx = uiTextScale * textSizePrimary;
+        holderTitle.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, resultUiTextSizeInPx);
 
         switch (dataType)
         {
@@ -97,22 +111,6 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
                 return tags.size();
         }
     }
-
-//    public void notifyRemoveEach()
-//    {
-//        for (int i = 0; i < tags.size(); i++)
-//        {
-//            notifyItemRemoved(i);
-//        }
-//    }
-//
-//    public void notifyAddEach()
-//    {
-//        for (int i = 0; i < tags.size(); i++)
-//        {
-//            notifyItemInserted(i);
-//        }
-//    }
 
     public static class HolderTitle extends RecyclerView.ViewHolder
     {

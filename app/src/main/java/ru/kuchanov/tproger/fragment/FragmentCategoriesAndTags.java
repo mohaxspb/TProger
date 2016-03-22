@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.RecyclerAdapterCatsTags;
+import ru.kuchanov.tproger.activity.ActivityCategoriesAndTags;
+import ru.kuchanov.tproger.adapter.RecyclerAdapterCatsTags;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;
 import ru.kuchanov.tproger.otto.BusProvider;
@@ -173,7 +174,9 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler);
 
         boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
-        if (isGridManager)
+        boolean isOnArticleActivity = ctx instanceof ActivityArticle;
+        boolean isOnActivityCatsAndTags = ctx instanceof ActivityCategoriesAndTags;
+        if (isGridManager && !isOnArticleActivity && !isOnActivityCatsAndTags)
         {
             recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
         }
@@ -190,7 +193,7 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
             case TYPE_CATEGORY:
                 if (categories.size() != 0)
                 {
-                    RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories);
+                    RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories, ctx);
                     adapterCatsTags.setDataType(RecyclerAdapterCatsTags.TYPE_CATEGORY);
                     recyclerView.setAdapter(adapterCatsTags);
                 }
@@ -202,7 +205,7 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
             case TYPE_TAG:
                 if (tags.size() != 0)
                 {
-                    RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories);
+                    RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories, ctx);
                     adapterCatsTags.setDataType(RecyclerAdapterCatsTags.TYPE_TAG);
                     recyclerView.setAdapter(adapterCatsTags);
                 }
@@ -243,7 +246,7 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
 //        Log.i(LOG, "onStart called");
         super.onStart();
         spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
-        spiceManagerOffline.addListenerIfPending(TagsCategories.class, "unused", new TagsCategoriesRequestListener());
+        spiceManagerOffline.addListenerIfPending(TagsCategories.class, LOG, new TagsCategoriesRequestListener());
 
         BusProvider.getInstance().register(this);
     }
@@ -284,35 +287,62 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
         }
         if (key.equals(this.getString(R.string.pref_design_key_list_style)))
         {
-            //TODO
             boolean isGridManager = sharedPreferences.getBoolean(key, false);
-            boolean isOnArticleActivity = (ctx instanceof ActivityArticle);
-            if (isGridManager && !isOnArticleActivity)
+            boolean isOnArticleActivity = ctx instanceof ActivityArticle;
+            boolean isOnActivityCatsAndTags = ctx instanceof ActivityCategoriesAndTags;
+            if (isGridManager && !isOnArticleActivity && !isOnActivityCatsAndTags)
             {
-//                recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
-//                this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
-//                recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
+                if (curCategoryType == TYPE_CATEGORY)
+                {
+                    recyclerView.getAdapter().notifyItemRangeRemoved(0, categories.size());
+                    this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
+                    recyclerView.getAdapter().notifyItemRangeInserted(0, categories.size());
+                }
+                else
+                {
+                    recyclerView.getAdapter().notifyItemRangeRemoved(0, tags.size());
+                    this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
+                    recyclerView.getAdapter().notifyItemRangeInserted(0, tags.size());
+                }
             }
             else
             {
-//                recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
-//                this.recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
-//                recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
+                if (curCategoryType == TYPE_CATEGORY)
+                {
+                    recyclerView.getAdapter().notifyItemRangeRemoved(0, categories.size());
+                    this.recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+                    recyclerView.getAdapter().notifyItemRangeInserted(0, categories.size());
+                }
+                else
+                {
+                    recyclerView.getAdapter().notifyItemRangeRemoved(0, tags.size());
+                    this.recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+                    recyclerView.getAdapter().notifyItemRangeInserted(0, tags.size());
+                }
             }
         }
         if (key.equals(this.getString(R.string.pref_design_key_col_num)))
         {
-            //TODO
             boolean isGridManager = sharedPreferences.getBoolean(this.getString(R.string.pref_design_key_list_style), false);
 
             this.numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(key, "2"));
 
             boolean isOnArticleActivity = (ctx instanceof ActivityArticle);
-            if (isGridManager && !isOnArticleActivity)
+            boolean isOnActivityCatsAndTags = ctx instanceof ActivityCategoriesAndTags;
+            if (isGridManager && !isOnArticleActivity && !isOnActivityCatsAndTags)
             {
-//                recyclerView.getAdapter().notifyItemRangeRemoved(0, artsList.size());
-//                this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
-//                recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
+                if (curCategoryType == TYPE_CATEGORY)
+                {
+                    recyclerView.getAdapter().notifyItemRangeRemoved(0, categories.size());
+                    this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
+                    recyclerView.getAdapter().notifyItemRangeInserted(0, categories.size());
+                }
+                else
+                {
+                    recyclerView.getAdapter().notifyItemRangeRemoved(0, tags.size());
+                    this.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numOfColsInGridLayoutManager, StaggeredGridLayoutManager.VERTICAL));
+                    recyclerView.getAdapter().notifyItemRangeInserted(0, tags.size());
+                }
             }
         }
         if (key.equals(this.getString(R.string.pref_design_key_text_size_ui)))
@@ -422,7 +452,7 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
             categories.clear();
             categories.addAll(tagsCategories.getCategories());
 
-            RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories);
+            RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories, ctx);
             adapterCatsTags.setDataType(curCategoryType);
             recyclerView.setAdapter(adapterCatsTags);
         }

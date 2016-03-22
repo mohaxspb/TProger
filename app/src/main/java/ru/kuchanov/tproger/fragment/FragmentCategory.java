@@ -28,7 +28,7 @@ import java.util.Collections;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.RecyclerAdapterArtsList;
+import ru.kuchanov.tproger.adapter.RecyclerAdapterArtsList;
 import ru.kuchanov.tproger.RecyclerViewOnScrollListener;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;

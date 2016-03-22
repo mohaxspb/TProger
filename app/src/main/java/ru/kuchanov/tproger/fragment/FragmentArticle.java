@@ -22,7 +22,7 @@ import com.octo.android.robospice.request.listener.PendingRequestListener;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.RecyclerAdapterArticle;
+import ru.kuchanov.tproger.adapter.RecyclerAdapterArticle;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
