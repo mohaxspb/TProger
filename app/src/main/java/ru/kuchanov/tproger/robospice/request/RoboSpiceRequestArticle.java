@@ -4,10 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import com.octo.android.robospice.request.SpiceRequest;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;

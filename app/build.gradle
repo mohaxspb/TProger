@@ -50,7 +50,7 @@ dependencies {
     compile 'com.j256.ormlite:ormlite-core:4.48'
     compile 'com.j256.ormlite:ormlite-android:4.48'
     //OkHttp
-    compile 'com.squareup.okhttp:okhttp:2.5.0'
+    compile 'com.squareup.okhttp3:okhttp:3.2.0'
     //Jsoup
     compile 'org.jsoup:jsoup:1.8.3'
     //Otto
@@ -58,7 +58,7 @@ dependencies {
     //recyclerView item animation
     compile 'jp.wasabeef:recyclerview-animators:2.0.0'
     //materialDialogs
-    compile('com.afollestad.material-dialogs:core:0.8.4.2@aar') {
+    compile('com.afollestad.material-dialogs:core:0.8.5.4@aar') {
         transitive = true
     }
     //materialDialogs
@@ -66,7 +66,7 @@ dependencies {
         maven { url "https://jitpack.io" }
     }
     //UIL
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     //fresco (facebook image loader lib)
     compile 'com.facebook.fresco:fresco:0.9.0'
     repositories { mavenCentral() }
