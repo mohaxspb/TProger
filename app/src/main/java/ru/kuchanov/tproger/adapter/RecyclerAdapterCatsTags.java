@@ -3,6 +3,7 @@ package ru.kuchanov.tproger.adapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
@@ -15,8 +16,10 @@ import java.util.ArrayList;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.activity.ActivityCategoriesAndTags;
+import ru.kuchanov.tproger.activity.ActivityMain;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.db.Tag;
+import ru.kuchanov.tproger.utils.AttributeGetter;
 
 public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
@@ -31,6 +34,11 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
     private ArrayList<Tag> tags;
 
     private Context ctx;
+    /**
+     * holds position of activated item; Activated Item is colored in tablet mode;
+     * default value is -1 (none)
+     */
+    private int currentActivatedPosition = -1;
 
     public RecyclerAdapterCatsTags(ArrayList<Tag> tags, ArrayList<Category> cats, Context ctx)
     {
@@ -67,6 +75,18 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
         float resultUiTextSizeInPx = uiTextScale * textSizePrimary;
         holderTitle.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, resultUiTextSizeInPx);
 
+        //mark activated item
+        boolean isTabletMode = pref.getBoolean(ctx.getString(R.string.pref_design_key_tablet_mode), false);
+        boolean isOnMainActivity = ctx instanceof ActivityMain;
+        if (isTabletMode && !isOnMainActivity && position == currentActivatedPosition)
+        {
+            holderTitle.container.setBackgroundColor(AttributeGetter.getColor(ctx, R.attr.colorAccent));
+        }
+        else
+        {
+            holderTitle.container.setBackgroundColor(ContextCompat.getColor(ctx, android.R.color.transparent));
+        }
+
         switch (dataType)
         {
             default:
@@ -79,7 +99,7 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
                     public void onClick(View v)
                     {
                         Log.d(LOG, category.getTitle());
-                        ActivityCategoriesAndTags.startActivityCatsAndTags(holderTitle.title.getContext(), cats, tags, TYPE_CATEGORY, position);
+                        ActivityCategoriesAndTags.startActivityCatsAndTags(ctx, cats, tags, TYPE_CATEGORY, position);
                     }
                 });
                 break;
@@ -92,7 +112,7 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
                     public void onClick(View v)
                     {
                         Log.d(LOG, tag.getTitle());
-                        ActivityCategoriesAndTags.startActivityCatsAndTags(holderTitle.title.getContext(), cats, tags, TYPE_TAG, position);
+                        ActivityCategoriesAndTags.startActivityCatsAndTags(ctx, cats, tags, TYPE_TAG, position);
                     }
                 });
                 break;
@@ -112,14 +132,26 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
         }
     }
 
+    public int getCurrentActivatedPosition()
+    {
+        return currentActivatedPosition;
+    }
+
+    public void setCurrentActivatedPosition(int currentActivatedPosition)
+    {
+        this.currentActivatedPosition = currentActivatedPosition;
+    }
+
     public static class HolderTitle extends RecyclerView.ViewHolder
     {
+        public View container;
         public TextView title;
 
         public HolderTitle(View v)
         {
             super(v);
             title = (TextView) v.findViewById(R.id.title);
+            container = v;
         }
     }
 }

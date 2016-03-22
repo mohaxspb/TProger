@@ -33,6 +33,7 @@ import ru.kuchanov.tproger.adapter.RecyclerAdapterCatsTags;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;
 import ru.kuchanov.tproger.otto.BusProvider;
+import ru.kuchanov.tproger.otto.EventCatsTagActivateItem;
 import ru.kuchanov.tproger.otto.EventCatsTagsShow;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Category;
@@ -52,11 +53,13 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
     public static final int TYPE_CATEGORY = 0;
     public static final int TYPE_TAG = 1;
     public static final String KEY_CATS_OR_TAGS_DATA_TYPE = "KEY_CATS_OR_TAGS_DATA_TYPE";
+    public static final String KEY_CURRENT_ACTIVATED_POSITION = "KEY_CURRENT_ACTIVATED_POSITION";
     //    public static final String KEY_CUR_CATEGORY_TYPE = "KEY_CUR_CATEGORY_TYPE";
     //    public static final String KEY_IS_LOADING = "isLoading";
     protected MySpiceManager spiceManagerOffline;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
+    private int currentActivatedPosition = -1;
     private int curCategoryType;
     private ArrayList<Category> categories = new ArrayList<>();
     private ArrayList<Tag> tags = new ArrayList<>();
@@ -76,10 +79,11 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
         return frag;
     }
 
-    public static FragmentCategoriesAndTags newInstance(int categoryType, ArrayList<Category> cats, ArrayList<Tag> tags)
+    public static FragmentCategoriesAndTags newInstance(int categoryType, ArrayList<Category> cats, ArrayList<Tag> tags, int currentActivatedPosition)
     {
         FragmentCategoriesAndTags frag = new FragmentCategoriesAndTags();
         Bundle b = new Bundle();
+        b.putInt(KEY_CURRENT_ACTIVATED_POSITION, currentActivatedPosition);
         b.putInt(KEY_CATS_OR_TAGS_DATA_TYPE, categoryType);
         b.putParcelableArrayList(Category.LOG, cats);
         b.putParcelableArrayList(Tag.LOG, tags);
@@ -94,6 +98,7 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
 //        Log.i(LOG, "onSaveInstanceState called");
         super.onSaveInstanceState(outState);
 
+        outState.putInt(KEY_CURRENT_ACTIVATED_POSITION, currentActivatedPosition);
         outState.putInt(KEY_CATS_OR_TAGS_DATA_TYPE, curCategoryType);
         outState.putParcelableArrayList(Category.LOG, categories);
         outState.putParcelableArrayList(Tag.LOG, tags);
@@ -118,6 +123,7 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
         if (savedInstanceState == null)
         {
             this.curCategoryType = args.getInt(KEY_CATS_OR_TAGS_DATA_TYPE);
+            this.currentActivatedPosition = args.getInt(KEY_CURRENT_ACTIVATED_POSITION);
 
             if (args.containsKey(Category.LOG))
             {
@@ -141,22 +147,24 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
         else
         {
             this.curCategoryType = savedInstanceState.getInt(KEY_CATS_OR_TAGS_DATA_TYPE);
+            this.currentActivatedPosition = savedInstanceState.getInt(KEY_CURRENT_ACTIVATED_POSITION);
+
             if (savedInstanceState.containsKey(Category.LOG))
             {
                 this.categories.clear();
-                ArrayList<Category> catsFromArgs = savedInstanceState.getParcelableArrayList(Category.LOG);
-                if (catsFromArgs != null)
+                ArrayList<Category> catsFromState = savedInstanceState.getParcelableArrayList(Category.LOG);
+                if (catsFromState != null)
                 {
-                    this.categories.addAll(catsFromArgs);
+                    this.categories.addAll(catsFromState);
                 }
             }
             if (savedInstanceState.containsKey(Tag.LOG))
             {
                 this.tags.clear();
-                ArrayList<Tag> tagsFromArgs = savedInstanceState.getParcelableArrayList(Tag.LOG);
-                if (tagsFromArgs != null)
+                ArrayList<Tag> tagsFromState = savedInstanceState.getParcelableArrayList(Tag.LOG);
+                if (tagsFromState != null)
                 {
-                    this.tags.addAll(tagsFromArgs);
+                    this.tags.addAll(tagsFromState);
                 }
             }
         }
@@ -195,6 +203,7 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
                 {
                     RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories, ctx);
                     adapterCatsTags.setDataType(RecyclerAdapterCatsTags.TYPE_CATEGORY);
+                    adapterCatsTags.setCurrentActivatedPosition(currentActivatedPosition);
                     recyclerView.setAdapter(adapterCatsTags);
                 }
                 else
@@ -207,6 +216,7 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
                 {
                     RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories, ctx);
                     adapterCatsTags.setDataType(RecyclerAdapterCatsTags.TYPE_TAG);
+                    adapterCatsTags.setCurrentActivatedPosition(currentActivatedPosition);
                     recyclerView.setAdapter(adapterCatsTags);
                 }
                 else
@@ -385,7 +395,6 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
         this.setLoading(true);
         RoboSpiceRequestTagsCategoriesOffline requestFromDB = new RoboSpiceRequestTagsCategoriesOffline(ctx);
         spiceManagerOffline.execute(requestFromDB, "unused", DurationInMillis.ALWAYS_EXPIRED, new TagsCategoriesRequestListener());
-
     }
 
     @Subscribe
@@ -406,6 +415,24 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
 //        recyclerView.getAdapter().notifyDataSetChanged();
 
 //        ((FabUpdater) act).updateFAB(1, curCategoryType);
+    }
+
+    @Subscribe
+    public void onActivateItem(EventCatsTagActivateItem event)
+    {
+        int position = event.getPosition();
+        Log.i(LOG, "onActivateItem with position: " + position);
+        int curTypeListSize = (curCategoryType == TYPE_CATEGORY) ? categories.size() : tags.size();
+        if (position < curTypeListSize)
+        {
+            recyclerView.smoothScrollToPosition(position);
+            ((RecyclerAdapterCatsTags) recyclerView.getAdapter()).setCurrentActivatedPosition(position);
+            recyclerView.getAdapter().notifyDataSetChanged();
+        }
+        else
+        {
+            Log.i(LOG, "Strange scroll to position bigger than listSize");
+        }
     }
 
     private class TagsCategoriesRequestListener implements PendingRequestListener<TagsCategories>
@@ -454,6 +481,7 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
 
             RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories, ctx);
             adapterCatsTags.setDataType(curCategoryType);
+            adapterCatsTags.setCurrentActivatedPosition(currentActivatedPosition);
             recyclerView.setAdapter(adapterCatsTags);
         }
 

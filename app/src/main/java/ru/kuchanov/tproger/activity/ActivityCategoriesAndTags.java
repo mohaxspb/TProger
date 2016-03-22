@@ -39,6 +39,7 @@ import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.OnPageChangeListenerMain;
 import ru.kuchanov.tproger.navigation.PagerAdapterCatsAndTags;
 import ru.kuchanov.tproger.otto.BusProvider;
+import ru.kuchanov.tproger.otto.EventCatsTagActivateItem;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.Category;
@@ -147,7 +148,7 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
                 {
                     if (fragCatsAndTags == null)
                     {
-                        fragCatsAndTags = FragmentCategoriesAndTags.newInstance(FragmentCategoriesAndTags.TYPE_CATEGORY, categories, tags);
+                        fragCatsAndTags = FragmentCategoriesAndTags.newInstance(FragmentCategoriesAndTags.TYPE_CATEGORY, categories, tags, positionInList);
                         transaction.add(R.id.container_left, fragCatsAndTags);
                         transaction.commit();
                     }
@@ -158,7 +159,7 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
                 {
                     if (fragCatsAndTags == null)
                     {
-                        fragCatsAndTags = FragmentCategoriesAndTags.newInstance(FragmentCategoriesAndTags.TYPE_TAG, categories, tags);
+                        fragCatsAndTags = FragmentCategoriesAndTags.newInstance(FragmentCategoriesAndTags.TYPE_TAG, categories, tags, positionInList);
                         transaction.add(R.id.container_left, fragCatsAndTags);
                         transaction.commit();
                     }
@@ -187,6 +188,8 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
                         break;
                 }
                 collapsingToolbarLayout.setTitle(title);
+                EventCatsTagActivateItem eventCatsTagActivateItem = new EventCatsTagActivateItem(position);
+                BusProvider.getInstance().post(eventCatsTagActivateItem);
             }
         };
         this.pager.addOnPageChangeListener(onPageChangeListener);
@@ -199,7 +202,6 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
         {
             this.pager.setCurrentItem(positionInList, true);
         }
-
     }
 
     private void initializeViews()
