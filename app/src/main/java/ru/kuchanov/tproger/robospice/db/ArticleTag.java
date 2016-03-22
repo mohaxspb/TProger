@@ -251,7 +251,7 @@ public class ArticleTag
      * @return quontity of new articles in category  (-1 on first loading, and 10 if cant match for old topArtCat, which
      * means that we do not now we have 10 or more new articles)
      */
-    public static int writeArtsListToArtCatFromTop(ArrayList<Article> arts, int categoryId, MyRoboSpiceDatabaseHelper h)
+    public static int writeArtsListToArtTagFromTop(ArrayList<Article> arts, int tagId, MyRoboSpiceDatabaseHelper h)
     {
         //0. Get topArtCat
         //if it's null, so it's first time we write artCat
@@ -275,14 +275,14 @@ public class ArticleTag
          */
         int quontOfNewArtsInCategory = -1;
 
-        ArrayList<ArticleTag> artCatListToWrite = new ArrayList<>();
+        ArrayList<ArticleTag> artTagListToWrite = new ArrayList<>();
 
         try
         {
-            Dao<ArticleTag, Integer> daoArtCat = h.getDao(ArticleTag.class);
+            Dao<ArticleTag, Integer> daoArtTag = h.getDao(ArticleTag.class);
 
-            ArticleTag topArtCat = daoArtCat.queryBuilder().
-                    where().eq(ArticleTag.FIELD_TAG_ID, categoryId).
+            ArticleTag topArtCat = daoArtTag.queryBuilder().
+                    where().eq(ArticleTag.FIELD_TAG_ID, tagId).
                     and().eq(ArticleTag.FIELD_IS_TOP_IN_TAG, true).queryForFirst();
             //0.
             if (topArtCat == null)
@@ -291,13 +291,13 @@ public class ArticleTag
                 //so write artCat and set isTop to true for first row
                 ArticleTag artCat = new ArticleTag();
                 artCat.setArticleId(arts.get(0).getId());
-                artCat.setTagId(categoryId);
+                artCat.setTagId(tagId);
                 artCat.setTopInTag(true);
                 Article nextArt = (arts.size() > 1) ? arts.get(1) : null;
                 int nextArtId = (nextArt == null) ? -1 : nextArt.getId();
                 artCat.setNextArticleId(nextArtId);
 
-                artCatListToWrite.add(artCat);
+                artTagListToWrite.add(artCat);
 
                 for (int i = 1; i < arts.size(); i++)
                 {
@@ -305,24 +305,24 @@ public class ArticleTag
 
                     ArticleTag artCatToWrite = new ArticleTag();
                     artCatToWrite.setArticleId(a.getId());
-                    artCatToWrite.setTagId(categoryId);
+                    artCatToWrite.setTagId(tagId);
                     Article nextArtInLoop = (arts.size() > i + 1) ? arts.get(i + 1) : null;
                     int nextArtIdInLoop = (nextArtInLoop == null) ? -1 : nextArtInLoop.getId();
                     artCatToWrite.setNextArticleId(nextArtIdInLoop);
                     artCatToWrite.setPreviousArticleId(arts.get(i - 1).getId());
 
-                    artCatListToWrite.add(artCatToWrite);
+                    artTagListToWrite.add(artCatToWrite);
                 }
 
                 //set bottom art if size of arts<DefaultNumOnPage;
                 if (arts.size() < Const.NUM_OF_ARTS_ON_PAGE)
                 {
-                    artCatListToWrite.get(artCatListToWrite.size() - 1).setInitialInTag(true);
+                    artTagListToWrite.get(artTagListToWrite.size() - 1).setInitialInTag(true);
                 }
 
-                for (ArticleTag artCatToWrite : artCatListToWrite)
+                for (ArticleTag artCatToWrite : artTagListToWrite)
                 {
-                    daoArtCat.create(artCatToWrite);
+                    daoArtTag.create(artCatToWrite);
                 }
                 return quontOfNewArtsInCategory;
             }
@@ -347,10 +347,10 @@ public class ArticleTag
                         topArtCat.setTopInTag(false);
                         //2)
                         topArtCat.setPreviousArticleId(arts.get(i - 1).getId());
-                        daoArtCat.update(topArtCat);
+                        daoArtTag.update(topArtCat);
 
                         //4)
-                        artCatListToWrite.get(i - 1).setNextArticleId(topArtCat.getArticleId());
+                        artTagListToWrite.get(i - 1).setNextArticleId(topArtCat.getArticleId());
                         quontOfNewArtsInCategory = i;
                         break;
                     }
@@ -359,7 +359,7 @@ public class ArticleTag
                 {
                     ArticleTag artCatToWrite = new ArticleTag();
                     artCatToWrite.setArticleId(a.getId());
-                    artCatToWrite.setTagId(categoryId);
+                    artCatToWrite.setTagId(tagId);
                     //check if there is such entry in DB and set it's id to artCat obj
                     ArticleTag artCatInDB = ArticleTag.getByArticleAndCategoryIds(h, artCatToWrite.getArticleId(), artCatToWrite.getTagId());
                     if (artCatInDB != null)
@@ -373,7 +373,7 @@ public class ArticleTag
                     int prevArtId = (i != 0) ? arts.get(i - 1).getId() : -1;
                     artCatToWrite.setPreviousArticleId(prevArtId);
 
-                    artCatListToWrite.add(artCatToWrite);
+                    artTagListToWrite.add(artCatToWrite);
 
                     quontOfNewArtsInCategory = i;
 
@@ -383,23 +383,30 @@ public class ArticleTag
                     if (i == arts.size() - 1)
                     {
                         //return 10, which means >=10... Yeah it sucks(((
-//                        quontOfNewArtsInCategory++;
                         quontOfNewArtsInCategory++;
                     }
                 }
             }
             //3)
-            artCatListToWrite.get(0).setTopInTag(true);
-
-            for (ArticleTag artCat : artCatListToWrite)
+            artTagListToWrite.get(0).setTopInTag(true);
+            //and clear is top status for all other artTags
+            ArrayList<ArticleTag> articleTagsThatAreTop;
+                 articleTagsThatAreTop   = (ArrayList<ArticleTag>) daoArtTag.queryBuilder().where().eq(FIELD_IS_TOP_IN_TAG, true).and().eq(FIELD_TAG_ID, tagId).query();
+            for (ArticleTag articleTag : articleTagsThatAreTop)
             {
-                daoArtCat.createOrUpdate(artCat);
+                articleTag.setTopInTag(false);
+                daoArtTag.createOrUpdate(articleTag);
+            }
+
+            for (ArticleTag artCat : artTagListToWrite)
+            {
+                daoArtTag.createOrUpdate(artCat);
             }
 
             //write initial artTag if it is
             if (arts.size() > 0 && arts.size() < Const.NUM_OF_ARTS_ON_PAGE)
             {
-                ArticleTag initialArtTag = ArticleTag.getByArticleAndCategoryIds(h, arts.get(arts.size() - 1).getId(), categoryId);
+                ArticleTag initialArtTag = ArticleTag.getByArticleAndCategoryIds(h, arts.get(arts.size() - 1).getId(), tagId);
                 initialArtTag.setInitialInTag(true);
                 h.getDaoArtTag().createOrUpdate(initialArtTag);
             }
@@ -408,6 +415,8 @@ public class ArticleTag
         {
             e.printStackTrace();
         }
+
+        Log.i(LOG, "quontOfNewArtsInCategory: " + quontOfNewArtsInCategory);
 
         return quontOfNewArtsInCategory;
     }

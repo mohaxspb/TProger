@@ -389,6 +389,15 @@ public class ArticleCategory
                 }
             }
             //3)
+            //and clear is top status for all other artTags
+            ArrayList<ArticleCategory> articleCatsThatAreTop;
+            articleCatsThatAreTop = (ArrayList<ArticleCategory>) daoArtCat.queryBuilder().where().eq(FIELD_IS_TOP_IN_CATEGORY, true).and().eq(FIELD_CATEGORY_ID, categoryId).query();
+            for (ArticleCategory articleCategory : articleCatsThatAreTop)
+            {
+                articleCategory.setTopInCategory(false);
+                daoArtCat.createOrUpdate(articleCategory);
+            }
+
             artCatListToWrite.get(0).setTopInCategory(true);
 
             for (ArticleCategory artCat : artCatListToWrite)

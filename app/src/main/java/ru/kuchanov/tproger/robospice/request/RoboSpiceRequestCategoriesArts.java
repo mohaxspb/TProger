@@ -172,7 +172,7 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
                 databaseHelper.getDaoArtTag().delete(allArtCatList);
             }
 
-            newArtsQuont = ArticleTag.writeArtsListToArtCatFromTop(list, tag.getId(), databaseHelper);
+            newArtsQuont = ArticleTag.writeArtsListToArtTagFromTop(list, tag.getId(), databaseHelper);
             //we can pass quont through Articles class via field...
 
             //update refreshed date of category to currentTimeInMills
