@@ -172,7 +172,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
             fragmentCategory = (FragmentCategory) getSupportFragmentManager().findFragmentById(R.id.container_left);
             if (fragmentCategory == null)
             {
-                fragmentCategory = FragmentCategory.newInstance(categoryOrTagUrl);
+                fragmentCategory = FragmentCategory.newInstance(categoryOrTagUrl, currentPositionOfArticleInList);
 
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.add(R.id.container_left, fragmentCategory);

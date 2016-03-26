@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-    xmlns:tools="http://schemas.android.com/tools"
     package="ru.kuchanov.tproger"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -27,8 +27,8 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-<!--
-            android:launchMode="singleTask"-->
+        <!--
+                    android:launchMode="singleTask"-->
         <activity
             android:name=".activity.ActivityArticle"
             android:label="@string/title_activity_article"
@@ -56,6 +56,15 @@
         <service
             android:name=".robospice.HtmlSpiceServiceOfflineArticle"
             android:enabled="true"/>
+
+        <!--test receiver-->
+        <!--<receiver
+            android:name=".MinuteReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>-->
     </application>
 
 </manifest>

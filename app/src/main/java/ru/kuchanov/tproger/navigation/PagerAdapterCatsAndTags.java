@@ -45,9 +45,9 @@ public class PagerAdapterCatsAndTags extends FragmentStatePagerAdapter
         switch (this.curType)
         {
             case FragmentCategoriesAndTags.TYPE_CATEGORY:
-                return FragmentCategory.newInstance(cats.get(position).getUrl());
+                return FragmentCategory.newInstance(cats.get(position).getUrl(), -1);
             case FragmentCategoriesAndTags.TYPE_TAG:
-                return FragmentCategory.newInstance(tags.get(position).getUrl());
+                return FragmentCategory.newInstance(tags.get(position).getUrl(), -1);
             default:
                 return null;
         }

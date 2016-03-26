@@ -51,6 +51,12 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
 
     private String categoryOrTagUrl;
 
+    /**
+     * holds position of activated item; Activated Item is colored in tablet mode;
+     * default value is -1 (none)
+     */
+    private int currentActivatedPosition = -1;
+
     public RecyclerAdapterArtsList(Context ctx, ArrayList<Article> dataset, String categoryOrTagUrl)
     {
         this.ctx = ctx;
@@ -273,6 +279,11 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     public int getItemCount()
     {
         return artsList.size();
+    }
+
+    public void setCurrentActivatedPosition(int currentActivatedPosition)
+    {
+        this.currentActivatedPosition = currentActivatedPosition;
     }
 
     public static class ViewHolderMinimum extends RecyclerView.ViewHolder

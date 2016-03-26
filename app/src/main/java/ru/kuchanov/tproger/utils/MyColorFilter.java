@@ -5,11 +5,12 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.PorterDuff;
 import android.support.annotation.AttrRes;
+import android.view.View;
 import android.widget.ImageView;
 
 /**
- * Created by Юрий on 13.12.2015 20:08.
- * For ExpListTest.
+ * Created by Юрий on 13.12.2015 20:08 18:46.
+ * For TProger.
  */
 public class MyColorFilter
 {
@@ -22,6 +23,12 @@ public class MyColorFilter
     {
         int color = AttributeGetter.getColor(ctx, attr);
         imageView.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+    }
+
+    public static void applyColorFromAttr(Context ctx, View view, int attr)
+    {
+        int color = AttributeGetter.getColor(ctx, attr);
+        view.getBackground().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
     }
 
     public static void applyGreyFilter(ImageView imageView)

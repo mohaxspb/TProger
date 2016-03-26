@@ -40,7 +40,7 @@ public class PagerAdapterMain extends FragmentStatePagerAdapter
         switch (position)
         {
             case 0:
-                return FragmentCategory.newInstance("");
+                return FragmentCategory.newInstance("", -1);
             case 1:
                 String key = ctx.getString(R.string.pref_design_key_category_in_cats_or_tags);
                 boolean showCategories = pref.getBoolean(key, true);

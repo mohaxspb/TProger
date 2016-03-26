@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 
+import ru.kuchanov.tproger.test.MyTabLayout;
+
 /**
  * Created by Юрий on 06.01.2016 15:14.
  * For ExpListTest.
@@ -19,5 +21,10 @@ public class MyApplication extends Application
         Fresco.initialize(this);
 
         super.onCreate();
+
+        //test
+
+//        MyTabLayout myTabLayout =  new MyTabLayout(this);
+//        myTabLayout.addTab(myTabLayout.newTab().setText("test"));
     }
 }

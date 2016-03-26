@@ -20,7 +20,7 @@
         <item name="windowBackgroundDark">@color/my_material_grey_300</item>
         <!--custom colors-->
         <item name="myCardBackgroundColor">@color/my_material_grey_50</item>
-        <item name="myCardBackgroundColorDark">@color/my_material_grey_300</item>
+        <item name="myCardBackgroundColorDark">@color/material_grey_400</item>
         <!-- settings icons -->
         <item name="overflowIcon">@drawable/ic_more_vert_grey600_48dp</item>
         <item name="themeIcon">@drawable/ic_color_lens_grey600_48dp</item>
@@ -170,7 +170,7 @@
 
         <!--custom colors-->
         <item name="myCardBackgroundColor">@color/my_material_grey_800</item>
-        <item name="myCardBackgroundColorDark">@color/material_grey_700</item>
+        <item name="myCardBackgroundColorDark">@color/my_material_grey_600</item>
         <!-- icons -->
 
         <!-- arrow icons -->

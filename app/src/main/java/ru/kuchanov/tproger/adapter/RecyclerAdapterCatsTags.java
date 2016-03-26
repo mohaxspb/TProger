@@ -3,7 +3,7 @@ package ru.kuchanov.tproger.adapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
@@ -57,8 +57,7 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_min, parent, false);
-        HolderTitle vh = new HolderTitle(v);
-        return vh;
+        return new HolderTitle(v);
     }
 
     @Override
@@ -80,11 +79,11 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
         boolean isOnMainActivity = ctx instanceof ActivityMain;
         if (isTabletMode && !isOnMainActivity && position == currentActivatedPosition)
         {
-            holderTitle.container.setBackgroundColor(AttributeGetter.getColor(ctx, R.attr.colorAccent));
+            holderTitle.cardView.setCardBackgroundColor(AttributeGetter.getColor(ctx, R.attr.myCardBackgroundColorDark));
         }
         else
         {
-            holderTitle.container.setBackgroundColor(ContextCompat.getColor(ctx, android.R.color.transparent));
+            holderTitle.cardView.setCardBackgroundColor(AttributeGetter.getColor(ctx, R.attr.myCardBackgroundColor));
         }
 
         switch (dataType)
@@ -132,10 +131,10 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
         }
     }
 
-    public int getCurrentActivatedPosition()
-    {
-        return currentActivatedPosition;
-    }
+//    public int getCurrentActivatedPosition()
+//    {
+//        return currentActivatedPosition;
+//    }
 
     public void setCurrentActivatedPosition(int currentActivatedPosition)
     {
@@ -144,14 +143,16 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
 
     public static class HolderTitle extends RecyclerView.ViewHolder
     {
-        public View container;
+        //        public View container;
+        public CardView cardView;
         public TextView title;
 
         public HolderTitle(View v)
         {
             super(v);
             title = (TextView) v.findViewById(R.id.title);
-            container = v;
+            cardView = (CardView) v.findViewById(R.id.cardView);
+//            container = v;
         }
     }
 }

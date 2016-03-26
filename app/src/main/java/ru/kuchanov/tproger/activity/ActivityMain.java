@@ -752,7 +752,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
     @SuppressLint("CommitPrefEdits")
     @Override
-    public void updateFAB(final int positionInViewPager/*, int typeOfDataInCatsTagsFrag*/)
+    public void updateFAB(final int positionInViewPager)
     {
         switch (positionInViewPager)
         {

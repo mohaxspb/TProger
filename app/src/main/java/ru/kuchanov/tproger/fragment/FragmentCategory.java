@@ -48,8 +48,8 @@ import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.ScreenProperties;
 
 /**
- * Created by Юрий on 17.09.2015 17:20.
- * For ExpListTest.
+ * Created by Юрий on 17.09.2015 17:20 19:35.
+ * For TProger.
  */
 public class FragmentCategory extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -57,12 +57,16 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     public static final String KEY_CURRENT_PAGE_TO_LOAD = "KEY_CURRENT_PAGE_TO_LOAD";
     public static final String KEY_IS_LOADING = "KEY_IS_LOADING";
     public static final String KEY_IS_LOADING_FROM_TOP = "KEY_IS_LOADING_FROM_TOP";
+    public static final String KEY_CURRENT_ACTIVATED_POSITION = "KEY_CURRENT_ACTIVATED_POSITION";
+
     protected MySpiceManager spiceManager;
     protected MySpiceManager spiceManagerOffline;
+
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
-    MyRoboSpiceDatabaseHelper databaseHelper;
+    private MyRoboSpiceDatabaseHelper databaseHelper;
     private String LOG = FragmentCategory.class.getSimpleName();
+
     private String categoryOrTagUrl;
     private Category category;
     private Tag tag;
@@ -70,17 +74,19 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     private AppCompatActivity act;
     private Context ctx;
     private int currentPageToLoad = 1;
+    private int currentActivatedPosition = -1;
     private boolean isLoading = false;
     private boolean isLoadingFromTop = true;
     private SharedPreferences pref;
     private int numOfColsInGridLayoutManager = 2;
     private ArrayList<Article> artsList = new ArrayList<>();
 
-    public static FragmentCategory newInstance(String category)
+    public static FragmentCategory newInstance(String category, int currentActivatedPosition)
     {
         FragmentCategory frag = new FragmentCategory();
         Bundle b = new Bundle();
         b.putString(KEY_CATEGORY_OR_TAG_URL, category);
+        b.putInt(KEY_CURRENT_ACTIVATED_POSITION, currentActivatedPosition);
         frag.setArguments(b);
 
         return frag;
@@ -95,6 +101,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         outState.putBoolean(KEY_IS_LOADING, isLoading);
         outState.putBoolean(KEY_IS_LOADING_FROM_TOP, isLoadingFromTop);
         outState.putInt(KEY_CURRENT_PAGE_TO_LOAD, currentPageToLoad);
+        outState.putInt(KEY_CURRENT_ACTIVATED_POSITION, currentActivatedPosition);
         outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
     }
 
@@ -106,6 +113,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
         Bundle args = this.getArguments();
         this.categoryOrTagUrl = args.getString(KEY_CATEGORY_OR_TAG_URL);
+        this.currentActivatedPosition = args.getInt(KEY_CURRENT_ACTIVATED_POSITION);
         this.LOG += "#" + this.categoryOrTagUrl;
 //        Log.d(LOG, this.categoryOrTagUrl);
 
@@ -141,6 +149,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             this.isLoading = savedInstanceState.getBoolean(KEY_IS_LOADING);
             this.isLoadingFromTop = savedInstanceState.getBoolean(KEY_IS_LOADING_FROM_TOP);
             this.currentPageToLoad = savedInstanceState.getInt(KEY_CURRENT_PAGE_TO_LOAD);
+            this.currentActivatedPosition = savedInstanceState.getInt(KEY_CURRENT_ACTIVATED_POSITION);
             this.artsList = savedInstanceState.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
         }
 
@@ -188,7 +197,9 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         //fill recycler with data of make request for it
         if (artsList.size() != 0)
         {
-            recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList, categoryOrTagUrl));
+            RecyclerAdapterArtsList adapterArtsList = new RecyclerAdapterArtsList(ctx, artsList, categoryOrTagUrl);
+            adapterArtsList.setCurrentActivatedPosition(currentActivatedPosition);
+            recyclerView.setAdapter(adapterArtsList);
 
             recyclerView.clearOnScrollListeners();
             recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
@@ -234,23 +245,10 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
         BusProvider.getInstance().register(this);
 
-//        if (act instanceof ActivityArticle)
-//        {
-//            spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
-//            spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
-//        }
-//        else if (act instanceof ActivityMain)
-//        {
         spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
         spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
-//        }
-//        else
-//        {
-//            throw new NullPointerException("need to add service for this activity: " + act.getClass().getSimpleName());
-//        }
 
         //remove spiceServiceStart to on resume
-
         spiceManager.addListenerIfPending(Articles.class, "unused", new CategoriesArtsRequestListener());
         spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new CategoriesArtsRequestListener());
     }
@@ -579,7 +577,9 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 artsList.addAll(list);
                 if (recyclerView.getAdapter() == null)
                 {
-                    recyclerView.setAdapter(new RecyclerAdapterArtsList(ctx, artsList, categoryOrTagUrl));
+                    RecyclerAdapterArtsList adapterArtsList = new RecyclerAdapterArtsList(ctx, artsList, categoryOrTagUrl);
+                    adapterArtsList.setCurrentActivatedPosition(currentActivatedPosition);
+                    recyclerView.setAdapter(adapterArtsList);
                     recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
                 }
                 else
