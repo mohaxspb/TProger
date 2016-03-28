@@ -48,14 +48,13 @@ import ru.kuchanov.tproger.navigation.OnNavigationItemSelectedListenerArticleAct
 import ru.kuchanov.tproger.navigation.PagerAdapterArticle;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
+import ru.kuchanov.tproger.otto.EventCategoryActivateItem;
+import ru.kuchanov.tproger.otto.EventCatsTagActivateItem;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
-import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.utils.AttributeGetter;
-import ru.kuchanov.tproger.utils.MyColorFilter;
 import ru.kuchanov.tproger.utils.MyRandomUtil;
 import ru.kuchanov.tproger.utils.MyUIL;
-import ru.kuchanov.tproger.utils.anim.ChangeImageWithAlpha;
 
 public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdateSelected,*/ ImageChanger, SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -68,12 +67,12 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     protected final int[] coverImgsIds = {R.drawable.tproger_small, R.drawable.cremlin, R.drawable.petergof};
     //views for tabletMode
 //    protected Toolbar toolbarLeft;
-    protected CollapsingToolbarLayout collapsingToolbarLayoutLeft;
-    protected CoordinatorLayout coordinatorLayoutLeft;
-    protected ImageView coverLeft;
-    protected View cover2Left;
-    protected View cover2BorderLeft;
-    protected AppBarLayout appBarLeft;
+//    protected CollapsingToolbarLayout collapsingToolbarLayoutLeft;
+//    protected CoordinatorLayout coordinatorLayoutLeft;
+//    protected ImageView coverLeft;
+//    protected View cover2Left;
+//    protected View cover2BorderLeft;
+//    protected AppBarLayout appBarLeft;
     protected LinearLayout mainContainer;
     protected FrameLayout leftContainer;
 
@@ -96,7 +95,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     ///////////
     /////////////
 //    ChangeImageWithAlpha changeImageWithAlpha;
-    ChangeImageWithAlpha changeImageWithAlphaLeft;
+//    ChangeImageWithAlpha changeImageWithAlphaLeft;
     ImageLoader imageLoader;
     ///////////
 //    protected MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
@@ -165,7 +164,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         if (isTabletMode)
         {
             setUpBackgroundAnimation(cover, cover2);
-            setUpBackgroundAnimation(coverLeft, cover2Left);
+//            setUpBackgroundAnimation(coverLeft, cover2Left);
 
             //Add category fragment
             FragmentCategory fragmentCategory;
@@ -189,29 +188,29 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         this.pref.registerOnSharedPreferenceChangeListener(this);
 
 
-        if (isTabletMode)
-        {
-            /////////
-            MyColorFilter.applyColorFromAttr(ctx, coverLeft, R.attr.colorAccent);
-
-            changeImageWithAlphaLeft = new ChangeImageWithAlpha();
-            changeImageWithAlphaLeft.setValues(ctx, cover2Left, coverLeft, artsWithImage);
-        }
+//        if (isTabletMode)
+//        {
+//            /////////
+//            MyColorFilter.applyColorFromAttr(ctx, coverLeft, R.attr.colorAccent);
+//
+//            changeImageWithAlphaLeft = new ChangeImageWithAlpha();
+//            changeImageWithAlphaLeft.setValues(ctx, cover2Left, coverLeft, artsWithImage);
+//        }
     }
 
     private void initializeViews()
     {
         if (isTabletMode)
         {
-            coverLeft = (ImageView) findViewById(R.id.cover_left);
-            cover2Left = findViewById(R.id.cover_to_fill_left);
-            cover2BorderLeft = findViewById(R.id.cover_2_border_left);
+//            coverLeft = (ImageView) findViewById(R.id.cover_left);
+//            cover2Left = findViewById(R.id.cover_to_fill_left);
+//            cover2BorderLeft = findViewById(R.id.cover_2_border_left);
 
-            appBarLeft = (AppBarLayout) this.findViewById(R.id.app_bar_layout_left);
+//            appBarLeft = (AppBarLayout) this.findViewById(R.id.app_bar_layout_left);
 
-            collapsingToolbarLayoutLeft = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_left);
+//            collapsingToolbarLayoutLeft = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_left);
 
-            coordinatorLayoutLeft = (CoordinatorLayout) this.findViewById(R.id.coordinator_left);
+//            coordinatorLayoutLeft = (CoordinatorLayout) this.findViewById(R.id.coordinator_left);
 
             mainContainer = (LinearLayout) findViewById(R.id.container_main);
             leftContainer = (FrameLayout) findViewById(R.id.container_left);
@@ -248,7 +247,8 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
             {
                 super.onPageSelected(position);
                 currentPositionOfArticleInList = position;
-
+                EventCategoryActivateItem eventCategoryActivateItem = new EventCategoryActivateItem(position);
+                BusProvider.getInstance().post(eventCategoryActivateItem);
                 collapsingToolbarLayout.setTitle(artsList.get(currentPositionOfArticleInList).getTitle());
             }
         };
@@ -532,14 +532,14 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         if (this.cover.getAlpha() == 0)
         {
             cover.setImageResource(coverImgsIds[positionInPager]);
-            return;
+//            return;
         }
 //        ChangeImageWithAlpha changeImageWithAlpha;
 //        ChangeImageWithAlpha changeImageWithAlphaLeft;
-        if (isTabletMode)
-        {
-            changeImageWithAlphaLeft.animate(0);
-        }
+//        if (isTabletMode)
+//        {
+//            changeImageWithAlphaLeft.animate(0);
+//        }
     }
 
     @Override
@@ -644,41 +644,41 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         }
 
         //prevent changing images if we are not in tabletMode
-        if (!this.isTabletMode || artsWithImage.size() == 0)
-        {
-            return;
-        }
+//        if (!this.isTabletMode || artsWithImage.size() == 0)
+//        {
+//            return;
+//        }
 
-        timer = new Timer();
-        timerTask = new TimerTask()
-        {
-            @Override
-            public void run()
-            {
-                runOnUiThread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        updateImageFromArts(artsWithImage, coverLeft, cover2Left);
-                    }
-                });
-            }
-        };
-        timer.schedule(timerTask, 0, 5000);
+//        timer = new Timer();
+//        timerTask = new TimerTask()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                runOnUiThread(new Runnable()
+//                {
+//                    @Override
+//                    public void run()
+//                    {
+//                        updateImageFromArts(artsWithImage, coverLeft, cover2Left);
+//                    }
+//                });
+//            }
+//        };
+//        timer.schedule(timerTask, 0, 5000);
 
-        if (isTabletMode)
-        {
-            if (changeImageWithAlphaLeft == null)
-            {
-                changeImageWithAlphaLeft = new ChangeImageWithAlpha();
-                changeImageWithAlphaLeft.setValues(ctx, cover2Left, coverLeft, artsWithImage);
-            }
-            else
-            {
-                changeImageWithAlphaLeft.updateArtsList(artsWithImage);
-            }
-        }
+//        if (isTabletMode)
+//        {
+//            if (changeImageWithAlphaLeft == null)
+//            {
+//                changeImageWithAlphaLeft = new ChangeImageWithAlpha();
+//                changeImageWithAlphaLeft.setValues(ctx, cover2Left, coverLeft, artsWithImage);
+//            }
+//            else
+//            {
+//                changeImageWithAlphaLeft.updateArtsList(artsWithImage);
+//            }
+//        }
     }
 
     public void updateImageFromArts(final ArrayList<Article> artsWithImage, final ImageView cover, final View cover2)
@@ -717,13 +717,13 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         if (this.cover.getAlpha() == 0)
         {
             imageLoader.displayImage(artsWithImage.get(positionInList).getImageUrl(), cover, DisplayImageOptions.createSimple());
-            return;
+//            return;
         }
 
-        if (isTabletMode)
-        {
-            changeImageWithAlphaLeft.animate(positionInList);
-        }
+//        if (isTabletMode)
+//        {
+//            changeImageWithAlphaLeft.animate(positionInList);
+//        }
     }
 
     private void setUpBackgroundAnimation(View cover, View cover2)
@@ -770,66 +770,16 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         cover.startAnimation(anim);
     }
 
-    public boolean getIsCollapsed()
-    {
-        return this.isCollapsed;
-    }
-
-    public void setCollapsed(boolean isCollapsed)
-    {
-        this.isCollapsed = isCollapsed;
-    }
-
-    public int getVerticalOffsetPrevious()
-    {
-        return verticalOffsetPrevious;
-    }
-
-    public void setVerticalOffsetPrevious(int verticalOffsetPrevious)
-    {
-        this.verticalOffsetPrevious = verticalOffsetPrevious;
-    }
 
     public ImageView getCover()
     {
         return cover;
     }
 
-    public View getCover2Border()
-    {
-        return cover2Border;
-    }
 
     public Toolbar getToolbar()
     {
         return toolbar;
-    }
-
-    public Toolbar getToolbarRight()
-    {
-        return toolbarRight;
-    }
-
-    public ViewPager getPager()
-    {
-        return this.pager;
-    }
-
-
-    public CollapsingToolbarLayout getCollapsingToolbarLayout()
-    {
-        return collapsingToolbarLayout;
-    }
-
-//    public boolean isFullyExpanded()
-//    {
-//        return fullyExpanded;
-//    }
-
-    public void setFullyExpanded(boolean fullyExpanded)
-    {
-        this.fullyExpanded = fullyExpanded;
-//        Log.i(LOG, "fullyExpanded: " + fullyExpanded);
     }
 
     @Override

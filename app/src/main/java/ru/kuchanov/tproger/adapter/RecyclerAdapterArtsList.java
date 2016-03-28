@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
@@ -28,6 +29,7 @@ import java.util.TimeZone;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.activity.ActivityArticle;
+import ru.kuchanov.tproger.activity.ActivityMain;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DipToPx;
@@ -112,6 +114,18 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         if (showMaxInfo)
         {
             final ViewHolderMaximum maxHolder = (ViewHolderMaximum) holder;
+
+            //mark activated item
+            boolean isTabletMode = pref.getBoolean(ctx.getString(R.string.pref_design_key_tablet_mode), false);
+            boolean isOnMainActivity = ctx instanceof ActivityMain;
+            if (isTabletMode && !isOnMainActivity && position == currentActivatedPosition)
+            {
+                maxHolder.cardView.setCardBackgroundColor(AttributeGetter.getColor(ctx, R.attr.myCardBackgroundColorDark));
+            }
+            else
+            {
+                maxHolder.cardView.setCardBackgroundColor(AttributeGetter.getColor(ctx, R.attr.myCardBackgroundColor));
+            }
 
             //TITLE
             maxHolder.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
@@ -272,6 +286,18 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             minHolder.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
             minHolder.title.setText(Html.fromHtml(a.getTitle()));
             minHolder.title.setOnClickListener(new ShowArticleCL(a, position));
+
+            //mark activated item
+            boolean isTabletMode = pref.getBoolean(ctx.getString(R.string.pref_design_key_tablet_mode), false);
+            boolean isOnMainActivity = ctx instanceof ActivityMain;
+            if (isTabletMode && !isOnMainActivity && position == currentActivatedPosition)
+            {
+                minHolder.cardView.setCardBackgroundColor(AttributeGetter.getColor(ctx, R.attr.myCardBackgroundColorDark));
+            }
+            else
+            {
+                minHolder.cardView.setCardBackgroundColor(AttributeGetter.getColor(ctx, R.attr.myCardBackgroundColor));
+            }
         }
     }
 
@@ -288,17 +314,20 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
 
     public static class ViewHolderMinimum extends RecyclerView.ViewHolder
     {
+        public CardView cardView;
         public TextView title;
 
         public ViewHolderMinimum(View v)
         {
             super(v);
+            cardView = (CardView) v;
             title = (TextView) v.findViewById(R.id.title);
         }
     }
 
     public static class ViewHolderMaximum extends RecyclerView.ViewHolder
     {
+        public CardView cardView;
         public TextView title;
         public TextView date;
         public ImageView img;
@@ -314,6 +343,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         public ViewHolderMaximum(View v)
         {
             super(v);
+            cardView = (CardView) v;
             title = (TextView) v.findViewById(R.id.title);
             date = (TextView) v.findViewById(R.id.date);
             img = (ImageView) v.findViewById(R.id.art_card_img);

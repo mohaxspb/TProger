@@ -21,6 +21,7 @@ import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.PendingRequestListener;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,8 +33,11 @@ import ru.kuchanov.tproger.adapter.RecyclerAdapterArtsList;
 import ru.kuchanov.tproger.RecyclerViewOnScrollListener;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;
+import ru.kuchanov.tproger.adapter.RecyclerAdapterCatsTags;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
+import ru.kuchanov.tproger.otto.EventCategoryActivateItem;
+import ru.kuchanov.tproger.otto.EventCatsTagActivateItem;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
@@ -90,6 +94,17 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         frag.setArguments(b);
 
         return frag;
+    }
+
+    @Subscribe
+    public void onActivateItem(EventCategoryActivateItem event)
+    {
+        int position = event.getPosition();
+        Log.i(LOG, "onActivateItem with position: " + position);
+
+        recyclerView.smoothScrollToPosition(position);
+        ((RecyclerAdapterArtsList) recyclerView.getAdapter()).setCurrentActivatedPosition(position);
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     @Override

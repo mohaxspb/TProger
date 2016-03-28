@@ -425,9 +425,12 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
         int curTypeListSize = (curCategoryType == TYPE_CATEGORY) ? categories.size() : tags.size();
         if (position < curTypeListSize)
         {
-            recyclerView.smoothScrollToPosition(position);
-            ((RecyclerAdapterCatsTags) recyclerView.getAdapter()).setCurrentActivatedPosition(position);
-            recyclerView.getAdapter().notifyDataSetChanged();
+            if (recyclerView.getAdapter() != null)
+            {
+                recyclerView.smoothScrollToPosition(position);
+                ((RecyclerAdapterCatsTags) recyclerView.getAdapter()).setCurrentActivatedPosition(position);
+                recyclerView.getAdapter().notifyDataSetChanged();
+            }
         }
         else
         {
