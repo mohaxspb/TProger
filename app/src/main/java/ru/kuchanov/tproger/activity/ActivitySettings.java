@@ -35,7 +35,7 @@ import ru.kuchanov.tproger.fragment.preference.FragmentPreferenceSystem;
 public class ActivitySettings extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {
 
-    public static final String PREF_KEY_NIGHT_MODE = "pref_design_key_night_mode";
+    //    public static final String PREF_KEY_NIGHT_MODE = "pref_design_key_night_mode";
     private final static String LOG = ActivitySettings.class.getSimpleName();
     /**
      * A preference value change listener that updates the preference's summary
@@ -108,7 +108,7 @@ public class ActivitySettings extends PreferenceActivity implements SharedPrefer
         PreferenceManager.setDefaultValues(this, R.xml.pref_notification, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_about, true);
         this.pref = PreferenceManager.getDefaultSharedPreferences(this);
-        themeId = (pref.getBoolean(PREF_KEY_NIGHT_MODE, false)) ? R.style.Theme_Preference_Dark : R.style.Theme_Preference_Light;
+        themeId = (pref.getBoolean(getString(R.string.pref_design_key_night_mode), false)) ? R.style.Theme_Preference_Dark : R.style.Theme_Preference_Light;
         this.setTheme(themeId);
         super.onCreate(savedInstanceState);
 
@@ -166,12 +166,9 @@ public class ActivitySettings extends PreferenceActivity implements SharedPrefer
     public void onSharedPreferenceChanged(SharedPreferences pref, String key)
     {
         Log.d(LOG, "onSharedPreferenceChanged key: " + key);
-
-        switch (key)
+        if (key.equals(getString(R.string.pref_design_key_night_mode)))
         {
-            case PREF_KEY_NIGHT_MODE:
-                this.recreate();
-                break;
+            recreate();
         }
     }
 }

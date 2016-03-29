@@ -122,7 +122,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         PreferenceManager.setDefaultValues(this, R.xml.pref_about, true);
         this.pref = PreferenceManager.getDefaultSharedPreferences(this);
         //set theme before super and set content to apply it
-        int themeId = (pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false)) ? R.style.My_Theme_Dark : R.style.My_Theme_Light;
+        int themeId = (pref.getBoolean(getString(R.string.pref_design_key_night_mode), false)) ? R.style.My_Theme_Dark : R.style.My_Theme_Light;
         this.setTheme(themeId);
         //call super after setTheme to set it 0_0
         super.onCreate(savedInstanceState);
@@ -288,7 +288,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
         int id = item.getItemId();
 
-        boolean nightModeIsOn = this.pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false);
+        boolean nightModeIsOn = this.pref.getBoolean(getString(R.string.pref_design_key_night_mode), false);
         boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
 
         switch (id)
@@ -301,7 +301,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 this.drawerLayout.openDrawer(GravityCompat.START);
                 return true;
             case R.id.night_mode_switcher:
-                this.pref.edit().putBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, !nightModeIsOn).commit();
+                this.pref.edit().putBoolean(getString(R.string.pref_design_key_night_mode), !nightModeIsOn).commit();
 //                this.recreate();
                 return true;
             case R.id.list_style_switcher:
@@ -352,7 +352,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 }
             }
 
-            boolean nightModeIsOn = this.pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false);
+            boolean nightModeIsOn = this.pref.getBoolean(getString(R.string.pref_design_key_night_mode), false);
             MenuItem themeMenuItem = menu.findItem(R.id.night_mode_switcher);
             if (nightModeIsOn)
             {

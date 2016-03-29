@@ -2,8 +2,6 @@ package ru.kuchanov.tproger.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -19,7 +17,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -33,14 +30,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.fragment.FragmentCategoriesAndTags;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.OnPageChangeListenerMain;
 import ru.kuchanov.tproger.navigation.PagerAdapterCatsAndTags;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventCatsTagActivateItem;
-import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.db.Tag;
@@ -60,28 +55,18 @@ public class ActivityCategoriesAndTags extends ActivityBase
     private static final String LOG = ActivityCategoriesAndTags.class.getSimpleName();
     private int positionInList = -1;
     ////////
-//    private Toolbar toolbar;
     private CollapsingToolbarLayout collapsingToolbarLayout;
-    //    private NavigationView navigationView;
-//    private DrawerLayout drawerLayout;
-//    private ActionBarDrawerToggle mDrawerToggle;
-    private boolean drawerOpened;
     private ViewPager pager;
     private CoordinatorLayout coordinatorLayout;
     private boolean isCollapsed = true;
     private View cover2Border;
     private AppBarLayout appBar;
-    //    private MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
-//    private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
     private FloatingActionButton fab;
     //listeners for navView and pager
     private OnPageChangeListenerMain onPageChangeListenerMain;
-    //    protected View cover2;
     private View coverThatChangesAlpha;
     private ImageView cover;
     private int verticalOffsetPrevious = 0;
-    //    private Context ctx;
-    //    private SharedPreferences pref;
     ///animations
     private ArrayList<Article> artsWithImage = new ArrayList<>();
     private int prevPosOfImage = -1;
@@ -93,8 +78,6 @@ public class ActivityCategoriesAndTags extends ActivityBase
     private int curDataType;
     //
     private int numOfColsInGridLayoutManager;
-
-//    private boolean isTabletMode;
 
     public static void startActivityCatsAndTags(Context ctx, ArrayList<Category> cats, ArrayList<Tag> tags, int curDataType, int positionInList)
     {
@@ -125,7 +108,7 @@ public class ActivityCategoriesAndTags extends ActivityBase
         this.isTabletMode = this.pref.getBoolean(getString(R.string.pref_design_key_tablet_mode), false);
 
         //set theme before super and set content to apply it
-        int themeId = (pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false)) ? R.style.My_Theme_Dark : R.style.My_Theme_Light;
+        int themeId = (pref.getBoolean(getString(R.string.pref_design_key_night_mode), false)) ? R.style.My_Theme_Dark : R.style.My_Theme_Light;
         this.setTheme(themeId);
         //call super after setTheme to set it 0_0
         super.onCreate(savedInstanceState);
@@ -245,12 +228,10 @@ public class ActivityCategoriesAndTags extends ActivityBase
                 public void onDrawerClosed(View view)
                 {
                     supportInvalidateOptionsMenu();
-                    drawerOpened = false;
                 }
 
                 public void onDrawerOpened(View drawerView)
                 {
-                    drawerOpened = true;
                 }
             };
             //show arrow instead of hamburger
@@ -316,7 +297,7 @@ public class ActivityCategoriesAndTags extends ActivityBase
         Log.d(LOG, "onOptionsItemSelected");
         int id = item.getItemId();
 
-        boolean nightModeIsOn = this.pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false);
+        boolean nightModeIsOn = this.pref.getBoolean(getString(R.string.pref_design_key_night_mode), false);
         boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
 
         switch (id)
@@ -329,7 +310,7 @@ public class ActivityCategoriesAndTags extends ActivityBase
                 onBackPressed();
                 return true;
             case R.id.night_mode_switcher:
-                this.pref.edit().putBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, !nightModeIsOn).commit();
+                this.pref.edit().putBoolean(getString(R.string.pref_design_key_night_mode), !nightModeIsOn).commit();
                 this.recreate();
                 return true;
             case R.id.list_style_switcher:
@@ -364,7 +345,7 @@ public class ActivityCategoriesAndTags extends ActivityBase
                 }
             }
 
-            boolean nightModeIsOn = this.pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false);
+            boolean nightModeIsOn = this.pref.getBoolean(getString(R.string.pref_design_key_night_mode), false);
             MenuItem themeMenuItem = menu.findItem(R.id.night_mode_switcher);
             if (nightModeIsOn)
             {

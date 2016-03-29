@@ -49,7 +49,6 @@ import ru.kuchanov.tproger.navigation.PagerAdapterArticle;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.otto.EventCategoryActivateItem;
-import ru.kuchanov.tproger.otto.EventCatsTagActivateItem;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.AttributeGetter;
@@ -134,7 +133,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         PreferenceManager.setDefaultValues(this, R.xml.pref_about, true);
         this.pref = PreferenceManager.getDefaultSharedPreferences(this);
         //set theme before super and set content to apply it
-        int themeId = (pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false)) ? R.style.My_Theme_Dark : R.style.My_Theme_Light;
+        int themeId = (pref.getBoolean(getString(R.string.pref_design_key_night_mode), false)) ? R.style.My_Theme_Dark : R.style.My_Theme_Light;
         this.setTheme(themeId);
         //call super after setTheme to set it 0_0
         super.onCreate(savedInstanceState);
@@ -355,7 +354,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
                 }
             }
 
-            boolean nightModeIsOn = this.pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false);
+            boolean nightModeIsOn = this.pref.getBoolean(getString(R.string.pref_design_key_night_mode), false);
             MenuItem themeMenuItem = menu.findItem(R.id.night_mode_switcher);
             if (nightModeIsOn)
             {
@@ -380,7 +379,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
 
         int id = item.getItemId();
 
-        boolean nightModeIsOn = this.pref.getBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, false);
+        boolean nightModeIsOn = this.pref.getBoolean(getString(R.string.pref_design_key_night_mode), false);
 
         switch (id)
         {
@@ -392,7 +391,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
                 onBackPressed();
                 return true;
             case R.id.night_mode_switcher:
-                this.pref.edit().putBoolean(ActivitySettings.PREF_KEY_NIGHT_MODE, !nightModeIsOn).commit();
+                this.pref.edit().putBoolean(getString(R.string.pref_design_key_night_mode), !nightModeIsOn).commit();
                 this.recreate();
                 return true;
             case R.id.text_size_dialog:
