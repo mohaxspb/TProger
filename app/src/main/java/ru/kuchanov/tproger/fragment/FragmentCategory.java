@@ -25,6 +25,7 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.Const;
@@ -106,6 +107,25 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         ((RecyclerAdapterArtsList) recyclerView.getAdapter()).setCurrentActivatedPosition(position);
         recyclerView.getAdapter().notifyDataSetChanged();
     }
+
+    //TODO test
+//    ArrayList<String> allNames = new ArrayList<String>(){{add("a");add("b");add("c");}};
+//
+//    ArrayList<String> names = new ArrayList<String>(){{add("a");add("a1");add("a2");}};
+//
+//    public String getUniqName()
+//    {
+//        Random rnd = new Random();
+//        String randonNameFromListOfAllNames = allNames.get(rnd.nextInt(allNames.size()));
+//        String initialName = randonNameFromListOfAllNames;
+//        int counter = 0;
+//        while (allNames.contains(randonNameFromListOfAllNames))
+//        {
+//            counter++;
+//            randonNameFromListOfAllNames = initialName +  Roman.IntegerToRoman(counter);
+//        }
+//        return randonNameFromListOfAllNames;
+//    }
 
     @Override
     public void onSaveInstanceState(Bundle outState)
@@ -509,7 +529,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         @Override
         public void onRequestSuccess(Articles articles)
         {
-//            Log.i(LOG, "onRequestSuccess");
+            Log.i(LOG, "onRequestSuccess");
             if (!isAdded())
             {
                 Log.e(LOG, "frag not added");

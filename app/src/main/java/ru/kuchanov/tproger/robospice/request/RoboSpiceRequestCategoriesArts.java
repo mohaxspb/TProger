@@ -29,13 +29,13 @@ import ru.kuchanov.tproger.utils.WriteFile;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
 
 /**
- * Created by Юрий on 16.10.2015 16:43.
- * For ExpListTest.
+ * Created by Юрий on 16.10.2015 16:43 17:24.
+ * For TProger.
  */
 public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
 {
-    public static final String LOG = RoboSpiceRequestCategoriesArts.class.getSimpleName();
     boolean resetCategoryInDB = false;
+    private String LOG = RoboSpiceRequestCategoriesArts.class.getSimpleName();
     private Context ctx;
     private MyRoboSpiceDatabaseHelper databaseHelper;
     private String url;
@@ -47,6 +47,7 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
 
         this.ctx = ctx;
         this.categoryOrTagUrl = categoryOrTagUrl;
+        this.LOG += "#" + categoryOrTagUrl;
 
 //        this.url = "http://tproger.ru/page/1/";
         if (categoryOrTagUrl.startsWith("http"))
@@ -69,12 +70,14 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
     @Override
     public Articles loadDataFromNetwork() throws Exception
     {
-//        Log.i(LOG, "loadDataFromNetwork called");
+        Log.i(LOG, "loadDataFromNetwork called");
         Articles articles = new Articles();
 
         String responseBody = makeRequest();
         Document document = Jsoup.parse(responseBody);
 
+        Log.e(LOG, this.url);
+        System.out.println("FUCK!!!!!!!!!!!");
         ArrayList<Article> list = HtmlParsing.parseForArticlesList(document, databaseHelper);
         //write to DB
         list = Article.writeArtsList(list, databaseHelper);
@@ -284,7 +287,7 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         }
 
         //just get initial info for DB. Need to comment it in release;
-//        createInitialTagCategoriesInfoFile(categoriesFromDB, tagsFromDB);
+        createInitialTagCategoriesInfoFile(categoriesFromDB, tagsFromDB);
 
         //write them
         try
@@ -337,7 +340,7 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         builder.append("</string-array>");
         builder.append("\n").append("\n");
 
-        builder.append("<string-array name=\"tags_url\" formatted=\"false\">");
+        builder.append("<string-array name=\"tags_url\" formatted=\"false\">\n");
         for (Tag tag : tags)
         {
             builder.append("<item><![CDATA[").append(tag.getUrl()).append("]]></item>\n");

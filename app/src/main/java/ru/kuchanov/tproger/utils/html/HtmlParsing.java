@@ -35,6 +35,7 @@ public class HtmlParsing
         if (pageTitle.html().contains("Страница не найдена"))
         {
             throw new Exception(Const.ERROR_404_WHILE_PARSING_PAGE);
+//            return null;
         }
 
         Element mainColumns = doc.getElementById("main_columns");

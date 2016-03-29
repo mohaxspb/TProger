@@ -51,7 +51,7 @@ public class WriteFile extends AsyncTask<String, Void, String>
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(writenedFile, false), "UTF8"));
             bw.write(data);
             bw.close();
-
+            Log.i(LOG, "write to pathToFile");
         }
         catch (IOException e)
         {

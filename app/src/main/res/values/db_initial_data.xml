@@ -14,6 +14,22 @@
         <item><![CDATA[Рассказы о своих проектах]]></item>
         <item><![CDATA[События]]></item>
         <item><![CDATA[Статьи]]></item>
+        <item><![CDATA[Видео]]></item>
+        <item><![CDATA[Викторины]]></item>
+        <item><![CDATA[Еженедельная подборка]]></item>
+        <item><![CDATA[Задачки]]></item>
+        <item><![CDATA[Инструменты]]></item>
+        <item><![CDATA[Интервью]]></item>
+        <item><![CDATA[Интересные ссылки]]></item>
+        <item><![CDATA[Ищем программиста]]></item>
+        <item><![CDATA[Книги]]></item>
+        <item><![CDATA[Новости]]></item>
+        <item><![CDATA[Ответы экспертов]]></item>
+        <item><![CDATA[Переводы]]></item>
+        <item><![CDATA[Подборки]]></item>
+        <item><![CDATA[Рассказы о своих проектах]]></item>
+        <item><![CDATA[События]]></item>
+        <item><![CDATA[Статьи]]></item>
     </string-array>
 
     <string-array name="categories_url" formatted="false">
@@ -30,6 +46,22 @@
         <item><![CDATA[category/projects/]]></item>
         <item><![CDATA[category/events/]]></item>
         <item><![CDATA[category/articles/]]></item>
+        <item><![CDATA[https://tproger.ru/category/video/]]></item>
+        <item><![CDATA[https://tproger.ru/category/quiz/]]></item>
+        <item><![CDATA[https://tproger.ru/category/weekly/]]></item>
+        <item><![CDATA[https://tproger.ru/category/problems/]]></item>
+        <item><![CDATA[https://tproger.ru/category/tools/]]></item>
+        <item><![CDATA[https://tproger.ru/category/interview/]]></item>
+        <item><![CDATA[https://tproger.ru/category/links/]]></item>
+        <item><![CDATA[https://tproger.ru/category/looking-for-programmer/]]></item>
+        <item><![CDATA[https://tproger.ru/category/books/]]></item>
+        <item><![CDATA[https://tproger.ru/category/news/]]></item>
+        <item><![CDATA[https://tproger.ru/category/experts/]]></item>
+        <item><![CDATA[https://tproger.ru/category/translations/]]></item>
+        <item><![CDATA[https://tproger.ru/category/digest/]]></item>
+        <item><![CDATA[https://tproger.ru/category/projects/]]></item>
+        <item><![CDATA[https://tproger.ru/category/events/]]></item>
+        <item><![CDATA[https://tproger.ru/category/articles/]]></item>
     </string-array>
 
     <string-array name="tags_title" formatted="false">
@@ -37,6 +69,8 @@
         <item><![CDATA[API]]></item>
         <item><![CDATA[C#]]></item>
         <item><![CDATA[C и C++]]></item>
+        <item><![CDATA[Git]]></item>
+        <item><![CDATA[Google]]></item>
         <item><![CDATA[Hardware]]></item>
         <item><![CDATA[Java]]></item>
         <item><![CDATA[JavaScript]]></item>
@@ -48,6 +82,7 @@
         <item><![CDATA[Алгоритмы]]></item>
         <item><![CDATA[Безопасность]]></item>
         <item><![CDATA[Безопасный код]]></item>
+        <item><![CDATA[Браузеры]]></item>
         <item><![CDATA[Головоломки]]></item>
         <item><![CDATA[Для мотивации]]></item>
         <item><![CDATA[Для начинающих]]></item>
@@ -65,15 +100,12 @@
         <item><![CDATA[Низкоуровневое программирование]]></item>
         <item><![CDATA[Обучение программированию]]></item>
         <item><![CDATA[Оптимизация]]></item>
+        <item><![CDATA[Поразрядная обработка]]></item>
         <item><![CDATA[Потоки и блокировки]]></item>
-        <item><![CDATA[Прохождение интервью]]></item>
         <item><![CDATA[Разработка игр]]></item>
         <item><![CDATA[Рекомендуем]]></item>
-        <item><![CDATA[Рекурсия и динамика]]></item>
         <item><![CDATA[Ретро]]></item>
         <item><![CDATA[Связные списки]]></item>
-        <item><![CDATA[Сортировка и поиск]]></item>
-        <item><![CDATA[Стеки и очереди]]></item>
         <item><![CDATA[Тестирование]]></item>
         <item><![CDATA[Функциональное программирование]]></item>
         <item><![CDATA[Языки программирования]]></item>
@@ -81,50 +113,50 @@
     </string-array>
 
     <string-array name="tags_url" formatted="false">
-        <item><![CDATA[tag/android/]]></item>
-        <item><![CDATA[tag/api/]]></item>
-        <item><![CDATA[tag/c-sharp/]]></item>
-        <item><![CDATA[tag/c-and-cpp/]]></item>
-        <item><![CDATA[tag/hardware/]]></item>
-        <item><![CDATA[tag/java/]]></item>
-        <item><![CDATA[tag/javascript/]]></item>
-        <item><![CDATA[tag/linux/]]></item>
-        <item><![CDATA[tag/opensource/]]></item>
-        <item><![CDATA[tag/python/]]></item>
-        <item><![CDATA[tag/unity/]]></item>
-        <item><![CDATA[tag/web/]]></item>
-        <item><![CDATA[tag/algorithms/]]></item>
-        <item><![CDATA[tag/security/]]></item>
-        <item><![CDATA[tag/safe-code/]]></item>
-        <item><![CDATA[tag/brain-teasers/]]></item>
-        <item><![CDATA[tag/for-motivation/]]></item>
-        <item><![CDATA[tag/for-beginners/]]></item>
-        <item><![CDATA[tag/%d0%b7%d0%b0%d0%b4%d0%b0%d1%87%d0%b8-%d0%bf%d0%be%d0%b2%d1%8b%d1%88%d0%b5%d0%bd%d0%bd%d0%be%d0%b9-%d1%81%d0%bb%d0%be%d0%b6%d0%bd%d0%be%d1%81%d1%82%d0%b8/]]></item>
-        <item><![CDATA[tag/%d0%b7%d0%b0%d0%b4%d0%b0%d1%87%d0%b8-%d1%83%d0%bc%d0%b5%d1%80%d0%b5%d0%bd%d0%bd%d0%be%d0%b9-%d1%81%d0%bb%d0%be%d0%b6%d0%bd%d0%be%d1%81%d1%82%d0%b8/]]></item>
-        <item><![CDATA[tag/tools/]]></item>
-        <item><![CDATA[tag/internet/]]></item>
-        <item><![CDATA[tag/success-story/]]></item>
-        <item><![CDATA[tag/good-hack/]]></item>
-        <item><![CDATA[tag/best-practice/]]></item>
-        <item><![CDATA[tag/arrays-and-strings/]]></item>
-        <item><![CDATA[tag/scalability-and-memory-limits/]]></item>
-        <item><![CDATA[tag/math-and-probability/]]></item>
-        <item><![CDATA[tag/mobiledev/]]></item>
-        <item><![CDATA[tag/low-level-coding/]]></item>
-        <item><![CDATA[tag/learn-programming/]]></item>
-        <item><![CDATA[tag/optimization/]]></item>
-        <item><![CDATA[tag/threads-and-locks/]]></item>
-        <item><![CDATA[tag/job-interview/]]></item>
-        <item><![CDATA[tag/gamedev/]]></item>
-        <item><![CDATA[tag/featured/]]></item>
-        <item><![CDATA[tag/recursion-and-dynamic-programming/]]></item>
-        <item><![CDATA[tag/retro/]]></item>
-        <item><![CDATA[tag/linked-lists/]]></item>
-        <item><![CDATA[tag/sorting-and-searching/]]></item>
-        <item><![CDATA[tag/stacks-and-queues/]]></item>
-        <item><![CDATA[tag/testing/]]></item>
-        <item><![CDATA[tag/functional-programming/]]></item>
-        <item><![CDATA[tag/programming-languages/]]></item>
-        <item><![CDATA[tag/sandbox/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/android/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/api/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/c-sharp/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/c-and-cpp/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/git/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/google/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/hardware/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/java/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/javascript/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/linux/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/opensource/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/python/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/unity/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/web/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/algorithms/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/security/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/safe-code/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/browsers/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/brain-teasers/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/for-motivation/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/for-beginners/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/expert-problems/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/middle-problems/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/tools/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/internet/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/success-story/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/good-hack/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/best-practice/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/arrays-and-strings/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/scalability-and-memory-limits/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/math-and-probability/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/mobiledev/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/low-level-coding/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/learn-programming/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/optimization/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/bit-manipulation/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/threads-and-locks/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/gamedev/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/featured/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/retro/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/linked-lists/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/testing/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/functional-programming/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/programming-languages/]]></item>
+        <item><![CDATA[https://tproger.ru/tag/sandbox/]]></item>
     </string-array>
 </resources>

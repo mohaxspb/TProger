@@ -51,28 +51,28 @@ import ru.kuchanov.tproger.utils.anim.ChangeImageWithAlpha;
  * Created by Юрий on 01.02.2016 17:16.
  * For TProger.
  */
-public class ActivityCategoriesAndTags extends AppCompatActivity
+public class ActivityCategoriesAndTags extends ActivityBase
 {
     //constants
     private static final String KEY_POSITION = "KEY_POSITION";
     private static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
     private static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
     private static final String LOG = ActivityCategoriesAndTags.class.getSimpleName();
-    int positionInList;
+    private int positionInList = -1;
     ////////
-    private Toolbar toolbar;
+//    private Toolbar toolbar;
     private CollapsingToolbarLayout collapsingToolbarLayout;
-    private NavigationView navigationView;
-    private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
+    //    private NavigationView navigationView;
+//    private DrawerLayout drawerLayout;
+//    private ActionBarDrawerToggle mDrawerToggle;
     private boolean drawerOpened;
     private ViewPager pager;
     private CoordinatorLayout coordinatorLayout;
     private boolean isCollapsed = true;
     private View cover2Border;
     private AppBarLayout appBar;
-    private MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
-    private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
+    //    private MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
+//    private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
     private FloatingActionButton fab;
     //listeners for navView and pager
     private OnPageChangeListenerMain onPageChangeListenerMain;
@@ -80,8 +80,8 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
     private View coverThatChangesAlpha;
     private ImageView cover;
     private int verticalOffsetPrevious = 0;
-    private Context ctx;
-    private SharedPreferences pref;
+    //    private Context ctx;
+    //    private SharedPreferences pref;
     ///animations
     private ArrayList<Article> artsWithImage = new ArrayList<>();
     private int prevPosOfImage = -1;
@@ -94,7 +94,7 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
     //
     private int numOfColsInGridLayoutManager;
 
-    private boolean isTabletMode;
+//    private boolean isTabletMode;
 
     public static void startActivityCatsAndTags(Context ctx, ArrayList<Category> cats, ArrayList<Tag> tags, int curDataType, int positionInList)
     {
@@ -269,21 +269,6 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
             }
         };
         navigationView.setNavigationItemSelectedListener(navigationViewOnNavigationItemSelectedListener);
-
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState)
-    {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig)
-    {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -295,47 +280,10 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
     }
 
     @Override
-    protected void onStart()
-    {
-//        Log.i(LOG, "onStart called!");
-        super.onStart();
-        BusProvider.getInstance().register(this);
-
-        if (!spiceManager.isStarted())
-        {
-            spiceManager.start(ctx);
-        }
-        if (!spiceManagerOffline.isStarted())
-        {
-            spiceManagerOffline.start(ctx);
-        }
-    }
-
-    @Override
-    protected void onResume()
-    {
-//        Log.i(LOG, "onResume called!");
-        super.onResume();
-
-        if (!spiceManager.isStarted())
-        {
-            spiceManager.start(ctx);
-        }
-        if (!spiceManagerOffline.isStarted())
-        {
-            spiceManagerOffline.start(ctx);
-        }
-    }
-
-    @Override
     protected void onStop()
     {
 //        Log.i(LOG, "onStop called!");
         super.onStop();
-        //should unregister in onStop to avoid some issues while pausing activity/fragment
-        //see http://stackoverflow.com/a/19737191/3212712
-        BusProvider.getInstance().unregister(this);
-
         //stop and cancel all timers that manages animations
         if (timer != null && timerTask != null)
         {
@@ -344,22 +292,6 @@ public class ActivityCategoriesAndTags extends AppCompatActivity
 
             timer = null;
             timerTask = null;
-        }
-    }
-
-    @Override
-    protected void onPause()
-    {
-//        Log.i(LOG, "onPause called!");
-        super.onPause();
-
-        if (spiceManager.isStarted())
-        {
-            spiceManager.shouldStop();
-        }
-        if (spiceManagerOffline.isStarted())
-        {
-            spiceManagerOffline.shouldStop();
         }
     }
 
