@@ -616,11 +616,13 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     @Subscribe
     public void onArtsReceived(final EventArtsReceived event)
     {
-//        Log.i(LOG, "EventArtsReceived: " + String.valueOf(event.getArts().size()));
+        Log.i(LOG, "EventArtsReceived: " + String.valueOf(event.getArts().size()));
 
         //fill list of arts in activity;
         this.artsList.clear();
         this.artsList.addAll(event.getArts());
+
+        pager.getAdapter().notifyDataSetChanged();
 
         //fill artsWithImage list
         artsWithImage.clear();

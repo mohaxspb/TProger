@@ -9,7 +9,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 
+import java.lang.reflect.Method;
+
+import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
@@ -34,6 +41,10 @@ public abstract class ActivityBase extends AppCompatActivity
     protected Context ctx;
     protected SharedPreferences pref;
     protected boolean isTabletMode;
+
+    protected abstract void initializeViews();
+
+    protected abstract void setUpNavigationDrawer();
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState)
@@ -106,5 +117,42 @@ public abstract class ActivityBase extends AppCompatActivity
         //should unregister in onStop to avoid some issues while pausing activity/fragment
         //see http://stackoverflow.com/a/19737191/3212712
         BusProvider.getInstance().unregister(this);
+    }
+
+    //workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
+    @Override
+    protected boolean onPrepareOptionsPanel(View view, Menu menu)
+    {
+        if (menu != null)
+        {
+            if (menu.getClass().getSimpleName().equals("MenuBuilder"))
+            {
+                try
+                {
+                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
+                    m.setAccessible(true);
+                    m.invoke(menu, true);
+                }
+                catch (Exception e)
+                {
+                    Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
+                }
+            }
+
+            boolean nightModeIsOn = this.pref.getBoolean(getString(R.string.pref_design_key_night_mode), false);
+            MenuItem themeMenuItem = menu.findItem(R.id.night_mode_switcher);
+            if (nightModeIsOn && themeMenuItem != null)
+            {
+                themeMenuItem.setChecked(true);
+            }
+
+            boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
+            MenuItem listStyleMenuItem = menu.findItem(R.id.list_style_switcher);
+            if (isGridManager && listStyleMenuItem != null)
+            {
+                listStyleMenuItem.setChecked(true);
+            }
+        }
+        return super.onPrepareOptionsPanel(view, menu);
     }
 }

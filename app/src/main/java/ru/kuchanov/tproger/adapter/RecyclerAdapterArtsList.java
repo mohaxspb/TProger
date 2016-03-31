@@ -42,8 +42,8 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     public static final String LOG = RecyclerAdapterArtsList.class.getSimpleName();
     private static final int SHOW_MAX_INFO = 1;
     private static final int SHOW_MIN_INFO = 0;
-    int textSizePrimary;
-    int textSizeSecondary;
+    private int textSizePrimary;
+    private int textSizeSecondary;
     private ArrayList<Article> artsList;
     private SharedPreferences pref;
     private Context ctx;
@@ -272,6 +272,9 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
                 maxHolder.preview.setLayoutParams(paramsPreview);
 
                 maxHolder.preview.setOnClickListener(null);
+
+                maxHolder.previewCover.setVisibility(View.INVISIBLE);
+                maxHolder.bottomPanel.setBackgroundResource(android.R.color.transparent);
             }
             //date
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy 'в' HH:mm", Locale.getDefault());

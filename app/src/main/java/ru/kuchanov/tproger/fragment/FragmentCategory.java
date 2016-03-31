@@ -101,31 +101,19 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     public void onActivateItem(EventCategoryActivateItem event)
     {
         int position = event.getPosition();
+        this.currentActivatedPosition = position;
         Log.i(LOG, "onActivateItem with position: " + position);
 
-        recyclerView.smoothScrollToPosition(position);
-        ((RecyclerAdapterArtsList) recyclerView.getAdapter()).setCurrentActivatedPosition(position);
-        recyclerView.getAdapter().notifyDataSetChanged();
+        if (position != -1)
+        {
+            if (recyclerView.getAdapter() != null)
+            {
+                recyclerView.smoothScrollToPosition(position);
+                ((RecyclerAdapterArtsList) recyclerView.getAdapter()).setCurrentActivatedPosition(position);
+                recyclerView.getAdapter().notifyDataSetChanged();
+            }
+        }
     }
-
-    //TODO test
-//    ArrayList<String> allNames = new ArrayList<String>(){{add("a");add("b");add("c");}};
-//
-//    ArrayList<String> names = new ArrayList<String>(){{add("a");add("a1");add("a2");}};
-//
-//    public String getUniqName()
-//    {
-//        Random rnd = new Random();
-//        String randonNameFromListOfAllNames = allNames.get(rnd.nextInt(allNames.size()));
-//        String initialName = randonNameFromListOfAllNames;
-//        int counter = 0;
-//        while (allNames.contains(randonNameFromListOfAllNames))
-//        {
-//            counter++;
-//            randonNameFromListOfAllNames = initialName +  Roman.IntegerToRoman(counter);
-//        }
-//        return randonNameFromListOfAllNames;
-//    }
 
     @Override
     public void onSaveInstanceState(Bundle outState)
@@ -266,13 +254,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     }
 
     @Override
-    public void onDetach()
-    {
-//        Log.i(LOG, "onDetach called");
-        super.onDetach();
-    }
-
-    @Override
     public void onStart()
     {
 //        Log.i(LOG, "onStart called from activity: " + getActivity().getClass().getSimpleName());
@@ -312,6 +293,10 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         if (artsList.size() == 0)
         {
             performRequest(1, false, false);
+        }
+        else
+        {
+            onActivateItem(new EventCategoryActivateItem(currentActivatedPosition));
         }
     }
 

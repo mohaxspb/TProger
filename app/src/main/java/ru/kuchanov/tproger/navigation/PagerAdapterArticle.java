@@ -10,8 +10,8 @@ import ru.kuchanov.tproger.fragment.FragmentArticle;
 import ru.kuchanov.tproger.robospice.db.Article;
 
 /**
- * Created by Юрий on 17.09.2015 18:06.
- * For ExpListTest.
+ * Created by Юрий on 17.09.2015 18:06 19:33.
+ * For TProger.
  */
 public class PagerAdapterArticle extends FragmentStatePagerAdapter
 {
@@ -20,8 +20,8 @@ public class PagerAdapterArticle extends FragmentStatePagerAdapter
     public PagerAdapterArticle(FragmentManager fm, ArrayList<Article> artsList)
     {
         super(fm);
-//        this.artsList = artsList;
-        this.artsList = new ArrayList<>(artsList);
+        this.artsList = artsList;
+//        this.artsList = new ArrayList<>(artsList);
     }
 
     @Override

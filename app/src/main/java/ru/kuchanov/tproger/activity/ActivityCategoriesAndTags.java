@@ -76,8 +76,6 @@ public class ActivityCategoriesAndTags extends ActivityBase
     private ArrayList<Category> categories = new ArrayList<>();
     private ArrayList<Tag> tags = new ArrayList<>();
     private int curDataType;
-    //
-    private int numOfColsInGridLayoutManager;
 
     public static void startActivityCatsAndTags(Context ctx, ArrayList<Category> cats, ArrayList<Tag> tags, int curDataType, int positionInList)
     {
@@ -187,7 +185,8 @@ public class ActivityCategoriesAndTags extends ActivityBase
         }
     }
 
-    private void initializeViews()
+    @Override
+    protected void initializeViews()
     {
         cover = (ImageView) findViewById(R.id.cover);
         coverThatChangesAlpha = findViewById(R.id.cover_to_fill);
@@ -206,6 +205,7 @@ public class ActivityCategoriesAndTags extends ActivityBase
         fab = (FloatingActionButton) findViewById(R.id.fab);
     }
 
+    @Override
     protected void setUpNavigationDrawer()
     {
         //changing statusBarColor
@@ -325,43 +325,6 @@ public class ActivityCategoriesAndTags extends ActivityBase
         return super.onOptionsItemSelected(item);
     }
 
-    //workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
-    @Override
-    protected boolean onPrepareOptionsPanel(View view, Menu menu)
-    {
-        if (menu != null)
-        {
-            if (menu.getClass().getSimpleName().equals("MenuBuilder"))
-            {
-                try
-                {
-                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
-                    m.setAccessible(true);
-                    m.invoke(menu, true);
-                }
-                catch (Exception e)
-                {
-                    Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
-                }
-            }
-
-            boolean nightModeIsOn = this.pref.getBoolean(getString(R.string.pref_design_key_night_mode), false);
-            MenuItem themeMenuItem = menu.findItem(R.id.night_mode_switcher);
-            if (nightModeIsOn)
-            {
-                themeMenuItem.setChecked(true);
-            }
-
-            boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
-            MenuItem listStyleMenuItem = menu.findItem(R.id.list_style_switcher);
-            if (isGridManager)
-            {
-                listStyleMenuItem.setChecked(true);
-            }
-        }
-        return super.onPrepareOptionsPanel(view, menu);
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState)
     {
@@ -378,7 +341,6 @@ public class ActivityCategoriesAndTags extends ActivityBase
     private void restoreState(Bundle savedInstanceState, Bundle args)
     {
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
-        this.numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(this.getString(R.string.pref_design_key_col_num), "2"));
 
         if (savedInstanceState == null)
         {

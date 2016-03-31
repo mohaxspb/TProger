@@ -285,6 +285,10 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
         {
             performRequest();
         }
+        else
+        {
+            onActivateItem(new EventCatsTagActivateItem(currentActivatedPosition));
+        }
     }
 
     @Override
@@ -421,6 +425,7 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
     public void onActivateItem(EventCatsTagActivateItem event)
     {
         int position = event.getPosition();
+        this.currentActivatedPosition = position;
         Log.i(LOG, "onActivateItem with position: " + position);
         int curTypeListSize = (curCategoryType == TYPE_CATEGORY) ? categories.size() : tags.size();
         if (position < curTypeListSize)
