@@ -33,7 +33,6 @@ import ru.kuchanov.tproger.adapter.RecyclerAdapterCatsTags;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;
 import ru.kuchanov.tproger.otto.BusProvider;
-import ru.kuchanov.tproger.otto.EventCatsTagActivateItem;
 import ru.kuchanov.tproger.otto.EventCatsTagsShow;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Category;
@@ -203,7 +202,6 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
                 {
                     RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories, ctx);
                     adapterCatsTags.setDataType(RecyclerAdapterCatsTags.TYPE_CATEGORY);
-                    adapterCatsTags.setCurrentActivatedPosition(currentActivatedPosition);
                     recyclerView.setAdapter(adapterCatsTags);
                 }
                 else
@@ -216,7 +214,6 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
                 {
                     RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories, ctx);
                     adapterCatsTags.setDataType(RecyclerAdapterCatsTags.TYPE_TAG);
-                    adapterCatsTags.setCurrentActivatedPosition(currentActivatedPosition);
                     recyclerView.setAdapter(adapterCatsTags);
                 }
                 else
@@ -284,10 +281,6 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
         if (tags.size() == 0 && categories.size() == 0)
         {
             performRequest();
-        }
-        else
-        {
-            onActivateItem(new EventCatsTagActivateItem(currentActivatedPosition));
         }
     }
 
@@ -421,28 +414,6 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
 //        ((FabUpdater) act).updateFAB(1, curCategoryType);
     }
 
-    @Subscribe
-    public void onActivateItem(EventCatsTagActivateItem event)
-    {
-        int position = event.getPosition();
-        this.currentActivatedPosition = position;
-        Log.i(LOG, "onActivateItem with position: " + position);
-        int curTypeListSize = (curCategoryType == TYPE_CATEGORY) ? categories.size() : tags.size();
-        if (position < curTypeListSize)
-        {
-            if (recyclerView.getAdapter() != null)
-            {
-                recyclerView.smoothScrollToPosition(position);
-                ((RecyclerAdapterCatsTags) recyclerView.getAdapter()).setCurrentActivatedPosition(position);
-                recyclerView.getAdapter().notifyDataSetChanged();
-            }
-        }
-        else
-        {
-            Log.i(LOG, "Strange scroll to position bigger than listSize");
-        }
-    }
-
     private class TagsCategoriesRequestListener implements PendingRequestListener<TagsCategories>
     {
         @Override
@@ -489,7 +460,6 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
 
             RecyclerAdapterCatsTags adapterCatsTags = new RecyclerAdapterCatsTags(tags, categories, ctx);
             adapterCatsTags.setDataType(curCategoryType);
-            adapterCatsTags.setCurrentActivatedPosition(currentActivatedPosition);
             recyclerView.setAdapter(adapterCatsTags);
         }
 

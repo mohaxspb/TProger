@@ -16,10 +16,8 @@ import java.util.ArrayList;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.activity.ActivityCategoriesAndTags;
-import ru.kuchanov.tproger.activity.ActivityMain;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.db.Tag;
-import ru.kuchanov.tproger.utils.AttributeGetter;
 
 public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
@@ -34,11 +32,6 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
     private ArrayList<Tag> tags;
 
     private Context ctx;
-    /**
-     * holds position of activated item; Activated Item is colored in tablet mode;
-     * default value is -1 (none)
-     */
-    private int currentActivatedPosition = -1;
 
     public RecyclerAdapterCatsTags(ArrayList<Tag> tags, ArrayList<Category> cats, Context ctx)
     {
@@ -73,18 +66,6 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
         float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
         float resultUiTextSizeInPx = uiTextScale * textSizePrimary;
         holderTitle.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, resultUiTextSizeInPx);
-
-        //mark activated item
-        boolean isTabletMode = pref.getBoolean(ctx.getString(R.string.pref_design_key_tablet_mode), false);
-        boolean isOnMainActivity = ctx instanceof ActivityMain;
-        if (isTabletMode && !isOnMainActivity && position == currentActivatedPosition)
-        {
-            holderTitle.cardView.setCardBackgroundColor(AttributeGetter.getColor(ctx, R.attr.myCardBackgroundColorDark));
-        }
-        else
-        {
-            holderTitle.cardView.setCardBackgroundColor(AttributeGetter.getColor(ctx, R.attr.myCardBackgroundColor));
-        }
 
         switch (dataType)
         {
@@ -129,16 +110,6 @@ public class RecyclerAdapterCatsTags extends RecyclerView.Adapter<RecyclerView.V
             case TYPE_TAG:
                 return tags.size();
         }
-    }
-
-//    public int getCurrentActivatedPosition()
-//    {
-//        return currentActivatedPosition;
-//    }
-
-    public void setCurrentActivatedPosition(int currentActivatedPosition)
-    {
-        this.currentActivatedPosition = currentActivatedPosition;
     }
 
     public static class HolderTitle extends RecyclerView.ViewHolder

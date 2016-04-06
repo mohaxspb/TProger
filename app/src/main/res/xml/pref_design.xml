@@ -32,15 +32,6 @@
             android:title="@string/pref_design_title_col_num"/>
 
         <SwitchPreference
-            android:defaultValue="@bool/isTablet"
-            android:icon="?tabletIcon"
-            android:key="@string/pref_design_key_tablet_mode"
-            android:summaryOff="@string/pref_design_title_tablet_mode"
-            android:summaryOn="@string/pref_design_title_tablet_mode"
-            android:switchTextOff="@string/pref_key_off"
-            android:switchTextOn="@string/pref_key_on"/>
-
-        <SwitchPreference
             android:defaultValue="true"
             android:key="@string/pref_design_key_category_in_cats_or_tags"/>
     </PreferenceCategory>

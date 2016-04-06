@@ -1,6 +1,7 @@
 package ru.kuchanov.tproger.robospice.request;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.octo.android.robospice.request.SpiceRequest;
 
@@ -47,7 +48,7 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
         this.categoryOrTagUrl = categoryOrTagUrl;
         this.page = page;
 
-        this.url = Const.DOMAIN_MAIN + categoryOrTagUrl + Const.SLASH + "page" + Const.SLASH + page + Const.SLASH;
+        this.url = ((categoryOrTagUrl.startsWith("http")) ?  "": Const.DOMAIN_MAIN) + categoryOrTagUrl + ((categoryOrTagUrl.endsWith("/")) ? "" : Const.SLASH) + "page" + Const.SLASH + page + Const.SLASH;
 
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
     }
@@ -66,7 +67,6 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
         {
             throw new Exception("I cant imaging how it can be...");
         }
-
 
         boolean isCategory = isCategoryOrTagOrDoNotExists;
         if (isCategory)
@@ -140,6 +140,7 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
 
     private String makeRequest() throws Exception
     {
+        Log.i(LOG, "makeRequest with url: " + url);
         OkHttpClient client = new OkHttpClient();
 
         Request.Builder request = new Request.Builder();

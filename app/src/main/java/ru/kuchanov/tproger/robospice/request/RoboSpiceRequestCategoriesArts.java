@@ -212,6 +212,7 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
 
     private String makeRequest() throws Exception
     {
+        Log.i(LOG, "makeRequest with url: " + url);
         OkHttpClient client = new OkHttpClient();
 
         Request.Builder request = new Request.Builder();

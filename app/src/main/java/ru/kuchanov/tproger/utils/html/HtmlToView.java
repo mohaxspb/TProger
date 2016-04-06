@@ -58,7 +58,6 @@ public class HtmlToView
         int colorAccent = AttributeGetter.getColor(ctx, android.R.attr.colorAccent);
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
-        final boolean isTabletMode = pref.getBoolean(ctx.getResources().getString(R.string.pref_design_key_tablet_mode), false);
 
         float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
 
@@ -94,11 +93,6 @@ public class HtmlToView
 
                     float recyclerWidth = ctx.getResources().getDisplayMetrics().widthPixels;
                     int paddingsInDp = 5;
-                    if (isTabletMode)
-                    {
-                        //here we mast change width as there will be a drawer in left part of screen
-                        recyclerWidth = recyclerWidth / 3 * 2;
-                    }
                     //minusing paddings
                     recyclerWidth -= DipToPx.convert(paddingsInDp * 2, ctx);
 

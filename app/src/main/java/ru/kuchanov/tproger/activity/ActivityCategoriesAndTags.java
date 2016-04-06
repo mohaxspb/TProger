@@ -2,7 +2,6 @@ package ru.kuchanov.tproger.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
@@ -10,13 +9,8 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -24,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -34,12 +27,9 @@ import ru.kuchanov.tproger.fragment.FragmentCategoriesAndTags;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.OnPageChangeListenerMain;
 import ru.kuchanov.tproger.navigation.PagerAdapterCatsAndTags;
-import ru.kuchanov.tproger.otto.BusProvider;
-import ru.kuchanov.tproger.otto.EventCatsTagActivateItem;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.db.Tag;
-import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.anim.ChangeImageWithAlpha;
 
 /**
@@ -90,6 +80,23 @@ public class ActivityCategoriesAndTags extends ActivityBase
         ctx.startActivity(intent);
     }
 
+//    @Override
+//    protected void onResume()
+//    {
+//        super.onResume();
+//
+//        TextView tv = (TextView) findViewById(R.id.text_view);
+//        for (int i = 0; i < 10; i++)
+//        {
+//            tv.append("&nbsp");
+//            Rect bounds = new Rect();
+//            Paint tpaint = tv.getPaint();
+//            tpaint.getTextBounds(tv.getText().toString(), 0, tv.getText().length(), bounds);
+//            int width = bounds.width();
+//            Log.i(LOG, "width: " + width);
+//        }
+//    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -103,7 +110,7 @@ public class ActivityCategoriesAndTags extends ActivityBase
         PreferenceManager.setDefaultValues(this, R.xml.pref_about, true);
         this.pref = PreferenceManager.getDefaultSharedPreferences(this);
         //get if isTabetMode
-        this.isTabletMode = this.pref.getBoolean(getString(R.string.pref_design_key_tablet_mode), false);
+//        this.isTabletMode = this.pref.getBoolean(getString(R.string.pref_design_key_tablet_mode), false);
 
         //set theme before super and set content to apply it
         int themeId = (pref.getBoolean(getString(R.string.pref_design_key_night_mode), false)) ? R.style.My_Theme_Dark : R.style.My_Theme_Light;
@@ -111,45 +118,28 @@ public class ActivityCategoriesAndTags extends ActivityBase
         //call super after setTheme to set it 0_0
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_cats__and_tags_tablet);
+        setContentView(R.layout.activity_cats_and_tags);
 
         this.restoreState(savedInstanceState, getIntent().getExtras());
 
         this.initializeViews();
-        this.setUpNavigationDrawer();
 
-        //add fragCatsAndTags in left contatiner
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        Fragment fragCatsAndTags = manager.findFragmentById(R.id.container_left);
-        switch (curDataType)
+        NavigationView.OnNavigationItemSelectedListener navigationViewOnNavigationItemSelectedListener = new NavigationView.OnNavigationItemSelectedListener()
         {
-            case FragmentCategoriesAndTags.TYPE_CATEGORY:
-                if (isTabletMode)
-                {
-                    if (fragCatsAndTags == null)
-                    {
-                        fragCatsAndTags = FragmentCategoriesAndTags.newInstance(FragmentCategoriesAndTags.TYPE_CATEGORY, categories, tags, positionInList);
-                        transaction.add(R.id.container_left, fragCatsAndTags);
-                        transaction.commit();
-                    }
-                }
-                break;
-            case FragmentCategoriesAndTags.TYPE_TAG:
-                if (isTabletMode)
-                {
-                    if (fragCatsAndTags == null)
-                    {
-                        fragCatsAndTags = FragmentCategoriesAndTags.newInstance(FragmentCategoriesAndTags.TYPE_TAG, categories, tags, positionInList);
-                        transaction.add(R.id.container_left, fragCatsAndTags);
-                        transaction.commit();
-                    }
-                }
-                break;
-        }
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item)
+            {
+                //TODO
+                Log.d(LOG, "onNavigationItemSelected called");
+                return false;
+            }
+        };
+
+        this.setUpNavigationDrawer(false, navigationViewOnNavigationItemSelectedListener);
+
 
         //setup pager
-        this.pager.setAdapter(new PagerAdapterCatsAndTags(manager, ctx, categories, tags, curDataType));
+        this.pager.setAdapter(new PagerAdapterCatsAndTags(getSupportFragmentManager(), ctx, categories, tags, curDataType));
         ViewPager.SimpleOnPageChangeListener onPageChangeListener = new ViewPager.SimpleOnPageChangeListener()
         {
             @Override
@@ -169,8 +159,6 @@ public class ActivityCategoriesAndTags extends ActivityBase
                         break;
                 }
                 collapsingToolbarLayout.setTitle(title);
-                EventCatsTagActivateItem eventCatsTagActivateItem = new EventCatsTagActivateItem(position);
-                BusProvider.getInstance().post(eventCatsTagActivateItem);
             }
         };
         this.pager.addOnPageChangeListener(onPageChangeListener);
@@ -203,53 +191,6 @@ public class ActivityCategoriesAndTags extends ActivityBase
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
-    }
-
-    @Override
-    protected void setUpNavigationDrawer()
-    {
-        //changing statusBarColor
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-        {
-            getWindow().setStatusBarColor(AttributeGetter.getColor(ctx, R.attr.colorPrimaryDark));
-        }
-
-        setSupportActionBar(toolbar);
-
-        final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
-        {
-            actionBar.setDisplayShowTitleEnabled(false);
-
-            actionBar.setDisplayHomeAsUpEnabled(true);
-
-            mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.hello_world, R.string.hello_world)
-            {
-                public void onDrawerClosed(View view)
-                {
-                    supportInvalidateOptionsMenu();
-                }
-
-                public void onDrawerOpened(View drawerView)
-                {
-                }
-            };
-            //show arrow instead of hamburger
-            mDrawerToggle.setDrawerIndicatorEnabled(false);
-
-            drawerLayout.setDrawerListener(mDrawerToggle);
-        }
-        NavigationView.OnNavigationItemSelectedListener navigationViewOnNavigationItemSelectedListener = new NavigationView.OnNavigationItemSelectedListener()
-        {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem item)
-            {
-                //TODO
-                Log.d(LOG, "onNavigationItemSelected called");
-                return false;
-            }
-        };
-        navigationView.setNavigationItemSelectedListener(navigationViewOnNavigationItemSelectedListener);
     }
 
     @Override

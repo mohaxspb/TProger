@@ -32,7 +32,6 @@
     <string name="pref_design_key_col_num">pref_design_key_col_num</string>
     <string name="pref_design_title_col_num">Число колонок</string>
 
-    <string name="pref_design_key_tablet_mode">pref_design_key_tablet_mode</string>
     <string name="pref_design_title_tablet_mode">Планшетный режим</string>
 
     <string-array name="pref_design_col_num_entries">

@@ -29,7 +29,6 @@ import java.util.TimeZone;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.activity.ActivityArticle;
-import ru.kuchanov.tproger.activity.ActivityMain;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DipToPx;
@@ -48,23 +47,13 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     private SharedPreferences pref;
     private Context ctx;
     private ImageLoader imageLoader;
-    private boolean isTabletMode;
-    private boolean isOnArticleActivity;
 
     private String categoryOrTagUrl;
-
-    /**
-     * holds position of activated item; Activated Item is colored in tablet mode;
-     * default value is -1 (none)
-     */
-    private int currentActivatedPosition = -1;
 
     public RecyclerAdapterArtsList(Context ctx, ArrayList<Article> dataset, String categoryOrTagUrl)
     {
         this.ctx = ctx;
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
-        this.isTabletMode = pref.getBoolean(ctx.getResources().getString(R.string.pref_design_key_tablet_mode), false);
-        this.isOnArticleActivity = (ctx instanceof ActivityArticle);
 
         imageLoader = MyUIL.get(ctx);
 
@@ -115,18 +104,6 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         {
             final ViewHolderMaximum maxHolder = (ViewHolderMaximum) holder;
 
-            //mark activated item
-            boolean isTabletMode = pref.getBoolean(ctx.getString(R.string.pref_design_key_tablet_mode), false);
-            boolean isOnMainActivity = ctx instanceof ActivityMain;
-            if (isTabletMode && !isOnMainActivity && position == currentActivatedPosition)
-            {
-                maxHolder.cardView.setCardBackgroundColor(AttributeGetter.getColor(ctx, R.attr.myCardBackgroundColorDark));
-            }
-            else
-            {
-                maxHolder.cardView.setCardBackgroundColor(AttributeGetter.getColor(ctx, R.attr.myCardBackgroundColor));
-            }
-
             //TITLE
             maxHolder.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
             maxHolder.title.setText(Html.fromHtml(a.getTitle()));
@@ -141,18 +118,8 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
 
                 float width = ctx.getResources().getDisplayMetrics().widthPixels;
 
-                if (isOnArticleActivity)
-                {
-                    width /= 3;
-                }
-                else if (isTabletMode)
-                {
-                    //here we mast change width as there will be a drawer in left part of screen
-                    width = width / 3 * 2;
-                }
-
                 boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
-                if (isGridManager && !isOnArticleActivity)
+                if (isGridManager)
                 {
                     int numOfColsInGridLayoutManager = Integer.parseInt(pref.getString(ctx.getString(R.string.pref_design_key_col_num), "2"));
                     width /= (float) numOfColsInGridLayoutManager;
@@ -289,18 +256,6 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             minHolder.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
             minHolder.title.setText(Html.fromHtml(a.getTitle()));
             minHolder.title.setOnClickListener(new ShowArticleCL(a, position));
-
-            //mark activated item
-            boolean isTabletMode = pref.getBoolean(ctx.getString(R.string.pref_design_key_tablet_mode), false);
-            boolean isOnMainActivity = ctx instanceof ActivityMain;
-            if (isTabletMode && !isOnMainActivity && position == currentActivatedPosition)
-            {
-                minHolder.cardView.setCardBackgroundColor(AttributeGetter.getColor(ctx, R.attr.myCardBackgroundColorDark));
-            }
-            else
-            {
-                minHolder.cardView.setCardBackgroundColor(AttributeGetter.getColor(ctx, R.attr.myCardBackgroundColor));
-            }
         }
     }
 
@@ -308,11 +263,6 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
     public int getItemCount()
     {
         return artsList.size();
-    }
-
-    public void setCurrentActivatedPosition(int currentActivatedPosition)
-    {
-        this.currentActivatedPosition = currentActivatedPosition;
     }
 
     public static class ViewHolderMinimum extends RecyclerView.ViewHolder

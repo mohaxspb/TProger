@@ -21,24 +21,19 @@ import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.PendingRequestListener;
-import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.adapter.RecyclerAdapterArtsList;
 import ru.kuchanov.tproger.RecyclerViewOnScrollListener;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;
-import ru.kuchanov.tproger.adapter.RecyclerAdapterCatsTags;
+import ru.kuchanov.tproger.adapter.RecyclerAdapterArtsList;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
-import ru.kuchanov.tproger.otto.EventCategoryActivateItem;
-import ru.kuchanov.tproger.otto.EventCatsTagActivateItem;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
@@ -97,22 +92,16 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         return frag;
     }
 
-    @Subscribe
-    public void onActivateItem(EventCategoryActivateItem event)
+    public static FragmentCategory newInstance(String category, int currentActivatedPosition, ArrayList<Article> artsList)
     {
-        int position = event.getPosition();
-        this.currentActivatedPosition = position;
-        Log.i(LOG, "onActivateItem with position: " + position);
+        FragmentCategory frag = new FragmentCategory();
+        Bundle b = new Bundle();
+        b.putString(KEY_CATEGORY_OR_TAG_URL, category);
+        b.putInt(KEY_CURRENT_ACTIVATED_POSITION, currentActivatedPosition);
+        b.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
+        frag.setArguments(b);
 
-        if (position != -1)
-        {
-            if (recyclerView.getAdapter() != null)
-            {
-                recyclerView.smoothScrollToPosition(position);
-                ((RecyclerAdapterArtsList) recyclerView.getAdapter()).setCurrentActivatedPosition(position);
-                recyclerView.getAdapter().notifyDataSetChanged();
-            }
-        }
+        return frag;
     }
 
     @Override
@@ -137,6 +126,16 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         Bundle args = this.getArguments();
         this.categoryOrTagUrl = args.getString(KEY_CATEGORY_OR_TAG_URL);
         this.currentActivatedPosition = args.getInt(KEY_CURRENT_ACTIVATED_POSITION);
+        if (args.containsKey(Article.KEY_ARTICLES_LIST))
+        {
+            this.artsList = args.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
+            Log.i(LOG, "currentPageToLoad: " + currentPageToLoad);
+            Log.i(LOG, "artsList.size(): " + artsList.size());
+            Log.i(LOG, " Const.NUM_OF_ARTS_ON_PAGE: " +  Const.NUM_OF_ARTS_ON_PAGE);
+            this.currentPageToLoad = (int) Math.floor(artsList.size() / Const.NUM_OF_ARTS_ON_PAGE);
+            Log.i(LOG, "currentPageToLoad: " + currentPageToLoad);
+        }
+
         this.LOG += "#" + this.categoryOrTagUrl;
 //        Log.d(LOG, this.categoryOrTagUrl);
 
@@ -220,8 +219,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         //fill recycler with data of make request for it
         if (artsList.size() != 0)
         {
+            Log.i(LOG, "artsList.size() != 0");
             RecyclerAdapterArtsList adapterArtsList = new RecyclerAdapterArtsList(ctx, artsList, categoryOrTagUrl);
-            adapterArtsList.setCurrentActivatedPosition(currentActivatedPosition);
             recyclerView.setAdapter(adapterArtsList);
 
             recyclerView.clearOnScrollListeners();
@@ -235,6 +234,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                     performRequest(currentPageToLoad, false, false);
                 }
             });
+
+//            BusProvider.getInstance().post(new EventArtsReceived(artsList));
         }
         else
         {
@@ -265,8 +266,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
 
         //remove spiceServiceStart to on resume
-        spiceManager.addListenerIfPending(Articles.class, "unused", new CategoriesArtsRequestListener());
-        spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new CategoriesArtsRequestListener());
+        spiceManager.addListenerIfPending(Articles.class, LOG, new CategoriesArtsRequestListener());
+        spiceManagerOffline.addListenerIfPending(Articles.class, LOG, new CategoriesArtsRequestListener());
     }
 
     @Override
@@ -294,10 +295,11 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         {
             performRequest(1, false, false);
         }
-        else
-        {
-            onActivateItem(new EventCategoryActivateItem(currentActivatedPosition));
-        }
+//        else
+//        {
+//            Log.i(LOG, "scroll to position: " + currentActivatedPosition);
+//            onActivateItem(new EventCategoryActivateItem(currentActivatedPosition));
+//        }
     }
 
     @Override
@@ -598,7 +600,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 if (recyclerView.getAdapter() == null)
                 {
                     RecyclerAdapterArtsList adapterArtsList = new RecyclerAdapterArtsList(ctx, artsList, categoryOrTagUrl);
-                    adapterArtsList.setCurrentActivatedPosition(currentActivatedPosition);
                     recyclerView.setAdapter(adapterArtsList);
                     recyclerView.getAdapter().notifyItemRangeInserted(0, artsList.size());
                 }

@@ -66,7 +66,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     private Article article;
     private Context ctx;
     private ImageLoader imageLoader;
-    private boolean isTabletMode;
     private int arrowUp;
     private int arrowDown;
 
@@ -75,7 +74,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         this.ctx = ctx;
         this.article = article;
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
-        this.isTabletMode = pref.getBoolean(ctx.getResources().getString(R.string.pref_design_key_tablet_mode), false);
 
         imageLoader = MyUIL.get(ctx);
 
@@ -91,11 +89,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
 
         recyclerWidth = ctx.getResources().getDisplayMetrics().widthPixels;
-        if (isTabletMode)
-        {
-            //here we mast change width as there will be a drawer in left part of screen
-            recyclerWidth = recyclerWidth / 3 * 2;
-        }
         //minusing paddings
         recyclerWidth -= DipToPx.convert(paddingsInDp * 2, ctx);
 

@@ -3,9 +3,11 @@ package ru.kuchanov.tproger.activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +22,7 @@ import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
+import ru.kuchanov.tproger.utils.AttributeGetter;
 
 /**
  * Created by Юрий on 29.03.2016 16:54.
@@ -40,11 +43,45 @@ public abstract class ActivityBase extends AppCompatActivity
      */
     protected Context ctx;
     protected SharedPreferences pref;
-    protected boolean isTabletMode;
 
     protected abstract void initializeViews();
 
-    protected abstract void setUpNavigationDrawer();
+    protected void setUpNavigationDrawer(boolean showHamburger, NavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener)
+    {
+        //changing statusBarColor
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            getWindow().setStatusBarColor(AttributeGetter.getColor(ctx, R.attr.colorPrimaryDark));
+        }
+
+        setSupportActionBar(toolbar);
+
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null)
+        {
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+
+            mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.hello_world, R.string.hello_world)
+            {
+                public void onDrawerClosed(View view)
+                {
+                    supportInvalidateOptionsMenu();
+                }
+
+                public void onDrawerOpened(View drawerView)
+                {
+
+                }
+            };
+            //show arrow instead of hamburger
+            mDrawerToggle.setDrawerIndicatorEnabled(showHamburger);
+
+            drawerLayout.setDrawerListener(mDrawerToggle);
+        }
+
+        navigationView.setNavigationItemSelectedListener(navigationItemSelectedListener);
+    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState)

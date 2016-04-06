@@ -21,7 +21,6 @@ public class PagerAdapterArticle extends FragmentStatePagerAdapter
     {
         super(fm);
         this.artsList = artsList;
-//        this.artsList = new ArrayList<>(artsList);
     }
 
     @Override

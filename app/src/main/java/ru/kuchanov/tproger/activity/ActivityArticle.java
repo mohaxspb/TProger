@@ -1,24 +1,17 @@
 package ru.kuchanov.tproger.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -26,63 +19,32 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.otto.Subscribe;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.SingltonRoboSpice;
-import ru.kuchanov.tproger.fragment.FragmentCategory;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.ImageChanger;
 import ru.kuchanov.tproger.navigation.OnNavigationItemSelectedListenerArticleActivity;
 import ru.kuchanov.tproger.navigation.PagerAdapterArticle;
-import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
-import ru.kuchanov.tproger.otto.EventCategoryActivateItem;
-import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
-import ru.kuchanov.tproger.utils.AttributeGetter;
-import ru.kuchanov.tproger.utils.MyRandomUtil;
-import ru.kuchanov.tproger.utils.MyUIL;
 
-public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdateSelected,*/ ImageChanger, SharedPreferences.OnSharedPreferenceChangeListener
+public class ActivityArticle extends ActivityBase implements ImageChanger, SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String KEY_CURRENT_ARTICLE_POSITION_IN_LIST = "KEY_CURRENT_ARTICLE_POSITION_IN_LIST";
     public static final String KEY_CURRENT_CATEGORY_OR_TAG_URL = "KEY_CURRENT_CATEGORY_OR_TAG_URL";
     private static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
-    private static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
+    //    private static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
     private final static String LOG = ActivityArticle.class.getSimpleName();
 
     protected final int[] coverImgsIds = {R.drawable.tproger_small, R.drawable.cremlin, R.drawable.petergof};
-    //views for tabletMode
-//    protected Toolbar toolbarLeft;
-//    protected CollapsingToolbarLayout collapsingToolbarLayoutLeft;
-//    protected CoordinatorLayout coordinatorLayoutLeft;
-//    protected ImageView coverLeft;
-//    protected View cover2Left;
-//    protected View cover2BorderLeft;
-//    protected AppBarLayout appBarLeft;
-    protected LinearLayout mainContainer;
-    protected FrameLayout leftContainer;
 
-    protected Toolbar toolbarRight;
     //main views
-    protected Toolbar toolbar;
     protected CollapsingToolbarLayout collapsingToolbarLayout;
-    protected NavigationView navigationView;
-    protected DrawerLayout drawerLayout;
-    protected ActionBarDrawerToggle mDrawerToggle;
-    protected boolean drawerOpened;
     protected ViewPager pager;
     protected CoordinatorLayout coordinatorLayout;
     protected boolean isCollapsed = true;
@@ -90,31 +52,13 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     protected View cover2;
     protected View cover2Border;
     protected AppBarLayout appBar;
-    protected boolean fullyExpanded = true;
-    ///////////
-    /////////////
-//    ChangeImageWithAlpha changeImageWithAlpha;
-//    ChangeImageWithAlpha changeImageWithAlphaLeft;
-    ImageLoader imageLoader;
-    ///////////
-//    protected MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
-//    protected MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
-    private MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
-    private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
     /**
      * list of articles to show in pager and recyclerView
      */
     private ArrayList<Article> artsList = new ArrayList<>();
-    private int currentPositionOfArticleInList = 0;
+    private int currentPositionOfArticleInList = -1;
     //
-    private int verticalOffsetPrevious = 0;
-    private Context ctx;
-    private SharedPreferences pref;
     private ArrayList<Article> artsWithImage = new ArrayList<>();
-    private int prevPosOfImage = -1;
-    private Timer timer;
-    private TimerTask timerTask;
-    private boolean isTabletMode;
 
     private String categoryOrTagUrl;
 
@@ -122,10 +66,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     protected void onCreate(Bundle savedInstanceState)
     {
 //        Log.i(LOG, "onCreate");
-
         this.ctx = this;
-
-        imageLoader = MyUIL.get(ctx);
 
         //get default settings to get all settings later
         PreferenceManager.setDefaultValues(this, R.xml.pref_design, true);
@@ -138,86 +79,26 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         //call super after setTheme to set it 0_0
         super.onCreate(savedInstanceState);
 
-        isTabletMode = pref.getBoolean(getString(R.string.pref_design_key_tablet_mode), true);
+        setContentView(R.layout.activity_article);
 
-        //TODO make layout for phone
-        setContentView(R.layout.activity_article_tablet);
-
-//        if (savedInstanceState == null)
-//        {
-//            restoreStateFromIntent(this.getIntent().getExtras());
-//        }
-//        else
-//        {
-//            restoreState(savedInstanceState);
-//        }
         restoreData(savedInstanceState, getIntent().getExtras());
 
         initializeViews();
 
-        setUpNavigationDrawer();
+        setUpNavigationDrawer(false, new OnNavigationItemSelectedListenerArticleActivity(ctx));
         setUpPager();
 
 //        appBar.addOnOffsetChangedListener(new MyOnOffsetChangedListener(this));
 
-        if (isTabletMode)
-        {
-            setUpBackgroundAnimation(cover, cover2);
-//            setUpBackgroundAnimation(coverLeft, cover2Left);
+        setUpBackgroundAnimation(cover, cover2);
 
-            //Add category fragment
-            FragmentCategory fragmentCategory;
-            fragmentCategory = (FragmentCategory) getSupportFragmentManager().findFragmentById(R.id.container_left);
-            if (fragmentCategory == null)
-            {
-                fragmentCategory = FragmentCategory.newInstance(categoryOrTagUrl, currentPositionOfArticleInList);
-
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.add(R.id.container_left, fragmentCategory);
-                fragmentTransaction.commit();
-            }
-        }
-        else
-        {
-            setUpBackgroundAnimation(cover, cover2);
-        }
-
-        this.onArtsReceived(new EventArtsReceived(new ArrayList<>(artsWithImage)));
+//        this.onArtsReceived(new EventArtsReceived(new ArrayList<>(artsWithImage)));
 
         this.pref.registerOnSharedPreferenceChangeListener(this);
-
-
-//        if (isTabletMode)
-//        {
-//            /////////
-//            MyColorFilter.applyColorFromAttr(ctx, coverLeft, R.attr.colorAccent);
-//
-//            changeImageWithAlphaLeft = new ChangeImageWithAlpha();
-//            changeImageWithAlphaLeft.setValues(ctx, cover2Left, coverLeft, artsWithImage);
-//        }
     }
 
-    private void initializeViews()
+    protected void initializeViews()
     {
-        if (isTabletMode)
-        {
-//            coverLeft = (ImageView) findViewById(R.id.cover_left);
-//            cover2Left = findViewById(R.id.cover_to_fill_left);
-//            cover2BorderLeft = findViewById(R.id.cover_2_border_left);
-
-//            appBarLeft = (AppBarLayout) this.findViewById(R.id.app_bar_layout_left);
-
-//            collapsingToolbarLayoutLeft = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_left);
-
-//            coordinatorLayoutLeft = (CoordinatorLayout) this.findViewById(R.id.coordinator_left);
-
-            mainContainer = (LinearLayout) findViewById(R.id.container_main);
-            leftContainer = (FrameLayout) findViewById(R.id.container_left);
-
-            toolbarRight = (Toolbar) findViewById(R.id.toolbar_right);
-        }
-
-
         cover = (ImageView) findViewById(R.id.cover);
         cover2 = findViewById(R.id.cover_to_fill);
         cover2Border = findViewById(R.id.cover_2_border);
@@ -246,8 +127,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
             {
                 super.onPageSelected(position);
                 currentPositionOfArticleInList = position;
-                EventCategoryActivateItem eventCategoryActivateItem = new EventCategoryActivateItem(position);
-                BusProvider.getInstance().post(eventCategoryActivateItem);
                 collapsingToolbarLayout.setTitle(artsList.get(currentPositionOfArticleInList).getTitle());
             }
         };
@@ -261,61 +140,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         {
             this.pager.setCurrentItem(currentPositionOfArticleInList, true);
         }
-    }
-
-    protected void setUpNavigationDrawer()
-    {
-        //changing statusBarColor
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-        {
-            getWindow().setStatusBarColor(AttributeGetter.getColor(ctx, R.attr.colorPrimaryDark));
-        }
-
-        setSupportActionBar(toolbar);
-
-        final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
-        {
-            actionBar.setDisplayShowTitleEnabled(false);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-
-            mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.hello_world, R.string.hello_world)
-            {
-                public void onDrawerClosed(View view)
-                {
-                    supportInvalidateOptionsMenu();
-                    drawerOpened = false;
-                }
-
-                public void onDrawerOpened(View drawerView)
-                {
-                    drawerOpened = true;
-//                    updateNavigationViewState(checkedDrawerItemId);
-                }
-            };
-            //show arrow instead of hamburger
-            mDrawerToggle.setDrawerIndicatorEnabled(false);
-
-            drawerLayout.setDrawerListener(mDrawerToggle);
-        }
-        OnNavigationItemSelectedListenerArticleActivity navCL;
-        navCL = new OnNavigationItemSelectedListenerArticleActivity(ctx);
-
-        navigationView.setNavigationItemSelectedListener(navCL);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState)
-    {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig)
-    {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     /* Called whenever we call supportInvalidateOptionsMenu() */
@@ -332,36 +156,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
 //        navigationView.setCheckedItem(checkedDrawerItemId);
 
         return super.onPrepareOptionsMenu(menu);
-    }
-
-    //workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
-    @Override
-    protected boolean onPrepareOptionsPanel(View view, Menu menu)
-    {
-        if (menu != null)
-        {
-            if (menu.getClass().getSimpleName().equals("MenuBuilder"))
-            {
-                try
-                {
-                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
-                    m.setAccessible(true);
-                    m.invoke(menu, true);
-                }
-                catch (Exception e)
-                {
-                    Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
-                }
-            }
-
-            boolean nightModeIsOn = this.pref.getBoolean(getString(R.string.pref_design_key_night_mode), false);
-            MenuItem themeMenuItem = menu.findItem(R.id.night_mode_switcher);
-            if (nightModeIsOn)
-            {
-                themeMenuItem.setChecked(true);
-            }
-        }
-        return super.onPrepareOptionsPanel(view, menu);
     }
 
     @Override
@@ -409,7 +203,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         super.onSaveInstanceState(outState);
 //        outState.putInt(NAV_ITEM_ID, this.checkedDrawerItemId);
         outState.putBoolean(KEY_IS_COLLAPSED, isCollapsed);
-        outState.putInt(KEY_PREV_COVER_SOURCE, this.prevPosOfImage);
         outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE, artsWithImage);
 
         outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
@@ -421,7 +214,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
     public void onBackPressed()
     {
         Log.i(LOG, "onBackPressed");
-        if (drawerOpened)
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
         {
             drawerLayout.closeDrawer(GravityCompat.START);
         }
@@ -431,42 +224,19 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         }
     }
 
-//    private void restoreState(Bundle state)
-//    {
-//        isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
-//        prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
-//        artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE);
-//
-//        artsList = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
-//        currentPositionOfArticleInList = state.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
-//        this.categoryOrTagUrl = state.getString(KEY_CURRENT_CATEGORY_OR_TAG_URL);
-//    }
-//
-//    private void restoreStateFromIntent(Bundle stateFromIntent)
-//    {
-//        if (stateFromIntent != null)
-//        {
-//            artsList = stateFromIntent.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
-//            currentPositionOfArticleInList = stateFromIntent.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
-//            this.categoryOrTagUrl = stateFromIntent.getString(KEY_CURRENT_CATEGORY_OR_TAG_URL);
-//        }
-//    }
-
     private void restoreData(Bundle savedInstanceState, Bundle args)
     {
         if (savedInstanceState != null)
         {
-            if (args.containsKey(Article.KEY_ARTICLES_LIST))
+            if (savedInstanceState.containsKey(Article.KEY_ARTICLES_LIST))
             {
                 this.artsList.clear();
-                ArrayList<Article> articles = args.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
+                ArrayList<Article> articles = savedInstanceState.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
                 if (articles != null)
                 {
                     this.artsList.addAll(articles);
                 }
             }
-//            artsList.clear();
-//            artsList.addAll(savedInstanceState.<Article>getParcelableArrayList(Article.KEY_ARTICLES_LIST));
             currentPositionOfArticleInList = savedInstanceState.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
             this.categoryOrTagUrl = savedInstanceState.getString(KEY_CURRENT_CATEGORY_OR_TAG_URL);
         }
@@ -483,7 +253,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
             }
             currentPositionOfArticleInList = args.getInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, 0);
             this.categoryOrTagUrl = args.getString(KEY_CURRENT_CATEGORY_OR_TAG_URL);
-
         }
     }
 
@@ -513,15 +282,7 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         }
 
         //prevent changing images if we are not on artsListFragment in main pager
-        if (positionInPager != 0)
-        {
-            if (timer != null && timerTask != null)
-            {
-                timerTask.cancel();
-                timer.cancel();
-            }
-        }
-        else
+        if (positionInPager == 0)
         {
             this.onArtsReceived(new EventArtsReceived(new ArrayList<>(artsWithImage)));
             return;
@@ -531,85 +292,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
         if (this.cover.getAlpha() == 0)
         {
             cover.setImageResource(coverImgsIds[positionInPager]);
-//            return;
-        }
-//        ChangeImageWithAlpha changeImageWithAlpha;
-//        ChangeImageWithAlpha changeImageWithAlphaLeft;
-//        if (isTabletMode)
-//        {
-//            changeImageWithAlphaLeft.animate(0);
-//        }
-    }
-
-    @Override
-    protected void onPause()
-    {
-//        Log.i(LOG, "onPause called!");
-        super.onPause();
-
-        if (spiceManager.isStarted())
-        {
-            spiceManager.shouldStop();
-        }
-        if (spiceManagerOffline.isStarted())
-        {
-            spiceManagerOffline.shouldStop();
-        }
-    }
-
-    @Override
-    protected void onStop()
-    {
-//        Log.i(LOG, "onStop called with hash: " + this.hashCode());
-        super.onStop();
-        //should unregister in onStop to avoid some issues while pausing activity/fragment
-        //see http://stackoverflow.com/a/19737191/3212712
-        BusProvider.getInstance().unregister(this);
-    }
-
-    @Override
-    protected void onRestart()
-    {
-//        Log.i(LOG, "onRestart called!");
-        super.onRestart();
-
-        //check if timer is null (it's null after onStop)
-        //and restart it by calling onArtsReceiver to recreate it
-        this.onArtsReceived(new EventArtsReceived(this.artsWithImage));
-    }
-
-
-    @Override
-    protected void onStart()
-    {
-//        Log.i(LOG, "onStart called!");
-        super.onStart();
-        BusProvider.getInstance().register(this);
-
-        if (!spiceManager.isStarted())
-        {
-            spiceManager.start(ctx);
-        }
-        if (!spiceManagerOffline.isStarted())
-        {
-            spiceManagerOffline.start(ctx);
-        }
-    }
-
-    @Override
-    protected void onResume()
-    {
-//        Log.i(LOG, "onResume called!");
-//        Log.i(LOG, "onResume called with hash: "+this.hashCode());
-        super.onResume();
-
-        if (!spiceManager.isStarted())
-        {
-            spiceManager.start(ctx);
-        }
-        if (!spiceManagerOffline.isStarted())
-        {
-            spiceManagerOffline.start(ctx);
         }
     }
 
@@ -637,94 +319,6 @@ public class ActivityArticle extends AppCompatActivity implements /*DrawerUpdate
                 artsWithImage.add(a);
             }
         }
-
-        if (timer != null && timerTask != null)
-        {
-            timerTask.cancel();
-            timer.cancel();
-        }
-
-        //prevent changing images if we are not in tabletMode
-//        if (!this.isTabletMode || artsWithImage.size() == 0)
-//        {
-//            return;
-//        }
-
-//        timer = new Timer();
-//        timerTask = new TimerTask()
-//        {
-//            @Override
-//            public void run()
-//            {
-//                runOnUiThread(new Runnable()
-//                {
-//                    @Override
-//                    public void run()
-//                    {
-//                        updateImageFromArts(artsWithImage, coverLeft, cover2Left);
-//                    }
-//                });
-//            }
-//        };
-//        timer.schedule(timerTask, 0, 5000);
-
-//        if (isTabletMode)
-//        {
-//            if (changeImageWithAlphaLeft == null)
-//            {
-//                changeImageWithAlphaLeft = new ChangeImageWithAlpha();
-//                changeImageWithAlphaLeft.setValues(ctx, cover2Left, coverLeft, artsWithImage);
-//            }
-//            else
-//            {
-//                changeImageWithAlphaLeft.updateArtsList(artsWithImage);
-//            }
-//        }
-    }
-
-    public void updateImageFromArts(final ArrayList<Article> artsWithImage, final ImageView cover, final View cover2)
-    {
-//        Log.i(LOG, "updateImage with position in pager: "+positionInPager);
-        final int positionInList;
-        switch (artsWithImage.size())
-        {
-            case 0:
-                //cant be, but return anyway;
-                return;
-            case 1:
-                positionInList = 0;
-                break;
-            default:
-                positionInList = MyRandomUtil.nextInt(prevPosOfImage, artsWithImage.size());
-                break;
-        }
-        prevPosOfImage = positionInList;
-
-        cover2.setAlpha(0);
-        cover2.setScaleX(1);
-        cover2.setScaleY(1);
-        cover2.animate().cancel();
-
-        //prevent showing transition coloring if cover isn't showing
-        if (cover.getAlpha() == 0)
-        {
-            imageLoader.displayImage(artsWithImage.get(positionInList).getImageUrl(), cover, DisplayImageOptions.createSimple());
-            return;
-        }
-
-        cover2.setVisibility(View.INVISIBLE);
-
-        //prevent showing transition coloring if cover isn't showing
-        if (this.cover.getAlpha() == 0)
-        {
-            imageLoader.displayImage(artsWithImage.get(positionInList).getImageUrl(), cover, DisplayImageOptions.createSimple());
-//            return;
-        }
-
-//        if (isTabletMode)
-//        {
-//            changeImageWithAlphaLeft.animate(positionInList);
-//        }
     }
 
     private void setUpBackgroundAnimation(View cover, View cover2)
