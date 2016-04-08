@@ -108,24 +108,24 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         switch (viewType)
         {
             case TYPE_TITLE:
-                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_title, parent, false);
+                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_article_title, parent, false);
                 vh = new ViewHolderTitle(itemLayoutView);
                 break;
             case TYPE_CODE:
-                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_code_representer_main, parent, false);
+                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_article_code_representer_main, parent, false);
                 vh = new ViewHolderCode(itemLayoutView);
                 break;
             case TYPE_ACCORDION:
-                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_accordeon, parent, false);
+                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_article_accordeon, parent, false);
                 vh = new ViewHolderAccordeon(itemLayoutView);
                 break;
             case TYPE_POLL:
                 //TODO
-                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_poll, parent, false);
+                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_article_poll, parent, false);
                 vh = new ViewHolderPoll(itemLayoutView);
                 break;
             case TYPE_WELL:
-                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_well, parent, false);
+                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_article_well, parent, false);
                 vh = new ViewHolderWell(itemLayoutView);
                 break;
             case TYPE_TABLE:
@@ -150,12 +150,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 break;
             default:
             case TYPE_TEXT:
-                TextView textView = new TextView(ctx);
-                textView.setBackgroundColor(windowBackgroundColor);
-                int padding = (int) DipToPx.convert(3, ctx);
-                textView.setPadding(padding, 0, padding, 0);
-                textView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
-                itemLayoutView = textView;
+                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_article_text, parent, false);
                 vh = new ViewHolderText(itemLayoutView);
                 break;
         }

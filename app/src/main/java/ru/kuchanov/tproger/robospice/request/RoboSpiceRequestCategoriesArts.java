@@ -77,7 +77,6 @@ public class RoboSpiceRequestCategoriesArts extends SpiceRequest<Articles>
         Document document = Jsoup.parse(responseBody);
 
         Log.e(LOG, this.url);
-        System.out.println("FUCK!!!!!!!!!!!");
         ArrayList<Article> list = HtmlParsing.parseForArticlesList(document, databaseHelper);
         //write to DB
         list = Article.writeArtsList(list, databaseHelper);

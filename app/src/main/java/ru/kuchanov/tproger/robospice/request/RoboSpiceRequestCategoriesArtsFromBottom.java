@@ -29,7 +29,7 @@ import ru.kuchanov.tproger.utils.html.HtmlParsing;
  */
 public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Articles>
 {
-    public static final String LOG = RoboSpiceRequestCategoriesArtsFromBottom.class.getSimpleName();
+    public /*static final*/ String LOG = RoboSpiceRequestCategoriesArtsFromBottom.class.getSimpleName();
 
     //    private Context ctx;
     private MyRoboSpiceDatabaseHelper databaseHelper;
@@ -48,7 +48,9 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
         this.categoryOrTagUrl = categoryOrTagUrl;
         this.page = page;
 
-        this.url = ((categoryOrTagUrl.startsWith("http")) ?  "": Const.DOMAIN_MAIN) + categoryOrTagUrl + ((categoryOrTagUrl.endsWith("/")) ? "" : Const.SLASH) + "page" + Const.SLASH + page + Const.SLASH;
+        this.url = ((categoryOrTagUrl.startsWith("http")) ? "" : Const.DOMAIN_MAIN) + categoryOrTagUrl + ((categoryOrTagUrl.endsWith("/") || categoryOrTagUrl.equals("")) ? "" : Const.SLASH) + "page" + Const.SLASH + page + Const.SLASH;
+
+        this.LOG += "#" + url;
 
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
     }
@@ -56,7 +58,7 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
     @Override
     public Articles loadDataFromNetwork() throws Exception
     {
-//        Log.i(LOG, "loadDataFromNetwork() called");
+        Log.i(LOG, "loadDataFromNetwork() called");
         ArrayList<Article> listOfArticles;
 
         String responseBody = makeRequest();
@@ -65,7 +67,7 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
         Boolean isCategoryOrTagOrDoNotExists = MyRoboSpiceDatabaseHelper.isCategoryOrTagOrDoNotExists(databaseHelper, this.categoryOrTagUrl);
         if (isCategoryOrTagOrDoNotExists == null)
         {
-            throw new Exception("I cant imaging how it can be...");
+            throw new IllegalStateException("I cant imaging how it can be...");
         }
 
         boolean isCategory = isCategoryOrTagOrDoNotExists;
@@ -141,11 +143,12 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
     private String makeRequest() throws Exception
     {
         Log.i(LOG, "makeRequest with url: " + url);
-        OkHttpClient client = new OkHttpClient();
-
+        OkHttpClient client = new OkHttpClient.Builder()
+//                .followRedirects(false)
+                .build();
+//
         Request.Builder request = new Request.Builder();
         request.url(this.url);
-
         Response response = client.newCall(request.build()).execute();
 
         return response.body().string();

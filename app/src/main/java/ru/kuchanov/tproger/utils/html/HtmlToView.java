@@ -77,7 +77,7 @@ public class HtmlToView
             switch (curType)
             {
                 case Accordion:
-                    itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_accordeon, parent, false);
+                    itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_article_accordeon, parent, false);
                     final ViewHolderAccordeon holderAccordeon = new ViewHolderAccordeon(itemLayoutView);
                     final HtmlParsing.AccordionContent accordionContent = HtmlParsing.parseAccordion(curHtml);
 
@@ -138,7 +138,7 @@ public class HtmlToView
                     //TODO
                     break;
                 case Well:
-                    itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_well, parent, false);
+                    itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_article_well, parent, false);
                     ViewHolderWell holderWell = new ViewHolderWell(itemLayoutView);
                     holderWell.textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
                     holderWell.textView.setText(Html.fromHtml(curHtml,
@@ -146,7 +146,7 @@ public class HtmlToView
                             new MyHtmlTagHandler(ctx)));
                     break;
                 case Code:
-                    itemLayoutView = LayoutInflater.from(ctx).inflate(R.layout.recycler_item_code_representer_main, parent, false);
+                    itemLayoutView = LayoutInflater.from(ctx).inflate(R.layout.recycler_article_code_representer_main, parent, false);
                     ViewHolderCode holderCode = new ViewHolderCode(itemLayoutView);
 
                     holderCode.content.removeAllViews();
@@ -217,7 +217,7 @@ public class HtmlToView
                     break;
                 case Poll:
                     //TODO
-                    itemLayoutView = LayoutInflater.from(ctx).inflate(R.layout.article_poll, parent, false);
+                    itemLayoutView = LayoutInflater.from(ctx).inflate(R.layout.recycler_article_poll, parent, false);
                     ViewHolderPoll holderPoll = new ViewHolderPoll(itemLayoutView);
                     Log.d(LOG, "type POLL!");
                     break;

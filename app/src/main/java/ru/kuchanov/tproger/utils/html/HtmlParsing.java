@@ -1,7 +1,5 @@
 package ru.kuchanov.tproger.utils.html;
 
-import android.util.Log;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -25,7 +23,7 @@ import ru.kuchanov.tproger.robospice.db.Article;
  */
 public class HtmlParsing
 {
-    private static final String LOG = HtmlParsing.class.getSimpleName();
+//    private static final String LOG = HtmlParsing.class.getSimpleName();
 
     public static ArrayList<Article> parseForArticlesList(Document doc, MyRoboSpiceDatabaseHelper h) throws Exception
     {
@@ -41,10 +39,10 @@ public class HtmlParsing
         }
 
         Element mainColumns = doc.getElementById("main_columns");
-        for (Element el : doc.getElementsByClass("columns"))
-        {
-            Log.i(LOG, el.html());
-        }
+//        for (Element el : doc.getElementsByClass("columns"))
+//        {
+//            Log.i(LOG, el.html());
+//        }
         Elements articlesAll = mainColumns.getElementsByTag("article");
         Elements articles = new Elements();
         for (Element element : articlesAll)
