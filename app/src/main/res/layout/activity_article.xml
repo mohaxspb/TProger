@@ -2,7 +2,6 @@
     android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
@@ -20,9 +19,9 @@
             android:layout_width="match_parent"
             android:layout_height="290dp"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/app_name"
             android:scaleType="centerCrop"
-            android:src="@drawable/tproger_small"
-            tools:ignore="contentDescription"/>
+            android:src="@drawable/tproger_small"/>
         <!--and it's view that changes alpha while switching pagers pages-->
         <View
             android:id="@+id/cover_to_fill"
@@ -50,8 +49,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/detail_backdrop_height"
                 android:minHeight="?attr/actionBarSize"
+                app:contentScrim="?colorPrimary"
                 app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
-                app:title="test"
                 app:titleEnabled="true">
 
                 <android.support.v7.widget.Toolbar
@@ -64,6 +63,12 @@
         </android.support.design.widget.AppBarLayout>
 
 
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
         <android.support.design.widget.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -73,12 +78,6 @@
             app:layout_anchor="@+id/pager"
             app:layout_anchorGravity="bottom|right|end"
             app:layout_behavior="ru.kuchanov.tproger.navigation.ScrollAwareFABBehavior"/>
-
-        <android.support.v4.view.ViewPager
-            android:id="@+id/pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     </android.support.design.widget.CoordinatorLayout>
 

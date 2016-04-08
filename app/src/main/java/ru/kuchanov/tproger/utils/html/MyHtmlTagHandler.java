@@ -99,6 +99,7 @@ public class MyHtmlTagHandler implements TagHandler
         {
             case "html":
             case "body":
+            case "span":
                 //nothing to do
                 break;
             case "code":
