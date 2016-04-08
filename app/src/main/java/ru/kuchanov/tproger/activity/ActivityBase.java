@@ -77,7 +77,7 @@ public abstract class ActivityBase extends AppCompatActivity
             //show arrow instead of hamburger
             mDrawerToggle.setDrawerIndicatorEnabled(showHamburger);
 
-            drawerLayout.setDrawerListener(mDrawerToggle);
+            drawerLayout.addDrawerListener(mDrawerToggle);
         }
 
         navigationView.setNavigationItemSelectedListener(navigationItemSelectedListener);
@@ -156,7 +156,9 @@ public abstract class ActivityBase extends AppCompatActivity
         BusProvider.getInstance().unregister(this);
     }
 
-    //workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
+    /**
+     * workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
+     */
     @Override
     protected boolean onPrepareOptionsPanel(View view, Menu menu)
     {

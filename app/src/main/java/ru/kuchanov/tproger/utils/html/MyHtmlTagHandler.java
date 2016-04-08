@@ -30,7 +30,7 @@ public class MyHtmlTagHandler implements TagHandler
     private static final int indent = 10;
     private static final int listItemIndent = indent * 2;
     private static final BulletSpan bullet = new BulletSpan(indent);
-    Context ctx;
+    private Context ctx;
     /**
      * Keeps track of lists (ol, ul). On bottom of Stack is the outermost list
      * and on top of Stack is the most nested list
@@ -119,15 +119,6 @@ public class MyHtmlTagHandler implements TagHandler
                 break;
 //            case "upgradedquote":
 //                processUpgradedQuote(opening, output);
-//                break;
-//            case "hr":
-//                Log.e(LOG, "hr tag!!!!");
-////                if (!opening)
-////                {
-////                    String aaa = "aaaaaaaaaaaaaaaa";
-////                    output.append(aaa, 0, aaa.length());
-////                }
-//                processStrike(opening, output);
 //                break;
             default:
                 Log.e(LOG, "Unknown tag in TagHandler with name: " + tag);

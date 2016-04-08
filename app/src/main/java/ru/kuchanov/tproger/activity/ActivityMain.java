@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
@@ -19,7 +18,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -33,13 +31,11 @@ import android.widget.Toast;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.squareup.otto.Subscribe;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.fragment.FragmentCategoriesAndTags;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
@@ -54,7 +50,6 @@ import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.otto.EventCatsTagsShow;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
-import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Category;
@@ -65,7 +60,7 @@ import ru.kuchanov.tproger.utils.MyRandomUtil;
 import ru.kuchanov.tproger.utils.MyUIL;
 import ru.kuchanov.tproger.utils.anim.ChangeImageWithAlpha;
 
-public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelected, ImageChanger, FabUpdater, SharedPreferences.OnSharedPreferenceChangeListener
+public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, ImageChanger, FabUpdater, SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String NAV_ITEM_ID = "NAV_ITEM_ID";
     protected static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
@@ -73,12 +68,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
 
     private final static String LOG = ActivityMain.class.getSimpleName();
     protected final int[] coverImgsIds = {R.drawable.tproger_small, R.drawable.cremlin, R.drawable.petergof};
-    protected Toolbar toolbar;
     protected CollapsingToolbarLayout collapsingToolbarLayout;
-    protected NavigationView navigationView;
-    protected DrawerLayout drawerLayout;
-    protected ActionBarDrawerToggle mDrawerToggle;
-    protected boolean drawerOpened;
     protected ViewPager pager;
     protected CoordinatorLayout coordinatorLayout;
     protected int checkedDrawerItemId = R.id.tab_1;
@@ -88,8 +78,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     protected TabLayout tabLayout;
     protected boolean fullyExpanded = true;
     ///////////
-    protected MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
-    protected MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
     private NavigationViewOnNavigationItemSelectedListener navigationViewOnNavigationItemSelectedListener;
     private FloatingActionButton fab;
     //listeners for navView and pager
@@ -98,8 +86,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
     private View coverThatChangesAlpha;
     private ImageView cover;
     private int verticalOffsetPrevious = 0;
-    private Context ctx;
-    private SharedPreferences pref;
     ///animations
     private ArrayList<Article> artsWithImage = new ArrayList<>();
     private int prevPosOfImage = -1;
@@ -151,7 +137,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         cr.setValues(ctx, coverThatChangesAlpha, cover, artsWithImage);
     }
 
-    private void initializeViews()
+    protected void initializeViews()
     {
         cover = (ImageView) findViewById(R.id.cover);
         coverThatChangesAlpha = findViewById(R.id.cover_to_fill);
@@ -184,7 +170,7 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         this.startAnimation();
     }
 
-    private void setUpNavigationDrawer()
+    protected void setUpNavigationDrawer()
     {
         setSupportActionBar(toolbar);
 
@@ -200,18 +186,16 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
                 public void onDrawerClosed(View view)
                 {
                     supportInvalidateOptionsMenu();
-                    drawerOpened = false;
                 }
 
                 public void onDrawerOpened(View drawerView)
                 {
-                    drawerOpened = true;
                     updateNavigationViewState(checkedDrawerItemId);
                 }
             };
             mDrawerToggle.setDrawerIndicatorEnabled(true);
 
-            drawerLayout.setDrawerListener(mDrawerToggle);
+            drawerLayout.addDrawerListener(mDrawerToggle);
         }
         navigationViewOnNavigationItemSelectedListener = new NavigationViewOnNavigationItemSelectedListener(this, drawerLayout, pager);
 
@@ -238,21 +222,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         tabLayout.setOnTabSelectedListener(new TabLayoutOnTabSelectedListener(this, pager));
 
         navigationViewOnNavigationItemSelectedListener.onNavigationItemSelected(navigationView.getMenu().findItem(checkedDrawerItemId));
-    }
-
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState)
-    {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig)
-    {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -330,43 +299,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    //workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
-    @Override
-    protected boolean onPrepareOptionsPanel(View view, Menu menu)
-    {
-        if (menu != null)
-        {
-            if (menu.getClass().getSimpleName().equals("MenuBuilder"))
-            {
-                try
-                {
-                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
-                    m.setAccessible(true);
-                    m.invoke(menu, true);
-                }
-                catch (Exception e)
-                {
-                    Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
-                }
-            }
-
-            boolean nightModeIsOn = this.pref.getBoolean(getString(R.string.pref_design_key_night_mode), false);
-            MenuItem themeMenuItem = menu.findItem(R.id.night_mode_switcher);
-            if (nightModeIsOn)
-            {
-                themeMenuItem.setChecked(true);
-            }
-
-            boolean isGridManager = pref.getBoolean(ctx.getString(R.string.pref_design_key_list_style), false);
-            MenuItem listStyleMenuItem = menu.findItem(R.id.list_style_switcher);
-            if (isGridManager)
-            {
-                listStyleMenuItem.setChecked(true);
-            }
-        }
-        return super.onPrepareOptionsPanel(view, menu);
     }
 
     @Override
@@ -467,48 +399,11 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         cr.animate(0);
     }
 
-
-    @Override
-    protected void onStart()
-    {
-//        Log.i(LOG, "onStart called!");
-        super.onStart();
-        BusProvider.getInstance().register(this);
-
-        if (!spiceManager.isStarted())
-        {
-            spiceManager.start(ctx);
-        }
-        if (!spiceManagerOffline.isStarted())
-        {
-            spiceManagerOffline.start(ctx);
-        }
-    }
-
-    @Override
-    protected void onResume()
-    {
-//        Log.i(LOG, "onResume called!");
-        super.onResume();
-
-        if (!spiceManager.isStarted())
-        {
-            spiceManager.start(ctx);
-        }
-        if (!spiceManagerOffline.isStarted())
-        {
-            spiceManagerOffline.start(ctx);
-        }
-    }
-
     @Override
     protected void onStop()
     {
 //        Log.i(LOG, "onStop called!");
         super.onStop();
-        //should unregister in onStop to avoid some issues while pausing activity/fragment
-        //see http://stackoverflow.com/a/19737191/3212712
-        BusProvider.getInstance().unregister(this);
 
         //stop and cancel all timers that manages animations
         if (timer != null && timerTask != null)
@@ -530,22 +425,6 @@ public class ActivityMain extends AppCompatActivity implements DrawerUpdateSelec
         //check if timer is null (it's null after onStop)
         //and restart it by calling onArtsReceiver to recreate it
         this.onArtsReceived(new EventArtsReceived(this.artsWithImage));
-    }
-
-    @Override
-    protected void onPause()
-    {
-//        Log.i(LOG, "onPause called!");
-        super.onPause();
-
-        if (spiceManager.isStarted())
-        {
-            spiceManager.shouldStop();
-        }
-        if (spiceManagerOffline.isStarted())
-        {
-            spiceManagerOffline.shouldStop();
-        }
     }
 
     @Subscribe
