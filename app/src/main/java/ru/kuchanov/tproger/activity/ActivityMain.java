@@ -1,7 +1,6 @@
 package ru.kuchanov.tproger.activity;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -46,9 +45,10 @@ import ru.kuchanov.tproger.navigation.NavigationViewOnNavigationItemSelectedList
 import ru.kuchanov.tproger.navigation.OnPageChangeListenerMain;
 import ru.kuchanov.tproger.navigation.PagerAdapterMain;
 import ru.kuchanov.tproger.navigation.TabLayoutOnTabSelectedListener;
-import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.otto.EventCatsTagsShow;
+import ru.kuchanov.tproger.otto.EventShowImage;
+import ru.kuchanov.tproger.otto.SingltonOtto;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
@@ -57,10 +57,10 @@ import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DataBaseFileSaver;
 import ru.kuchanov.tproger.utils.MyColorFilter;
 import ru.kuchanov.tproger.utils.MyRandomUtil;
-import ru.kuchanov.tproger.utils.MyUIL;
-import ru.kuchanov.tproger.utils.anim.ChangeImageWithAlpha;
+import ru.kuchanov.tproger.utils.SingltonUIL;
+import ru.kuchanov.tproger.utils.anim.MyAnimationUtils;
 
-public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, ImageChanger, FabUpdater, SharedPreferences.OnSharedPreferenceChangeListener
+public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, FabUpdater, SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String NAV_ITEM_ID = "NAV_ITEM_ID";
     protected static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
@@ -87,13 +87,13 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
     private ImageView cover;
     private int verticalOffsetPrevious = 0;
     ///animations
-    private ArrayList<Article> artsWithImage = new ArrayList<>();
+//    private ArrayList<Article> artsWithImage = new ArrayList<>();
     private int prevPosOfImage = -1;
     private Timer timer;
     private TimerTask timerTask;
 
 
-    private ChangeImageWithAlpha cr;
+//    private ChangeImageWithAlpha cr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -125,16 +125,23 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
 
         appBar.addOnOffsetChangedListener(new MyOnOffsetChangedListener(this));
 
-        setUpBackgroundAnimation();
-
-        this.onArtsReceived(new EventArtsReceived(new ArrayList<>(artsWithImage)));
+//        this.onArtsReceived(new EventArtsReceived(new ArrayList<>(artsWithImage)));
 
         this.pref.registerOnSharedPreferenceChangeListener(this);
 
         MyColorFilter.applyColorFromAttr(ctx, cover, R.attr.colorAccent);
 
-        cr = new ChangeImageWithAlpha();
-        cr.setValues(ctx, coverThatChangesAlpha, cover, artsWithImage);
+//        cr = new ChangeImageWithAlpha();
+//        cr.setValues(ctx, coverThatChangesAlpha, cover, artsWithImage);
+
+        cover.setAlpha(0f);
+        cover.setScaleX(1.3f);
+        cover.setScaleY(1.3f);
+        cover.animate().alpha(1).setDuration(600);
+
+        coverThatChangesAlpha.setVisibility(View.INVISIBLE);
+//        coverThatChangesAlpha.setAlpha(0);
+        MyAnimationUtils.startTranslateAnimation(ctx, cover);
     }
 
     protected void initializeViews()
@@ -155,19 +162,6 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
-    }
-
-
-    private void setUpBackgroundAnimation()
-    {
-        cover.setAlpha(0f);
-        cover.setScaleX(1.3f);
-        cover.setScaleY(1.3f);
-        cover.animate().alpha(1).setDuration(600);
-
-        coverThatChangesAlpha.setVisibility(View.INVISIBLE);
-
-        this.startAnimation();
     }
 
     protected void setUpNavigationDrawer()
@@ -208,9 +202,30 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
     {
         pager.setAdapter(new PagerAdapterMain(this.getSupportFragmentManager(), 3, ctx));
 
-        onPageChangeListenerMain = new OnPageChangeListenerMain(this, this, this);
+        onPageChangeListenerMain = new OnPageChangeListenerMain(this, this);
 
         pager.addOnPageChangeListener(onPageChangeListenerMain);
+        pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener()
+        {
+            @Override
+            public void onPageSelected(int position)
+            {
+                super.onPageSelected(position);
+
+                //show collapsed toolbar with tabs on pageChanging
+                if (!isCollapsed)
+                {
+                    CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) appBar.getLayoutParams();
+                    AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) params.getBehavior();
+
+                    if (behavior != null)
+                    {
+                        int toolbarMinHeight = ViewCompat.getMinimumHeight(toolbar);
+                        behavior.onNestedPreScroll(coordinatorLayout, appBar, pager, 0, -2 * toolbarMinHeight, new int[2]);
+                    }
+                }
+            }
+        });
 
         String[] drawerItems = ctx.getResources().getStringArray(R.array.drawer_items);
 
@@ -308,7 +323,6 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
         outState.putInt(NAV_ITEM_ID, this.checkedDrawerItemId);
         outState.putBoolean(KEY_IS_COLLAPSED, isCollapsed);
         outState.putInt(KEY_PREV_COVER_SOURCE, this.prevPosOfImage);
-        outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE, artsWithImage);
     }
 
     private void restoreState(Bundle state)
@@ -318,7 +332,6 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
             checkedDrawerItemId = state.getInt(NAV_ITEM_ID, R.id.tab_1);
             isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
             prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
-            artsWithImage = state.getParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE);
         }
         else
         {
@@ -340,63 +353,6 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
     {
         this.checkedDrawerItemId = checkedDrawerItemId;
         supportInvalidateOptionsMenu();
-    }
-
-    @Override
-    public void updateImage(final int positionInPager)
-    {
-//        Log.i(LOG, "updateImage with position in pager: "+positionInPager);
-
-        //that is normal. Use it if other attempts fails;
-//        appBar.setExpanded(isCollapsed, true);
-
-        if (!isCollapsed)
-        {
-            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) appBar.getLayoutParams();
-            AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) params.getBehavior();
-
-            if (behavior != null)
-            {
-                int toolbarMinHeight = ViewCompat.getMinimumHeight(toolbar);
-                behavior.onNestedPreScroll(coordinatorLayout, appBar, pager, 0, -2 * toolbarMinHeight, new int[2]);
-            }
-        }
-
-        //prevent changing images if we are not on artsListFragment in main pager
-//        if (pager.getCurrentItem() != 0)
-        if (positionInPager != 0)
-        {
-            if (timer != null && timerTask != null)
-            {
-                timerTask.cancel();
-                timer.cancel();
-            }
-        }
-        else
-        {
-            this.onArtsReceived(new EventArtsReceived(new ArrayList<>(artsWithImage)));
-            return;
-        }
-
-        //prevent showing transition coloring if cover isn't showing
-        if (this.cover.getAlpha() == 0)
-        {
-            cover.setImageResource(coverImgsIds[positionInPager]);
-            return;
-        }
-
-        if (cr == null)
-        {
-            cr = new ChangeImageWithAlpha();
-            cr.setValues(ctx, coverThatChangesAlpha, cover, artsWithImage);
-        }
-        else
-        {
-            cr.updateArtsList(artsWithImage);
-        }
-
-        //TODO add supporing preSet images showing
-        cr.animate(0);
     }
 
     @Override
@@ -424,133 +380,15 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
 
         //check if timer is null (it's null after onStop)
         //and restart it by calling onArtsReceiver to recreate it
-        this.onArtsReceived(new EventArtsReceived(this.artsWithImage));
+//        this.onArtsReceived(new EventArtsReceived(this.artsWithImage));
     }
 
     @Subscribe
-    public void onArtsReceived(final EventArtsReceived event)
+    public void updateImage(EventShowImage eventShowImage)
     {
-//        Log.i(LOG, "EventArtsReceived: " + String.valueOf(event.getArts().size()));
-
-        artsWithImage.clear();
-        for (Article a : event.getArts())
-        {
-            if (a.getImageUrl() != null)
-            {
-                artsWithImage.add(a);
-            }
-        }
-
-        //prevent changing images if we are not on artsListFragment in main pager
-        if (pager.getCurrentItem() != 0)
-        {
-            if (timer != null && timerTask != null)
-            {
-                timerTask.cancel();
-                timer.cancel();
-            }
-            return;
-        }
-
-        if (artsWithImage.size() != 0)
-        {
-            if (timer != null && timerTask != null)
-            {
-                timerTask.cancel();
-                timer.cancel();
-            }
-            timer = new Timer();
-            timerTask = new TimerTask()
-            {
-                @Override
-                public void run()
-                {
-                    runOnUiThread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            updateImageFromArts(artsWithImage);
-                        }
-                    });
-                }
-            };
-            timer.schedule(timerTask, 0, 5000);
-
-
-            if (cr == null)
-            {
-                cr = new ChangeImageWithAlpha();
-                cr.setValues(ctx, coverThatChangesAlpha, cover, artsWithImage);
-            }
-            else
-            {
-                cr.updateArtsList(artsWithImage);
-            }
-        }
-    }
-
-    public void updateImageFromArts(final ArrayList<Article> artsWithImage)
-    {
-//        Log.i(LOG, "updateImage with position in pager: "+positionInPager);
-        final int positionInList;
-        switch (artsWithImage.size())
-        {
-            case 0:
-                //cant be, but return anyway;
-                return;
-            case 1:
-                positionInList = 0;
-                break;
-            default:
-                positionInList = MyRandomUtil.nextInt(prevPosOfImage, artsWithImage.size());
-                break;
-        }
-        prevPosOfImage = positionInList;
-
-        coverThatChangesAlpha.setVisibility(View.INVISIBLE);
-
-        //prevent showing transition coloring if cover isn't showing
-        if (this.cover.getAlpha() == 0)
-        {
-            MyUIL.get(ctx).displayImage(artsWithImage.get(positionInList).getImageUrl(), cover, DisplayImageOptions.createSimple());
-            return;
-        }
-
-        cr.animate(positionInList);
-    }
-
-
-    public void startAnimation()
-    {
-        cover.setVisibility(View.VISIBLE);
-
-        final int animResId = R.anim.cover_image;
-
-        Animation anim = AnimationUtils.loadAnimation(this, animResId);
-        anim.setAnimationListener(new Animation.AnimationListener()
-        {
-
-            @Override
-            public void onAnimationEnd(Animation arg0)
-            {
-                Animation anim = AnimationUtils.loadAnimation(ctx, animResId);
-                anim.setAnimationListener(this);
-                cover.startAnimation(anim);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation arg0)
-            {
-            }
-
-            @Override
-            public void onAnimationStart(Animation arg0)
-            {
-            }
-        });
-
-        cover.startAnimation(anim);
+//        Log.d(LOG, "updateImage called");
+        String imageUrl = eventShowImage.getImageUrl();
+        MyAnimationUtils.changeImageWithAlphaAnimation(coverThatChangesAlpha, cover, imageUrl);
     }
 
     public boolean getIsCollapsed()
@@ -675,7 +513,7 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
                         int dataType = pref.getBoolean(key, true) ? FragmentCategoriesAndTags.TYPE_CATEGORY : FragmentCategoriesAndTags.TYPE_TAG;
                         String newType = (dataType == FragmentCategoriesAndTags.TYPE_CATEGORY) ? "TYPE_CATEGORY" : "TYPE_TAG";
                         Log.d(LOG, "FAB clicked type: " + newType);
-                        BusProvider.getInstance().post(new EventCatsTagsShow(dataType));
+                        SingltonOtto.getInstance().post(new EventCatsTagsShow(dataType));
                     }
                 });
                 break;

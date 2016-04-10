@@ -34,7 +34,7 @@ import ru.kuchanov.tproger.fragment.FragmentDialogCodeRepresenter;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DipToPx;
-import ru.kuchanov.tproger.utils.MyUIL;
+import ru.kuchanov.tproger.utils.SingltonUIL;
 import ru.kuchanov.tproger.utils.UILImageGetter;
 import ru.kuchanov.tproger.utils.html.CodeRepresenter;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
@@ -75,7 +75,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         this.article = article;
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
 
-        imageLoader = MyUIL.get(ctx);
+        imageLoader = SingltonUIL.getInstance();
 
         this.textTypes = HtmlToView.getTextPartSummary(HtmlParsing.getElementListFromHtml(article.getText()));
 

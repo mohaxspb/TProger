@@ -4,7 +4,9 @@ import android.app.Application;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 
+import ru.kuchanov.tproger.otto.SingltonOtto;
 import ru.kuchanov.tproger.test.MyTabLayout;
+import ru.kuchanov.tproger.utils.SingltonUIL;
 
 /**
  * Created by Юрий on 06.01.2016 15:14.
@@ -22,9 +24,8 @@ public class MyApplication extends Application
 
         super.onCreate();
 
-        //test
+        SingltonUIL.initInstance(this);
+        SingltonOtto.initInstance();
 
-//        MyTabLayout myTabLayout =  new MyTabLayout(this);
-//        myTabLayout.addTab(myTabLayout.newTab().setText("test"));
     }
 }

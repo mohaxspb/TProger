@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.SingltonRoboSpice;
-import ru.kuchanov.tproger.otto.BusProvider;
+import ru.kuchanov.tproger.otto.SingltonOtto;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 
@@ -102,7 +102,7 @@ public abstract class ActivityBase extends AppCompatActivity
     {
 //        Log.i(LOG, "onStart called!");
         super.onStart();
-        BusProvider.getInstance().register(this);
+        SingltonOtto.getInstance().register(this);
 
         if (!spiceManager.isStarted())
         {
@@ -153,7 +153,7 @@ public abstract class ActivityBase extends AppCompatActivity
         super.onStop();
         //should unregister in onStop to avoid some issues while pausing activity/fragment
         //see http://stackoverflow.com/a/19737191/3212712
-        BusProvider.getInstance().unregister(this);
+        SingltonOtto.getInstance().unregister(this);
     }
 
     /**

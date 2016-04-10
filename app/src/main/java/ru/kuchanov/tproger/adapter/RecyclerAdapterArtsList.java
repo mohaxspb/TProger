@@ -32,7 +32,7 @@ import ru.kuchanov.tproger.activity.ActivityArticle;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DipToPx;
-import ru.kuchanov.tproger.utils.MyUIL;
+import ru.kuchanov.tproger.utils.SingltonUIL;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
 import ru.kuchanov.tproger.utils.html.HtmlToView;
 
@@ -55,7 +55,7 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
         this.ctx = ctx;
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
 
-        imageLoader = MyUIL.get(ctx);
+        imageLoader = SingltonUIL.getInstance();
 
         artsList = dataset;
         this.categoryOrTagUrl = categoryOrTagUrl;

@@ -3,8 +3,8 @@ package ru.kuchanov.tproger.utils;
 import java.util.Random;
 
 /**
- * Created by Юрий on 13.11.2015 16:47.
- * For ExpListTest.
+ * Created by Юрий on 13.11.2015 16:47 16:18.
+ * For TProger.
  */
 public class MyRandomUtil
 {

@@ -24,6 +24,8 @@ import com.octo.android.robospice.request.listener.PendingRequestListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.tproger.Const;
@@ -32,8 +34,9 @@ import ru.kuchanov.tproger.RecyclerViewOnScrollListener;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;
 import ru.kuchanov.tproger.adapter.RecyclerAdapterArtsList;
-import ru.kuchanov.tproger.otto.BusProvider;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
+import ru.kuchanov.tproger.otto.EventShowImage;
+import ru.kuchanov.tproger.otto.SingltonOtto;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Article;
@@ -45,6 +48,7 @@ import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArtsFromB
 import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArtsFromBottomOffline;
 import ru.kuchanov.tproger.robospice.request.RoboSpiceRequestCategoriesArtsOffline;
 import ru.kuchanov.tproger.utils.AttributeGetter;
+import ru.kuchanov.tproger.utils.MyRandomUtil;
 import ru.kuchanov.tproger.utils.ScreenProperties;
 
 /**
@@ -80,6 +84,10 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     private SharedPreferences pref;
     private int numOfColsInGridLayoutManager = 2;
     private ArrayList<Article> artsList = new ArrayList<>();
+
+    //for changing image
+    private Timer timer;
+    private TimerTask timerTask;
 
     public static FragmentCategory newInstance(String category, int currentActivatedPosition)
     {
@@ -131,7 +139,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
             this.artsList = args.getParcelableArrayList(Article.KEY_ARTICLES_LIST);
             Log.i(LOG, "currentPageToLoad: " + currentPageToLoad);
             Log.i(LOG, "artsList.size(): " + artsList.size());
-            Log.i(LOG, " Const.NUM_OF_ARTS_ON_PAGE: " +  Const.NUM_OF_ARTS_ON_PAGE);
+            Log.i(LOG, " Const.NUM_OF_ARTS_ON_PAGE: " + Const.NUM_OF_ARTS_ON_PAGE);
             this.currentPageToLoad = (int) Math.floor(artsList.size() / Const.NUM_OF_ARTS_ON_PAGE);
             Log.i(LOG, "currentPageToLoad: " + currentPageToLoad);
         }
@@ -260,7 +268,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //        Log.i(LOG, "onStart called from activity: " + getActivity().getClass().getSimpleName());
         super.onStart();
 
-        BusProvider.getInstance().register(this);
+        SingltonOtto.getInstance().register(this);
 
         spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
         spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
@@ -279,7 +287,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 
         //should unregister in onStop to avoid some issues while pausing activity/fragment
         //see http://stackoverflow.com/a/19737191/3212712
-        BusProvider.getInstance().unregister(this);
+        SingltonOtto.getInstance().unregister(this);
     }
 
     @Override
@@ -295,11 +303,10 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         {
             performRequest(1, false, false);
         }
-//        else
-//        {
-//            Log.i(LOG, "scroll to position: " + currentActivatedPosition);
-//            onActivateItem(new EventCategoryActivateItem(currentActivatedPosition));
-//        }
+        else
+        {
+            setTimer();
+        }
     }
 
     @Override
@@ -462,6 +469,61 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         }
     }
 
+    private void stopTimer()
+    {
+        if (timer != null && timerTask != null)
+        {
+            timerTask.cancel();
+            timer.cancel();
+            timer = null;
+            timerTask = null;
+        }
+    }
+
+    private void setTimer()
+    {
+        stopTimer();
+        //set and start timer
+        if (timer == null && timerTask == null)
+        {
+            timer = new Timer();
+            timerTask = new TimerTask()
+            {
+                @Override
+                public void run()
+                {
+                    //get new article with image
+                    if (getUserVisibleHint())
+                    {
+//                        Log.d(LOG, "timerTask run called");
+                        final String imageUrl;
+                        ArrayList<Article> artsWithImage = new ArrayList<>();
+                        for (Article a : artsList)
+                        {
+                            if (a.getImageUrl() != null)
+                            {
+                                artsWithImage.add(a);
+                            }
+                        }
+                        imageUrl = (artsWithImage.size() != 0) ? artsWithImage.get(MyRandomUtil.nextInt(0, artsWithImage.size())).getImageUrl() : null;
+                        if (getActivity() != null)
+                        {
+                            getActivity().runOnUiThread(new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    SingltonOtto.getInstance().post(new EventShowImage(imageUrl));
+                                }
+                            });
+                        }
+                    }
+                }
+            };
+            timer.scheduleAtFixedRate(timerTask, 0, 5000);
+        }
+    }
+
     //inner class of your spiced Activity
     private class CategoriesArtsRequestListener implements PendingRequestListener<Articles>
     {
@@ -590,7 +652,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 recyclerView.getAdapter().notifyItemRangeInserted(prevListSize, artsList.size());
 
                 //update cover
-                BusProvider.getInstance().post(new EventArtsReceived(artsList));
+                SingltonOtto.getInstance().post(new EventArtsReceived(artsList));
             }
             else
             {
@@ -609,7 +671,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 }
 
                 //update cover
-                BusProvider.getInstance().post(new EventArtsReceived(artsList));
+                SingltonOtto.getInstance().post(new EventArtsReceived(artsList));
+                setTimer();
 
                 int newArtsQuont = articles.getNumOfNewArts();
                 switch (newArtsQuont)

@@ -80,23 +80,6 @@ public class ActivityCategoriesAndTags extends ActivityBase
         ctx.startActivity(intent);
     }
 
-//    @Override
-//    protected void onResume()
-//    {
-//        super.onResume();
-//
-//        TextView tv = (TextView) findViewById(R.id.text_view);
-//        for (int i = 0; i < 10; i++)
-//        {
-//            tv.append("&nbsp");
-//            Rect bounds = new Rect();
-//            Paint tpaint = tv.getPaint();
-//            tpaint.getTextBounds(tv.getText().toString(), 0, tv.getText().length(), bounds);
-//            int width = bounds.width();
-//            Log.i(LOG, "width: " + width);
-//        }
-//    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -109,8 +92,6 @@ public class ActivityCategoriesAndTags extends ActivityBase
         PreferenceManager.setDefaultValues(this, R.xml.pref_notification, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_about, true);
         this.pref = PreferenceManager.getDefaultSharedPreferences(this);
-        //get if isTabetMode
-//        this.isTabletMode = this.pref.getBoolean(getString(R.string.pref_design_key_tablet_mode), false);
 
         //set theme before super and set content to apply it
         int themeId = (pref.getBoolean(getString(R.string.pref_design_key_night_mode), false)) ? R.style.My_Theme_Dark : R.style.My_Theme_Light;
@@ -136,7 +117,6 @@ public class ActivityCategoriesAndTags extends ActivityBase
         };
 
         this.setUpNavigationDrawer(false, navigationViewOnNavigationItemSelectedListener);
-
 
         //setup pager
         this.pager.setAdapter(new PagerAdapterCatsAndTags(getSupportFragmentManager(), ctx, categories, tags, curDataType));

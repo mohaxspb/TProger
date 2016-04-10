@@ -337,7 +337,7 @@ public class ActivityArticle extends ActivityBase implements ImageChanger, Share
     {
         cover.setVisibility(View.VISIBLE);
 
-        final int animResId = R.anim.cover_image;
+        final int animResId = R.anim.translate_square;
 
         Animation anim = AnimationUtils.loadAnimation(this, animResId);
         anim.setAnimationListener(new Animation.AnimationListener()

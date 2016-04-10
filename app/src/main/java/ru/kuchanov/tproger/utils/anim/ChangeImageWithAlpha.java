@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.MyRandomUtil;
-import ru.kuchanov.tproger.utils.MyUIL;
+import ru.kuchanov.tproger.utils.SingltonUIL;
 
 /**
  * Created by Юрий on 12.12.2015 20:07.
@@ -61,7 +61,7 @@ public class ChangeImageWithAlpha
                     {
                         checkedPosition = MyRandomUtil.nextInt(0, artsWithImage.size());
                     }
-                    MyUIL.get(ctx).displayImage(artsWithImage.get(checkedPosition).getImageUrl(), cover, DisplayImageOptions.createSimple());
+                    SingltonUIL.getInstance().displayImage(artsWithImage.get(checkedPosition).getImageUrl(), cover, DisplayImageOptions.createSimple());
                 }
                 else
                 {

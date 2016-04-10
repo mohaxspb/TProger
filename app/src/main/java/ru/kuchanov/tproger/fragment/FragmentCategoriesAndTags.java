@@ -28,12 +28,12 @@ import java.util.ArrayList;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.activity.ActivityCategoriesAndTags;
-import ru.kuchanov.tproger.adapter.RecyclerAdapterCatsTags;
 import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;
-import ru.kuchanov.tproger.otto.BusProvider;
+import ru.kuchanov.tproger.activity.ActivityCategoriesAndTags;
+import ru.kuchanov.tproger.adapter.RecyclerAdapterCatsTags;
 import ru.kuchanov.tproger.otto.EventCatsTagsShow;
+import ru.kuchanov.tproger.otto.SingltonOtto;
 import ru.kuchanov.tproger.robospice.MySpiceManager;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.robospice.db.Tag;
@@ -255,7 +255,7 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
         spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
         spiceManagerOffline.addListenerIfPending(TagsCategories.class, LOG, new TagsCategoriesRequestListener());
 
-        BusProvider.getInstance().register(this);
+        SingltonOtto.getInstance().register(this);
     }
 
     @Override
@@ -267,7 +267,7 @@ public class FragmentCategoriesAndTags extends Fragment implements SharedPrefere
 
         //should unregister in onStop to avoid some issues while pausing activity/fragment
         //see http://stackoverflow.com/a/19737191/3212712
-        BusProvider.getInstance().unregister(this);
+        SingltonOtto.getInstance().unregister(this);
     }
 
     @Override

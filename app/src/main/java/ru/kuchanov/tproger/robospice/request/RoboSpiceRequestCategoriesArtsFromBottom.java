@@ -144,12 +144,33 @@ public class RoboSpiceRequestCategoriesArtsFromBottom extends SpiceRequest<Artic
     {
         Log.i(LOG, "makeRequest with url: " + url);
         OkHttpClient client = new OkHttpClient.Builder()
-//                .followRedirects(false)
                 .build();
-//
+
         Request.Builder request = new Request.Builder();
         request.url(this.url);
         Response response = client.newCall(request.build()).execute();
+
+//        OkHttpClient client = new OkHttpClient.Builder()
+////                .followRedirects(false)
+//                .build();
+//
+//        String url = "http://www.scp-wiki.net/random:random-scp";
+//
+//        Request.Builder request = new Request.Builder();
+//        request.url(url);
+//        request.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+//        request.addHeader("Accept-Encoding", "gzip, deflate, sdch");
+//        request.addHeader("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4");
+//        request.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36");
+//        request.addHeader("referer", "http://www.scp-wiki.net/");
+//        request.addHeader("save", "data:on");
+//        request.addHeader("upgrade-insecure-requests", "1");
+//        request.get();
+//
+//        Response response = client.newCall(request.build()).execute();
+//
+//        Log.i("LOG", response.toString());
+//        Log.i("LOG", response.body().string());
 
         return response.body().string();
     }
