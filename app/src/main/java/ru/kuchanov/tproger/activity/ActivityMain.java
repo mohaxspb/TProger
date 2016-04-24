@@ -22,52 +22,40 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.squareup.otto.Subscribe;
-
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.fragment.FragmentCategoriesAndTags;
+import ru.kuchanov.tproger.fragment.FragmentCategory;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
 import ru.kuchanov.tproger.navigation.FabUpdater;
-import ru.kuchanov.tproger.navigation.ImageChanger;
 import ru.kuchanov.tproger.navigation.MyOnOffsetChangedListener;
 import ru.kuchanov.tproger.navigation.NavigationViewOnNavigationItemSelectedListener;
 import ru.kuchanov.tproger.navigation.OnPageChangeListenerMain;
 import ru.kuchanov.tproger.navigation.PagerAdapterMain;
 import ru.kuchanov.tproger.navigation.TabLayoutOnTabSelectedListener;
-import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.otto.EventCatsTagsShow;
+import ru.kuchanov.tproger.otto.EventRestartShowingArtsImgs;
 import ru.kuchanov.tproger.otto.EventShowImage;
 import ru.kuchanov.tproger.otto.SingltonOtto;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
-import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.robospice.db.ArticleCategory;
 import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DataBaseFileSaver;
 import ru.kuchanov.tproger.utils.MyColorFilter;
-import ru.kuchanov.tproger.utils.MyRandomUtil;
-import ru.kuchanov.tproger.utils.SingltonUIL;
 import ru.kuchanov.tproger.utils.anim.MyAnimationUtils;
 
 public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, FabUpdater, SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String NAV_ITEM_ID = "NAV_ITEM_ID";
     protected static final String KEY_IS_COLLAPSED = "KEY_IS_COLLAPSED";
-    protected static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
 
     private final static String LOG = ActivityMain.class.getSimpleName();
-    protected final int[] coverImgsIds = {R.drawable.tproger_small, R.drawable.cremlin, R.drawable.petergof};
     protected CollapsingToolbarLayout collapsingToolbarLayout;
     protected ViewPager pager;
     protected CoordinatorLayout coordinatorLayout;
@@ -77,29 +65,18 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
     protected AppBarLayout appBar;
     protected TabLayout tabLayout;
     protected boolean fullyExpanded = true;
-    ///////////
+
     private NavigationViewOnNavigationItemSelectedListener navigationViewOnNavigationItemSelectedListener;
     private FloatingActionButton fab;
-    //listeners for navView and pager
     private OnPageChangeListenerMain onPageChangeListenerMain;
-    //    protected View cover2;
     private View coverThatChangesAlpha;
     private ImageView cover;
     private int verticalOffsetPrevious = 0;
-    ///animations
-//    private ArrayList<Article> artsWithImage = new ArrayList<>();
-    private int prevPosOfImage = -1;
-    private Timer timer;
-    private TimerTask timerTask;
-
-
-//    private ChangeImageWithAlpha cr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-//        Log.i(LOG, "onCreate");
-
+        Log.d(LOG, "onCreate");
         this.ctx = this;
 
         //get default settings to get all settings later
@@ -125,14 +102,9 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
 
         appBar.addOnOffsetChangedListener(new MyOnOffsetChangedListener(this));
 
-//        this.onArtsReceived(new EventArtsReceived(new ArrayList<>(artsWithImage)));
-
         this.pref.registerOnSharedPreferenceChangeListener(this);
 
         MyColorFilter.applyColorFromAttr(ctx, cover, R.attr.colorAccent);
-
-//        cr = new ChangeImageWithAlpha();
-//        cr.setValues(ctx, coverThatChangesAlpha, cover, artsWithImage);
 
         cover.setAlpha(0f);
         cover.setScaleX(1.3f);
@@ -140,7 +112,6 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
         cover.animate().alpha(1).setDuration(600);
 
         coverThatChangesAlpha.setVisibility(View.INVISIBLE);
-//        coverThatChangesAlpha.setAlpha(0);
         MyAnimationUtils.startTranslateAnimation(ctx, cover);
     }
 
@@ -211,6 +182,16 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
             public void onPageSelected(int position)
             {
                 super.onPageSelected(position);
+
+                //updateImage for 2 and 3 frags with default logo
+                if (position != 0)
+                {
+                    updateImage(new EventShowImage(null));
+                }
+                else
+                {
+                    SingltonOtto.getInstance().post(new EventRestartShowingArtsImgs());
+                }
 
                 //show collapsed toolbar with tabs on pageChanging
                 if (!isCollapsed)
@@ -322,7 +303,6 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
         super.onSaveInstanceState(outState);
         outState.putInt(NAV_ITEM_ID, this.checkedDrawerItemId);
         outState.putBoolean(KEY_IS_COLLAPSED, isCollapsed);
-        outState.putInt(KEY_PREV_COVER_SOURCE, this.prevPosOfImage);
     }
 
     private void restoreState(Bundle state)
@@ -331,7 +311,6 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
         {
             checkedDrawerItemId = state.getInt(NAV_ITEM_ID, R.id.tab_1);
             isCollapsed = state.getBoolean(KEY_IS_COLLAPSED, false);
-            prevPosOfImage = state.getInt(KEY_PREV_COVER_SOURCE, -1);
         }
         else
         {
@@ -353,34 +332,6 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
     {
         this.checkedDrawerItemId = checkedDrawerItemId;
         supportInvalidateOptionsMenu();
-    }
-
-    @Override
-    protected void onStop()
-    {
-//        Log.i(LOG, "onStop called!");
-        super.onStop();
-
-        //stop and cancel all timers that manages animations
-        if (timer != null && timerTask != null)
-        {
-            timerTask.cancel();
-            timer.cancel();
-
-            timer = null;
-            timerTask = null;
-        }
-    }
-
-    @Override
-    protected void onRestart()
-    {
-//        Log.i(LOG, "onRestart called!");
-        super.onRestart();
-
-        //check if timer is null (it's null after onStop)
-        //and restart it by calling onArtsReceiver to recreate it
-//        this.onArtsReceived(new EventArtsReceived(this.artsWithImage));
     }
 
     @Subscribe

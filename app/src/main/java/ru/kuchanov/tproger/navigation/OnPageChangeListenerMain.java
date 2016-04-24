@@ -5,7 +5,7 @@ import android.util.Log;
 
 import ru.kuchanov.tproger.R;
 
-public class OnPageChangeListenerMain implements ViewPager.OnPageChangeListener
+public class OnPageChangeListenerMain extends ViewPager.SimpleOnPageChangeListener
 {
     private final static String LOG = OnPageChangeListenerMain.class.getSimpleName();
 
@@ -37,17 +37,5 @@ public class OnPageChangeListenerMain implements ViewPager.OnPageChangeListener
         }
         drawerUpdateSelected.updateNavigationViewState(checkedDrawerItemId);
         fabUpdater.updateFAB(position);
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state)
-    {
-
-    }
-
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
-    {
-
     }
 }

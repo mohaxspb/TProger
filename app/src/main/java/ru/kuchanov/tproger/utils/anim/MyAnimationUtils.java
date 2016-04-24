@@ -21,7 +21,6 @@ public class MyAnimationUtils
     {
         coverThatChangesAlpha.animate().cancel();
 
-//        float alpha = (coverThatChangesAlpha.getAlpha() == 0) ? 0 : 1;
         if (toolbarImage.getAlpha() == 0)
         {
             if (imageUrl != null)

@@ -21,6 +21,7 @@ import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.PendingRequestListener;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +36,7 @@ import ru.kuchanov.tproger.SingltonRoboSpice;
 import ru.kuchanov.tproger.activity.ActivityArticle;
 import ru.kuchanov.tproger.adapter.RecyclerAdapterArtsList;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
+import ru.kuchanov.tproger.otto.EventRestartShowingArtsImgs;
 import ru.kuchanov.tproger.otto.EventShowImage;
 import ru.kuchanov.tproger.otto.SingltonOtto;
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
@@ -305,7 +307,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         }
         else
         {
-            setTimer();
+//            setTimer();
+            restartTimerForImagesShowing(null);
         }
     }
 
@@ -467,6 +470,24 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 spiceManager.execute(request, LOG, DurationInMillis.ALWAYS_EXPIRED, new CategoriesArtsRequestListener());
             }
         }
+    }
+
+    @Subscribe
+    public void restartTimerForImagesShowing(EventRestartShowingArtsImgs event)
+    {
+        Log.d(LOG, "restartTimerForImagesShowing");
+//        setTimer();
+        final String imageUrl;
+        ArrayList<Article> artsWithImage = new ArrayList<>();
+        for (Article a : artsList)
+        {
+            if (a.getImageUrl() != null)
+            {
+                artsWithImage.add(a);
+            }
+        }
+        imageUrl = (artsWithImage.size() != 0) ? artsWithImage.get(MyRandomUtil.nextInt(0, artsWithImage.size())).getImageUrl() : null;
+        SingltonOtto.getInstance().post(new EventShowImage(imageUrl));
     }
 
     private void stopTimer()

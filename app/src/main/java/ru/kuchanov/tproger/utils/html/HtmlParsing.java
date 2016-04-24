@@ -225,6 +225,20 @@ public class HtmlParsing
             script.remove();
         }
         textDiv.select("footer").remove();
+        //extract all imgs from a tags
+        Elements aTags = textDiv.getElementsByTag("a");
+        for (Element a : aTags)
+        {
+            if (a.hasClass("lightbox"))
+            {
+                Element img = a.getElementsByTag("img").first();
+                if (img.attr("src").startsWith("//"))
+                {
+                    img.attr("src", "http:" + img.attr("src"));
+                }
+                a.replaceWith(img);
+            }
+        }
         text = textDiv.html();
 
         Article parsedArticle = new Article();

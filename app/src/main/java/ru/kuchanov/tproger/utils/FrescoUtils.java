@@ -10,8 +10,8 @@ import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.image.QualityInfo;
 
 /**
- * Created by Юрий on 06.01.2016 16:11.
- * For ExpListTest.
+ * Created by Юрий on 06.01.2016 16:11 19:56.
+ * For TProger.
  */
 public class FrescoUtils
 {

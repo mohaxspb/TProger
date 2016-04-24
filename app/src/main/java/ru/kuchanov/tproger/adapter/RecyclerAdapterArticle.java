@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +44,7 @@ import ru.kuchanov.tproger.utils.html.MyHtmlTagHandler;
 
 public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
-//    private static final String LOG = RecyclerAdapterArticle.class.getSimpleName();
+    private static final String LOG = RecyclerAdapterArticle.class.getSimpleName();
 
     private static final int TYPE_TITLE = 0;
     private static final int TYPE_TEXT = 1;
@@ -86,7 +87,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         sizeOfArticleParts += textTypes.size(); //for artText
 
         listOfParts = HtmlToView.getTextPartsList(HtmlParsing.getElementListFromHtml(article.getText()));
-
 
         recyclerWidth = ctx.getResources().getDisplayMetrics().widthPixels;
         //minusing paddings
@@ -264,6 +264,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 ViewHolderText holderText = (ViewHolderText) holder;
 
                 currentHtml = this.listOfParts.get(position - 1);
+//                Log.e(LOG, currentHtml);
 
                 holderText.text.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledTextSizePrimary);
                 HtmlToView.setTextToTextView(holderText.text, currentHtml, ctx);
@@ -281,7 +282,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 {
                     String codeLine = codeRepresenter.getLines().get(i);
 //                    Log.i(LOG, codeLine);
-                    LinearLayout codeLineLayout = (LinearLayout) LayoutInflater.from(ctx).inflate(R.layout.recycler_item_code_representer_code_line, holderCode.content, false);
+                    LinearLayout codeLineLayout = (LinearLayout) LayoutInflater.from(ctx).inflate(R.layout.recycler_article_code_representer_code_line, holderCode.content, false);
 
                     TextView lineNumber = (TextView) codeLineLayout.findViewById(R.id.line_number);
                     String lineNumberString = String.valueOf(i + 1);

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/material_teal_100"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/line_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/material_teal_200"
+        android:textColor="@color/material_indigo_800"/>
+
+    <TextView
+        android:id="@+id/line_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="3dp"
+        android:layout_marginRight="3dp"
+        android:ellipsize="end"
+        android:scrollHorizontally="true"
+        android:singleLine="true"/>
+</LinearLayout>

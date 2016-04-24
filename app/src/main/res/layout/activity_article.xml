@@ -49,7 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/detail_backdrop_height"
                 android:minHeight="?attr/actionBarSize"
-                app:contentScrim="?colorPrimary"
+                app:contentScrim="?attr/colorPrimary"
                 app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
                 app:titleEnabled="true">
 

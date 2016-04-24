@@ -157,7 +157,7 @@ public class HtmlToView
                     {
                         String codeLine = codeRepresenter.getLines().get(countenr);
 //                    Log.i(LOG, codeLine);
-                        LinearLayout codeLineLayout = (LinearLayout) LayoutInflater.from(ctx).inflate(R.layout.recycler_item_code_representer_code_line, holderCode.content, false);
+                        LinearLayout codeLineLayout = (LinearLayout) LayoutInflater.from(ctx).inflate(R.layout.recycler_article_code_representer_code_line, holderCode.content, false);
 
                         TextView lineNumber = (TextView) codeLineLayout.findViewById(R.id.line_number);
                         String lineNumberString = String.valueOf(countenr + 1);

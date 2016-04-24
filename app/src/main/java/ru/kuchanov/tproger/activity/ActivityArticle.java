@@ -43,7 +43,6 @@ public class ActivityArticle extends ActivityBase implements ImageChanger, Share
 
     protected final int[] coverImgsIds = {R.drawable.tproger_small, R.drawable.cremlin, R.drawable.petergof};
 
-    //main views
     protected CollapsingToolbarLayout collapsingToolbarLayout;
     protected ViewPager pager;
     protected CoordinatorLayout coordinatorLayout;
