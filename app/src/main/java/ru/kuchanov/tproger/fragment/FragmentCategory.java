@@ -307,8 +307,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         }
         else
         {
-//            setTimer();
-            restartTimerForImagesShowing(null);
+            setTimer();
+//            restartTimerForImagesShowing(null);
         }
     }
 
@@ -477,17 +477,20 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     {
         Log.d(LOG, "restartTimerForImagesShowing");
 //        setTimer();
-        final String imageUrl;
-        ArrayList<Article> artsWithImage = new ArrayList<>();
-        for (Article a : artsList)
-        {
-            if (a.getImageUrl() != null)
+//        if (getUserVisibleHint())
+//        {
+            final String imageUrl;
+            ArrayList<Article> artsWithImage = new ArrayList<>();
+            for (Article a : artsList)
             {
-                artsWithImage.add(a);
+                if (a.getImageUrl() != null)
+                {
+                    artsWithImage.add(a);
+                }
             }
-        }
-        imageUrl = (artsWithImage.size() != 0) ? artsWithImage.get(MyRandomUtil.nextInt(0, artsWithImage.size())).getImageUrl() : null;
-        SingltonOtto.getInstance().post(new EventShowImage(imageUrl));
+            imageUrl = (artsWithImage.size() != 0) ? artsWithImage.get(MyRandomUtil.nextInt(0, artsWithImage.size())).getImageUrl() : null;
+            SingltonOtto.getInstance().post(new EventShowImage(imageUrl));
+//        }
     }
 
     private void stopTimer()
@@ -516,7 +519,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                     //get new article with image
                     if (getUserVisibleHint())
                     {
-//                        Log.d(LOG, "timerTask run called");
+                        Log.d(LOG, "timerTask run called");
                         final String imageUrl;
                         ArrayList<Article> artsWithImage = new ArrayList<>();
                         for (Article a : artsList)
