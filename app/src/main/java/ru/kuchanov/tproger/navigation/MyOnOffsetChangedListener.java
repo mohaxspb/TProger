@@ -108,7 +108,7 @@ public class MyOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedLi
         }
         else
         {
-            //show cover if we start to expand collapsingToolbarLayout
+            //show toolbarImage if we start to expand collapsingToolbarLayout
             int heightOfToolbarAndStatusBar = activityMain.getToolbar().getHeight() + ScreenProperties.getStatusBarHeight(activityMain);
             int s = appBarLayout.getHeight() - heightOfToolbarAndStatusBar;
             activityMain.setCollapsed(verticalOffset > -s);

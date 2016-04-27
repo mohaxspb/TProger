@@ -479,17 +479,17 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //        setTimer();
 //        if (getUserVisibleHint())
 //        {
-            final String imageUrl;
-            ArrayList<Article> artsWithImage = new ArrayList<>();
-            for (Article a : artsList)
+        final String imageUrl;
+        ArrayList<Article> artsWithImage = new ArrayList<>();
+        for (Article a : artsList)
+        {
+            if (a.getImageUrl() != null)
             {
-                if (a.getImageUrl() != null)
-                {
-                    artsWithImage.add(a);
-                }
+                artsWithImage.add(a);
             }
-            imageUrl = (artsWithImage.size() != 0) ? artsWithImage.get(MyRandomUtil.nextInt(0, artsWithImage.size())).getImageUrl() : null;
-            SingltonOtto.getInstance().post(new EventShowImage(imageUrl));
+        }
+        imageUrl = (artsWithImage.size() != 0) ? artsWithImage.get(MyRandomUtil.nextInt(0, artsWithImage.size())).getImageUrl() : null;
+        SingltonOtto.getInstance().post(new EventShowImage(imageUrl));
 //        }
     }
 
@@ -519,17 +519,8 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                     //get new article with image
                     if (getUserVisibleHint())
                     {
-                        Log.d(LOG, "timerTask run called");
-                        final String imageUrl;
-                        ArrayList<Article> artsWithImage = new ArrayList<>();
-                        for (Article a : artsList)
-                        {
-                            if (a.getImageUrl() != null)
-                            {
-                                artsWithImage.add(a);
-                            }
-                        }
-                        imageUrl = (artsWithImage.size() != 0) ? artsWithImage.get(MyRandomUtil.nextInt(0, artsWithImage.size())).getImageUrl() : null;
+//                        Log.d(LOG, "timerTask run called");
+                        final String imageUrl = Article.getRandomImgUrlFromArtsList(artsList);
                         if (getActivity() != null)
                         {
                             getActivity().runOnUiThread(new Runnable()
@@ -675,7 +666,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                 artsList.addAll(list);
                 recyclerView.getAdapter().notifyItemRangeInserted(prevListSize, artsList.size());
 
-                //update cover
+                //update toolbarImage
                 SingltonOtto.getInstance().post(new EventArtsReceived(artsList));
             }
             else
@@ -694,7 +685,7 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
                     recyclerView.getAdapter().notifyItemRangeRemoved(0, prevSize);
                 }
 
-                //update cover
+                //update toolbarImage
                 SingltonOtto.getInstance().post(new EventArtsReceived(artsList));
                 setTimer();
 

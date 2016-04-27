@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.Date;
 
 import ru.kuchanov.tproger.robospice.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.tproger.utils.MyRandomUtil;
 
 /**
  * Created by Юрий on 16.10.2015 16:47 0:47.
@@ -76,6 +77,7 @@ public class Article implements Parcelable
      */
     @DatabaseField(foreign = true)
     private Articles result;
+
     //    Parcel implementation/////////////////////////////
     private Article(Parcel in)
     {
@@ -253,6 +255,21 @@ public class Article implements Parcelable
         return a;
     }
 
+    public static String getRandomImgUrlFromArtsList(ArrayList<Article> artsList)
+    {
+        final String imageUrl;
+        ArrayList<Article> artsWithImage = new ArrayList<>();
+        for (Article a : artsList)
+        {
+            if (a.getImageUrl() != null)
+            {
+                artsWithImage.add(a);
+            }
+        }
+        imageUrl = (artsWithImage.size() != 0) ? artsWithImage.get(MyRandomUtil.nextInt(0, artsWithImage.size())).getImageUrl() : null;
+        return imageUrl;
+    }
+
     public String getUrl()
     {
         return url;
@@ -375,17 +392,19 @@ public class Article implements Parcelable
     {
         return text;
     }
+
     public void setText(String text)
     {
         this.text = text;
     }
 
-//    Parcel implementation/////////////////////////////
+    //    Parcel implementation/////////////////////////////
     @Override
     public int describeContents()
     {
         return 0;
     }
+
     //    Parcel implementation/////////////////////////////
     @Override
     public void writeToParcel(Parcel dest, int flags)

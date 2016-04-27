@@ -17,6 +17,9 @@ import ru.kuchanov.tproger.utils.SingltonUIL;
  */
 public class MyAnimationUtils
 {
+    /**
+     * changes image with animatated alpha changing. If toolbarImage's alpha is 0, no animation showing;
+     */
     public static void changeImageWithAlphaAnimation(final View coverThatChangesAlpha, final ImageView toolbarImage, final String imageUrl)
     {
         coverThatChangesAlpha.animate().cancel();

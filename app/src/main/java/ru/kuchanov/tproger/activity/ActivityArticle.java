@@ -8,7 +8,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -17,8 +16,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.squareup.otto.Subscribe;
@@ -28,10 +25,12 @@ import java.util.ArrayList;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.ImageChanger;
+import ru.kuchanov.tproger.navigation.MyOnOffsetChangedListenerArticleActivity;
 import ru.kuchanov.tproger.navigation.OnNavigationItemSelectedListenerArticleActivity;
 import ru.kuchanov.tproger.navigation.PagerAdapterArticle;
 import ru.kuchanov.tproger.otto.EventArtsReceived;
 import ru.kuchanov.tproger.robospice.db.Article;
+import ru.kuchanov.tproger.utils.anim.MyAnimationUtils;
 
 public class ActivityArticle extends ActivityBase implements ImageChanger, SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -41,14 +40,13 @@ public class ActivityArticle extends ActivityBase implements ImageChanger, Share
     //    private static final String KEY_PREV_COVER_SOURCE = "KEY_PREV_COVER_SOURCE";
     private final static String LOG = ActivityArticle.class.getSimpleName();
 
-    protected final int[] coverImgsIds = {R.drawable.tproger_small, R.drawable.cremlin, R.drawable.petergof};
+//    protected final int[] coverImgsIds = {R.drawable.tproger_small, R.drawable.cremlin, R.drawable.petergof};
 
     protected CollapsingToolbarLayout collapsingToolbarLayout;
     protected ViewPager pager;
     protected CoordinatorLayout coordinatorLayout;
-    protected boolean isCollapsed = true;
-    protected ImageView cover;
-    protected View cover2;
+    protected ImageView toolbarImage;
+    protected View coverThatChangesAlpha;
     protected View cover2Border;
     protected AppBarLayout appBar;
     /**
@@ -57,9 +55,12 @@ public class ActivityArticle extends ActivityBase implements ImageChanger, Share
     private ArrayList<Article> artsList = new ArrayList<>();
     private int currentPositionOfArticleInList = -1;
     //
-    private ArrayList<Article> artsWithImage = new ArrayList<>();
+//    private ArrayList<Article> artsWithImage = new ArrayList<>();
 
     private String categoryOrTagUrl;
+    private boolean fullyExpanded=true;
+    private boolean isCollapsed = true;
+    private int verticalOffsetPrevious = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -87,19 +88,23 @@ public class ActivityArticle extends ActivityBase implements ImageChanger, Share
         setUpNavigationDrawer(false, new OnNavigationItemSelectedListenerArticleActivity(ctx));
         setUpPager();
 
-//        appBar.addOnOffsetChangedListener(new MyOnOffsetChangedListener(this));
+        appBar.addOnOffsetChangedListener(new MyOnOffsetChangedListenerArticleActivity(this));
 
-        setUpBackgroundAnimation(cover, cover2);
+        toolbarImage.setAlpha(0f);
+        toolbarImage.setScaleX(1.3f);
+        toolbarImage.setScaleY(1.3f);
+        toolbarImage.animate().alpha(1).setDuration(600);
 
-//        this.onArtsReceived(new EventArtsReceived(new ArrayList<>(artsWithImage)));
+        coverThatChangesAlpha.setVisibility(View.INVISIBLE);
+        MyAnimationUtils.startTranslateAnimation(ctx, toolbarImage);
 
         this.pref.registerOnSharedPreferenceChangeListener(this);
     }
 
     protected void initializeViews()
     {
-        cover = (ImageView) findViewById(R.id.cover);
-        cover2 = findViewById(R.id.cover_to_fill);
+        toolbarImage = (ImageView) findViewById(R.id.cover);
+        coverThatChangesAlpha = findViewById(R.id.cover_to_fill);
         cover2Border = findViewById(R.id.cover_2_border);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -117,7 +122,6 @@ public class ActivityArticle extends ActivityBase implements ImageChanger, Share
 
     private void setUpPager()
     {
-        //make adapter for articles;
         pager.setAdapter(new PagerAdapterArticle(this.getSupportFragmentManager(), this.artsList));
         ViewPager.SimpleOnPageChangeListener onPageChangeListener = new ViewPager.SimpleOnPageChangeListener()
         {
@@ -127,6 +131,19 @@ public class ActivityArticle extends ActivityBase implements ImageChanger, Share
                 super.onPageSelected(position);
                 currentPositionOfArticleInList = position;
                 collapsingToolbarLayout.setTitle(artsList.get(currentPositionOfArticleInList).getTitle());
+                String imgUrl = artsList.get(currentPositionOfArticleInList).getImageUrl();
+                MyAnimationUtils.changeImageWithAlphaAnimation(coverThatChangesAlpha, toolbarImage, imgUrl);
+                if (!isCollapsed)
+                {
+                    CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) appBar.getLayoutParams();
+                    AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) params.getBehavior();
+
+                    if (behavior != null)
+                    {
+                        int toolbarMinHeight = ViewCompat.getMinimumHeight(toolbar);
+                        behavior.onNestedPreScroll(coordinatorLayout, appBar, pager, 0, -2 * toolbarMinHeight, new int[2]);
+                    }
+                }
             }
         };
         pager.addOnPageChangeListener(onPageChangeListener);
@@ -202,25 +219,11 @@ public class ActivityArticle extends ActivityBase implements ImageChanger, Share
         super.onSaveInstanceState(outState);
 //        outState.putInt(NAV_ITEM_ID, this.checkedDrawerItemId);
         outState.putBoolean(KEY_IS_COLLAPSED, isCollapsed);
-        outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE, artsWithImage);
+//        outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST_WITH_IMAGE, artsWithImage);
 
         outState.putParcelableArrayList(Article.KEY_ARTICLES_LIST, artsList);
         outState.putInt(KEY_CURRENT_ARTICLE_POSITION_IN_LIST, currentPositionOfArticleInList);
         outState.putString(KEY_CURRENT_CATEGORY_OR_TAG_URL, categoryOrTagUrl);
-    }
-
-    @Override
-    public void onBackPressed()
-    {
-        Log.i(LOG, "onBackPressed");
-        if (drawerLayout.isDrawerOpen(GravityCompat.START))
-        {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        }
-        else
-        {
-            super.onBackPressed();
-        }
     }
 
     private void restoreData(Bundle savedInstanceState, Bundle args)
@@ -260,10 +263,10 @@ public class ActivityArticle extends ActivityBase implements ImageChanger, Share
     {
 //        Log.i(LOG, "updateImage with position in pager: "+positionInPager);
 
-        cover2.setAlpha(0);
-        cover2.setScaleX(1);
-        cover2.setScaleY(1);
-        cover2.animate().cancel();
+        coverThatChangesAlpha.setAlpha(0);
+        coverThatChangesAlpha.setScaleX(1);
+        coverThatChangesAlpha.setScaleY(1);
+        coverThatChangesAlpha.animate().cancel();
 
         //TODO that is normal. Use it if other attempts fails;
 //        appBar.setExpanded(isCollapsed, true);
@@ -279,19 +282,6 @@ public class ActivityArticle extends ActivityBase implements ImageChanger, Share
                 behavior.onNestedPreScroll(coordinatorLayout, appBar, pager, 0, -2 * toolbarMinHeight, new int[2]);
             }
         }
-
-        //prevent changing images if we are not on artsListFragment in main pager
-        if (positionInPager == 0)
-        {
-            this.onArtsReceived(new EventArtsReceived(new ArrayList<>(artsWithImage)));
-            return;
-        }
-
-        //prevent showing transition coloring if cover isn't showing
-        if (this.cover.getAlpha() == 0)
-        {
-            cover.setImageResource(coverImgsIds[positionInPager]);
-        }
     }
 
     @Subscribe
@@ -305,71 +295,61 @@ public class ActivityArticle extends ActivityBase implements ImageChanger, Share
 
         pager.getAdapter().notifyDataSetChanged();
 
-        //fill artsWithImage list
-        artsWithImage.clear();
-        //we need to create new instance of list, because if we clera old,
-        //we'll get 0 size list in onAnimationEnd...
-        //And i dont now why((((
+//        //fill artsWithImage list
 //        artsWithImage.clear();
-        for (Article a : event.getArts())
-        {
-            if (a.getImageUrl() != null)
-            {
-                artsWithImage.add(a);
-            }
-        }
+//        //we need to create new instance of list, because if we clera old,
+//        //we'll get 0 size list in onAnimationEnd...
+//        //And i dont now why((((
+////        artsWithImage.clear();
+//        for (Article a : event.getArts())
+//        {
+//            if (a.getImageUrl() != null)
+//            {
+//                artsWithImage.add(a);
+//            }
+//        }
     }
 
-    private void setUpBackgroundAnimation(View cover, View cover2)
+    public boolean getIsCollapsed()
     {
-        cover.setAlpha(0f);
-        cover.setScaleX(1.3f);
-        cover.setScaleY(1.3f);
-        cover.animate().alpha(1).setDuration(600);
-
-        cover2.setAlpha(0);
-
-        this.startAnimation(cover);
+        return this.isCollapsed;
     }
 
-    public void startAnimation(final View cover)
+    public void setCollapsed(boolean isCollapsed)
     {
-        cover.setVisibility(View.VISIBLE);
-
-        final int animResId = R.anim.translate_square;
-
-        Animation anim = AnimationUtils.loadAnimation(this, animResId);
-        anim.setAnimationListener(new Animation.AnimationListener()
-        {
-
-            @Override
-            public void onAnimationEnd(Animation arg0)
-            {
-                Animation anim = AnimationUtils.loadAnimation(ctx, animResId);
-                anim.setAnimationListener(this);
-                cover.startAnimation(anim);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation arg0)
-            {
-            }
-
-            @Override
-            public void onAnimationStart(Animation arg0)
-            {
-            }
-        });
-
-        cover.startAnimation(anim);
+        this.isCollapsed = isCollapsed;
     }
 
-
-    public ImageView getCover()
+    public int getVerticalOffsetPrevious()
     {
-        return cover;
+        return verticalOffsetPrevious;
     }
 
+    public void setVerticalOffsetPrevious(int verticalOffsetPrevious)
+    {
+        this.verticalOffsetPrevious = verticalOffsetPrevious;
+    }
+
+    public CollapsingToolbarLayout getCollapsingToolbarLayout()
+    {
+        return collapsingToolbarLayout;
+    }
+
+    public View getCover2Border()
+    {
+        return cover2Border;
+    }
+
+    public void setFullyExpanded(boolean fullyExpanded)
+    {
+        this.fullyExpanded = fullyExpanded;
+//        Log.i(LOG, "fullyExpanded: " + fullyExpanded);
+    }
+
+    public ImageView getToolbarImage()
+    {
+        return toolbarImage;
+    }
 
     public Toolbar getToolbar()
     {

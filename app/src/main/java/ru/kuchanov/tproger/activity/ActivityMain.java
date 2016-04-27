@@ -29,7 +29,6 @@ import com.squareup.otto.Subscribe;
 
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.fragment.FragmentCategoriesAndTags;
-import ru.kuchanov.tproger.fragment.FragmentCategory;
 import ru.kuchanov.tproger.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.tproger.navigation.DrawerUpdateSelected;
 import ru.kuchanov.tproger.navigation.FabUpdater;

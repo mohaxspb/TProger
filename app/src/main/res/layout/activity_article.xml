@@ -27,6 +27,7 @@
             android:id="@+id/cover_to_fill"
             android:layout_width="match_parent"
             android:layout_height="290dp"
+            android:layout_marginTop="-25dp"
             android:background="?colorAccent"/>
         <!--this view prevents floating top ImageView from showing under cover_to_fill view-->
         <View
@@ -62,7 +63,6 @@
             </android.support.design.widget.CollapsingToolbarLayout>
         </android.support.design.widget.AppBarLayout>
 
-
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
@@ -80,7 +80,6 @@
             app:layout_behavior="ru.kuchanov.tproger.navigation.ScrollAwareFABBehavior"/>
 
     </android.support.design.widget.CoordinatorLayout>
-
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation_view"

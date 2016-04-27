@@ -2,7 +2,6 @@
     android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
@@ -13,15 +12,16 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
+        <!-- Views for showing top picture -->
         <!--It's a top image, over the viewPager-->
         <ImageView
             android:id="@+id/cover"
             android:layout_width="match_parent"
             android:layout_height="290dp"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/app_name"
             android:scaleType="centerCrop"
-            android:src="@drawable/tproger_small"
-            tools:ignore="contentDescription"/>
+            android:src="@drawable/tproger_small"/>
         <!--and it's view that changes alpha while switching pagers pages-->
         <View
             android:id="@+id/cover_to_fill"

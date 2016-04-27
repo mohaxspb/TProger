@@ -314,7 +314,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
                 recyclerView.getAdapter().notifyItemRangeRemoved(0, prevSize);
             }
             //TODO
-//                //update cover
+//                //update toolbarImage
 //                BusProvider.getInstance().post(new EventArtsReceived(artsList));
 //            }
         }
