@@ -27,6 +27,9 @@
     <string name="fresh">Свежее</string>
     <string name="cats_and_themes">Категории и темы</string>
     <string name="downloaded_arts">Загруженные статьи</string>
+    <string name="pref_header_notifications_summary_off_on">Уведомления</string>
+    <string name="off">Выкл</string>
+    <string name="on">Вкл</string>
 
     <string-array name="drawer_items">
         <item>@string/fresh</item>

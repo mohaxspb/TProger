@@ -1,14 +1,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- A 'parent' preference, which enables/disables child preferences (below)
-         when checked/unchecked. -->
     <SwitchPreference
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:icon="?vibrationIcon"
         android:key="@string/pref_notifications_key_enable"
-        android:summaryOff="Уведомления"
-        android:summaryOn="Уведомления"
-        android:switchTextOff="Выкл"
-        android:switchTextOn="Вкл" />
+        android:summaryOff="@string/pref_header_notifications_summary_off_on"
+        android:summaryOn="@string/pref_header_notifications_summary_off_on"
+        android:switchTextOff="@string/off"
+        android:switchTextOn="@string/on"/>
 
 </PreferenceScreen>
