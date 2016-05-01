@@ -61,14 +61,14 @@
             android:name=".receiver.ReceiverTimer"
             android:exported="false">
             <intent-filter>
-                <action android:name="ru.dante.scpfoundation.eng.recivers.ReceiverTimer"/>
+                <action android:name="ru.kuchanov.tproger.receiver.ReceiverTimer"/>
             </intent-filter>
         </receiver>
         <receiver
             android:name=".receiver.ReceiverBoot"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
     </application>
