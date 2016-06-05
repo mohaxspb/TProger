@@ -2,12 +2,6 @@
 /local.properties
 .idea
 .DS_Store
-/app/build/generated
-/app/build/intermediates
-/app/build/tmp
-/app/build/outputs/logs
-/app/build/outputs/apk/*
-!/app/build/outputs/apk/app-debug.apk
 /captures
 build/
 /TProger.iml
@@ -15,3 +9,5 @@ build/
 /gradlew
 /gradlew.bat
 /build/
+/gradle/
+/app/app.iml
