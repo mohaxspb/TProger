@@ -14,14 +14,12 @@ import ru.kuchanov.tproger.utils.NotificationUtils;
 public class ReceiverBoot extends BroadcastReceiver
 {
     private static final String LOG = ReceiverBoot.class.getName();
-    private Context ctx;
 
     @Override
     public void onReceive(Context ctx, Intent intent)
     {
         Log.d(LOG, "onReceive " + intent.getAction());
-        this.ctx = ctx;
 
-        NotificationUtils.init(ctx);
+        NotificationUtils.checkAlarm(ctx.getApplicationContext());
     }
 }

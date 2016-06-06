@@ -61,7 +61,7 @@
             android:name=".receiver.ReceiverTimer"
             android:exported="false">
             <intent-filter>
-                <action android:name="ru.kuchanov.tproger.receiver.ReceiverTimer"/>
+                <action android:name="@string/receiver_timer_action"/>
             </intent-filter>
         </receiver>
         <receiver

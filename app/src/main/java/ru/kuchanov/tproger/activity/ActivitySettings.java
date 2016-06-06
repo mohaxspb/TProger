@@ -19,6 +19,7 @@ import ru.kuchanov.tproger.fragment.preference.FragmentPreferenceAbout;
 import ru.kuchanov.tproger.fragment.preference.FragmentPreferenceDesign;
 import ru.kuchanov.tproger.fragment.preference.FragmentPreferenceNotifications;
 import ru.kuchanov.tproger.fragment.preference.FragmentPreferenceSystem;
+import ru.kuchanov.tproger.utils.NotificationUtils;
 
 
 /**
@@ -100,6 +101,20 @@ public class ActivitySettings extends PreferenceActivity implements SharedPrefer
     }
 
     @Override
+    protected void onResume()
+    {
+        super.onResume();
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         int themeId;// = R.style.Theme_Preference_Light;
@@ -117,8 +132,6 @@ public class ActivitySettings extends PreferenceActivity implements SharedPrefer
         {
             this.getActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -161,7 +174,6 @@ public class ActivitySettings extends PreferenceActivity implements SharedPrefer
                 || FragmentPreferenceSystem.class.getName().equals(fragmentName);
     }
 
-    //change theme by restarting activity
     @Override
     public void onSharedPreferenceChanged(SharedPreferences pref, String key)
     {
@@ -169,6 +181,10 @@ public class ActivitySettings extends PreferenceActivity implements SharedPrefer
         if (key.equals(getString(R.string.pref_design_key_night_mode)))
         {
             recreate();
+        }
+        else if (key.equals(getString(R.string.pref_notifications_key_enable)))
+        {
+            NotificationUtils.checkAlarm(getApplicationContext());
         }
     }
 }

@@ -47,6 +47,7 @@ import ru.kuchanov.tproger.robospice.db.Category;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DataBaseFileSaver;
 import ru.kuchanov.tproger.utils.MyColorFilter;
+import ru.kuchanov.tproger.utils.NotificationUtils;
 import ru.kuchanov.tproger.utils.anim.MyAnimationUtils;
 
 public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, FabUpdater, SharedPreferences.OnSharedPreferenceChangeListener
@@ -88,6 +89,9 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
         this.setTheme(themeId);
         //call super after setTheme to set it 0_0
         super.onCreate(savedInstanceState);
+
+        //check if notif is on and enable and set it if need
+        NotificationUtils.checkIfSet(getApplicationContext());
 
         setContentView(R.layout.activity_main);
 

@@ -4,14 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.SwitchPreference;
 import android.util.Log;
 
 import ru.kuchanov.tproger.R;
-import ru.kuchanov.tproger.utils.NotificationUtils;
 
 /**
  * Created by Юрий on 21.09.2015 18:01 19:36.
@@ -19,8 +16,7 @@ import ru.kuchanov.tproger.utils.NotificationUtils;
  */
 public class FragmentPreferenceNotifications extends PreferenceFragment
 {
-    private static final String LOG = FragmentPreferenceNotifications.class.getSimpleName();
-    SharedPreferences pref;
+    private static final String TAG = FragmentPreferenceNotifications.class.getSimpleName();
     Context ctx;
 
     @Override
@@ -31,10 +27,11 @@ public class FragmentPreferenceNotifications extends PreferenceFragment
     }
 
     @Override
-    public void onAttach(Activity act)
+    public void onAttach(Activity activity)
     {
-        super.onAttach(act);
-        ctx = act;
+        super.onAttach(activity);
+        ctx = activity;
+
     }
 
     @Override
@@ -43,26 +40,6 @@ public class FragmentPreferenceNotifications extends PreferenceFragment
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_notification);
 
-        pref = PreferenceManager.getDefaultSharedPreferences(ctx);
-
-        SwitchPreference notifOnOff = (SwitchPreference) findPreference(getString(R.string.pref_notifications_key_enable));
-        notifOnOff.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener()
-        {
-            @Override
-            public boolean onPreferenceClick(Preference preference)
-            {
-                boolean isOn = pref.getBoolean(preference.getKey(), false);
-                Log.d(LOG, "isOn: " + isOn);
-                if (isOn)
-                {
-                    NotificationUtils.setAlarm(ctx);
-                }
-                else
-                {
-                    NotificationUtils.cancelAlarm(ctx);
-                }
-                return true;
-            }
-        });
+        Log.d(TAG, "ctx==null: " + String.valueOf(ctx == null));
     }
 }
