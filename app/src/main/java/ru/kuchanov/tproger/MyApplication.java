@@ -5,7 +5,6 @@ import android.app.Application;
 import com.facebook.drawee.backends.pipeline.Fresco;
 
 import ru.kuchanov.tproger.otto.SingltonOtto;
-import ru.kuchanov.tproger.test.MyTabLayout;
 import ru.kuchanov.tproger.utils.SingltonUIL;
 
 /**
