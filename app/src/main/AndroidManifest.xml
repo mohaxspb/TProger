@@ -27,13 +27,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <!--
-                    android:launchMode="singleTask"-->
+
         <activity
             android:name=".activity.ActivityArticle"
             android:label="@string/title_activity_article"
             android:parentActivityName="ru.kuchanov.tproger.activity.ActivityMain"/>
-
 
         <activity
             android:name=".activity.ActivityCategoriesAndTags"

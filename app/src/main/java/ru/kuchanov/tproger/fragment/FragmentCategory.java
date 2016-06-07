@@ -65,11 +65,11 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
     public static final String KEY_IS_LOADING_FROM_TOP = "KEY_IS_LOADING_FROM_TOP";
     public static final String KEY_CURRENT_ACTIVATED_POSITION = "KEY_CURRENT_ACTIVATED_POSITION";
 
-    protected MySpiceManager spiceManager;
-    protected MySpiceManager spiceManagerOffline;
+    private MySpiceManager spiceManager;
+    private MySpiceManager spiceManagerOffline;
 
-    protected SwipeRefreshLayout swipeRefreshLayout;
-    protected RecyclerView recyclerView;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private RecyclerView recyclerView;
     private MyRoboSpiceDatabaseHelper databaseHelper;
     private String LOG = FragmentCategory.class.getSimpleName();
 
@@ -275,7 +275,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
         spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
 
-        //remove spiceServiceStart to on resume
         spiceManager.addListenerIfPending(Articles.class, LOG, new CategoriesArtsRequestListener());
         spiceManagerOffline.addListenerIfPending(Articles.class, LOG, new CategoriesArtsRequestListener());
     }
@@ -298,8 +297,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
 //        Log.i(LOG, "onResume called from activity: " + getActivity().getClass().getSimpleName());
         super.onResume();
 
-//        spiceManager.addListenerIfPending(Articles.class, "unused", new CategoriesArtsRequestListener());
-//        spiceManagerOffline.addListenerIfPending(Articles.class, "unused", new CategoriesArtsRequestListener());
         //make request for it
         if (artsList.size() == 0)
         {
@@ -308,7 +305,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         else
         {
             setTimer();
-//            restartTimerForImagesShowing(null);
         }
     }
 
@@ -539,7 +535,6 @@ public class FragmentCategory extends Fragment implements SharedPreferences.OnSh
         }
     }
 
-    //inner class of your spiced Activity
     private class CategoriesArtsRequestListener implements PendingRequestListener<Articles>
     {
         @Override

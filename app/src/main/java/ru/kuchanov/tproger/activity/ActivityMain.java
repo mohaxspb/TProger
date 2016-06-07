@@ -68,7 +68,6 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
 
     private NavigationViewOnNavigationItemSelectedListener navigationViewOnNavigationItemSelectedListener;
     private FloatingActionButton fab;
-    private OnPageChangeListenerMain onPageChangeListenerMain;
     private View coverThatChangesAlpha;
     private ImageView cover;
     private int verticalOffsetPrevious = 0;
@@ -176,7 +175,7 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
     {
         pager.setAdapter(new PagerAdapterMain(this.getSupportFragmentManager(), 3, ctx));
 
-        onPageChangeListenerMain = new OnPageChangeListenerMain(this, this);
+        OnPageChangeListenerMain onPageChangeListenerMain = new OnPageChangeListenerMain(this, this);
 
         pager.addOnPageChangeListener(onPageChangeListenerMain);
         pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener()
@@ -273,7 +272,7 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
 //                this.recreate();
                 return true;
             case R.id.list_style_switcher:
-                this.pref.edit().putBoolean(ctx.getString(R.string.pref_design_key_list_style), !isGridManager).commit();
+                this.pref.edit().putBoolean(ctx.getString(R.string.pref_design_key_list_style), !isGridManager).apply();
                 this.supportInvalidateOptionsMenu();
                 return true;
             case R.id.text_size_dialog:
@@ -385,10 +384,10 @@ public class ActivityMain extends ActivityBase implements DrawerUpdateSelected, 
         return this.pager;
     }
 
-    public OnPageChangeListenerMain getOnPageChangeListenerMain()
-    {
-        return onPageChangeListenerMain;
-    }
+//    public OnPageChangeListenerMain getOnPageChangeListenerMain()
+//    {
+//        return onPageChangeListenerMain;
+//    }
 
     public CollapsingToolbarLayout getCollapsingToolbarLayout()
     {
