@@ -18,7 +18,7 @@ import ru.kuchanov.tproger.receiver.ReceiverTimer;
  */
 public class NotificationUtils
 {
-    private static final int ID = 678;
+    private static final int ALARM_MANAGER_ID = 678;
     private static final String TAG = NotificationUtils.class.getSimpleName();
 
     public static void setAlarm(Context ctx)
@@ -29,7 +29,7 @@ public class NotificationUtils
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 ctx.getApplicationContext(),
-                ID,
+                ALARM_MANAGER_ID,
                 intentToTimerReceiver,
                 PendingIntent.FLAG_CANCEL_CURRENT);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -54,7 +54,7 @@ public class NotificationUtils
         AlarmManager am = (AlarmManager) ctx.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         Intent intentToTimerReceiver = new Intent(ctx.getApplicationContext(), ReceiverTimer.class);
         intentToTimerReceiver.setAction(ctx.getString(R.string.receiver_timer_action));
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(ctx.getApplicationContext(), ID,
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(ctx.getApplicationContext(), ALARM_MANAGER_ID,
                 intentToTimerReceiver,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -88,7 +88,7 @@ public class NotificationUtils
         intent2check.setAction(ctx.getString(R.string.receiver_timer_action));
         boolean alarmUp = PendingIntent.getBroadcast(
                 ctx.getApplicationContext(),
-                ID,
+                ALARM_MANAGER_ID,
                 intent2check,
                 PendingIntent.FLAG_NO_CREATE)
                 != null;
