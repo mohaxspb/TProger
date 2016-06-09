@@ -10,20 +10,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,7 +32,6 @@ import ru.kuchanov.tproger.fragment.FragmentDialogCodeRepresenter;
 import ru.kuchanov.tproger.robospice.db.Article;
 import ru.kuchanov.tproger.utils.AttributeGetter;
 import ru.kuchanov.tproger.utils.DipToPx;
-import ru.kuchanov.tproger.utils.SingltonUIL;
 import ru.kuchanov.tproger.utils.UILImageGetter;
 import ru.kuchanov.tproger.utils.html.CodeRepresenter;
 import ru.kuchanov.tproger.utils.html.HtmlParsing;
@@ -44,7 +40,7 @@ import ru.kuchanov.tproger.utils.html.MyHtmlTagHandler;
 
 public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
-    private static final String LOG = RecyclerAdapterArticle.class.getSimpleName();
+//    private static final String LOG = RecyclerAdapterArticle.class.getSimpleName();
 
     private static final int TYPE_TITLE = 0;
     private static final int TYPE_TEXT = 1;
@@ -58,7 +54,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     private static final int TYPE_TABLE = 9;
     private static final int TYPE_WELL = 10;
 
-    private int paddingsInDp = 5;
     private int sizeOfArticleParts = 0;
     private float recyclerWidth;
     private ArrayList<HtmlToView.TextType> textTypes = new ArrayList<>();
@@ -66,7 +61,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     private SharedPreferences pref;
     private Article article;
     private Context ctx;
-    private ImageLoader imageLoader;
     private int arrowUp;
     private int arrowDown;
 
@@ -75,8 +69,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         this.ctx = ctx;
         this.article = article;
         this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
-
-        imageLoader = SingltonUIL.getInstance();
 
         this.textTypes = HtmlToView.getTextPartSummary(HtmlParsing.getElementListFromHtml(article.getText()));
 
@@ -90,7 +82,9 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
         recyclerWidth = ctx.getResources().getDisplayMetrics().widthPixels;
         //minusing paddings
-        recyclerWidth -= DipToPx.convert(paddingsInDp * 2, ctx);
+        recyclerWidth -= DipToPx.convert((int) (ctx.getResources().getDimension(R.dimen.recycler_padding) /
+                        ctx.getResources().getDisplayMetrics().density * 2),
+                ctx);
 
         arrowDown = AttributeGetter.getDrawableId(ctx, R.attr.arrowDownIcon);
         arrowUp = AttributeGetter.getDrawableId(ctx, R.attr.arrowUpIcon);
@@ -102,8 +96,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         RecyclerView.ViewHolder vh;
 
         View itemLayoutView;
-
-        int windowBackgroundColor = AttributeGetter.getColor(ctx, android.R.attr.windowBackground);
 
         switch (viewType)
         {
@@ -234,30 +226,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 //                Log.i(LOG, sdf.format(pubDate));//prints date in the format sdf
                 holderTitle.date.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizeSecondary);
                 holderTitle.date.setText(sdf.format(article.getPubDate()));
-
-                //image
-                LinearLayout.LayoutParams paramsImg;
-                if (article.getImageUrl() != null)
-                {
-                    paramsImg = (LinearLayout.LayoutParams) holderTitle.image.getLayoutParams();
-
-                    float scale = recyclerWidth / article.getImageWidth();
-                    float height = (scale) * article.getImageHeight();
-
-                    paramsImg.width = (int) recyclerWidth;
-                    paramsImg.height = (int) height;
-
-                    holderTitle.image.setLayoutParams(paramsImg);
-
-                    imageLoader.displayImage(article.getImageUrl(), holderTitle.image);
-                }
-                else
-                {
-                    holderTitle.image.setImageDrawable(null);
-                    paramsImg = (LinearLayout.LayoutParams) holderTitle.image.getLayoutParams();
-                    paramsImg.height = 0;
-                    holderTitle.image.setLayoutParams(paramsImg);
-                }
                 break;
             default:
             case TYPE_TEXT:
@@ -423,7 +391,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     public static class ViewHolderTitle extends RecyclerView.ViewHolder
     {
         public LinearLayout root;
-        public ImageView image;
         public TextView title;
         public TextView date;
 
@@ -431,7 +398,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         {
             super(v);
             root = (LinearLayout) v;
-            image = (ImageView) v.findViewById(R.id.img);
             date = (TextView) v.findViewById(R.id.date);
             title = (TextView) v.findViewById(R.id.title);
         }

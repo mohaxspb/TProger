@@ -54,8 +54,8 @@ public class HtmlToView
         ArrayList<TextType> textTypes = getTextPartSummary(elements);
         ArrayList<String> textParts = getTextPartsList(elements);
 
-        int windowBackgroundColor = AttributeGetter.getColor(ctx, android.R.attr.windowBackground);
-        int colorAccent = AttributeGetter.getColor(ctx, android.R.attr.colorAccent);
+//        int windowBackgroundColor = AttributeGetter.getColor(ctx, android.R.attr.windowBackground);
+//        int colorAccent = AttributeGetter.getColor(ctx, R.attr.colorAccent);
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
 

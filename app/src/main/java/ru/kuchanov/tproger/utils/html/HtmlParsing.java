@@ -27,8 +27,6 @@ public class HtmlParsing
 
     public static ArrayList<Article> parseForArticlesList(Document doc, MyRoboSpiceDatabaseHelper h) throws Exception
     {
-//        Document doc = Jsoup.parse(html);
-
         //check title if it contains "Страница не найдена" and throw exception
         //that means, that we try to load page, that not exists
         Element pageTitle = doc.getElementsByTag("title").first();

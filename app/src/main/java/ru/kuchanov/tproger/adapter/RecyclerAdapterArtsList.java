@@ -178,9 +178,12 @@ public class RecyclerAdapterArtsList extends RecyclerView.Adapter<RecyclerView.V
             final FrameLayout.LayoutParams paramsPreview;
             paramsPreview = (FrameLayout.LayoutParams) maxHolder.preview.getLayoutParams();
             boolean showPreview = pref.getBoolean(ctx.getString(R.string.pref_design_key_art_card_preview_show), false);
+//            Log.d(LOG, "showPreview: " + showPreview);
             if (showPreview)
             {
+//                Log.d(LOG, a.getPreview());
                 ArrayList<Element> elements = HtmlParsing.getElementListFromHtml(a.getPreview());
+//                Log.d(LOG, "elements.size(): " + elements.size());
                 HtmlToView.add(maxHolder.preview, elements);
 
                 //shorting preview field
