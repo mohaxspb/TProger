@@ -13,7 +13,7 @@
     <dimen name="text_size_secondary">17sp</dimen>
 
     <!--toolbar and tabLayout heights-->
-    <dimen name="toolbar_big_height">88dp</dimen>
+    <dimen name="toolbar_big_height">108dp</dimen>
     <dimen name="tab_layout_height">40dp</dimen>
 
     <!--padding for lists (recyclerView-->
