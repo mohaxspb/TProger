@@ -1,7 +1,7 @@
 <resources>
 
     <style name="My.Theme.Light" parent="Base.Theme.Light">
-        <!--<item name="android:windowTranslucentStatus">true</item>-->
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
     <style name="My.Theme.Dark" parent="Base.Theme.Dark">
