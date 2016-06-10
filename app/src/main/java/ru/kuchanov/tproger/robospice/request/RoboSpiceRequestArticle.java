@@ -44,11 +44,20 @@ public class RoboSpiceRequestArticle extends SpiceRequest<Article>
         Article artinDB = Article.getArticleByUrl(databaseHelper, loadedArticle.getUrl());
         if (artinDB != null)
         {
+            //FIXME its not correct place to set isRead state
             boolean isRead = artinDB.isRead();
             //TODO add tags comments and other info from article html
             int id = artinDB.getId();
             loadedArticle.setIsRead(isRead);
             loadedArticle.setId(id);
+
+            //do not use loaded preview if it arlready is,
+            //because in meta-tag there is no html formatting
+            if(artinDB.getPreview()!=null)
+            {
+                loadedArticle.setPreview(artinDB.getPreview());
+            }
+
             databaseHelper.getDaoArticle().createOrUpdate(loadedArticle);
         }
 
