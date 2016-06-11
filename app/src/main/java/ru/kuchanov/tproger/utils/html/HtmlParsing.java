@@ -149,8 +149,8 @@ public class HtmlParsing
 
     public static ArrayList<Element> getElementListFromHtml(String html)
     {
-        Log.d(TAG, html);
-        Log.d(TAG, Jsoup.parse(html).html());
+//        Log.d(TAG, html);
+//        Log.d(TAG, Jsoup.parse(html).html());
         return Jsoup.parse(html).body().children();
     }
 

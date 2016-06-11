@@ -36,7 +36,7 @@ public class RoboSpiceRequestArticleOffline extends SpiceRequest<Article>
         //get from DB by URL to DB
         Article artinDB = Article.getArticleByUrl(databaseHelper, article.getUrl());
         //check if art in DB has text. If not we must return null and start loading from web
-        if (artinDB.getText() == null)
+        if (artinDB != null && artinDB.getText() == null)
         {
             return null;
         }

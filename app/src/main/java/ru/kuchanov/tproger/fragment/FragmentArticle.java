@@ -21,6 +21,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.PendingRequestListener;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
+import ru.kuchanov.tproger.Const;
 import ru.kuchanov.tproger.R;
 import ru.kuchanov.tproger.adapter.RecyclerAdapterArticle;
 import ru.kuchanov.tproger.SingltonRoboSpice;
@@ -89,7 +90,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
             this.article = args.getParcelable(Article.KEY_ARTICLE);
 
             //TODO test some article
-//            this.article.setUrl(Const.Articles.WELL);
+//            this.article.setUrl(Const.Articles.TABLE);
         }
 
         if (article != null)
@@ -158,8 +159,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         super.onStart();
 
 //        BusProvider.getInstance().register(this);
-//        spiceManager = SingltonRoboSpice.getInstance().getSpiceManagerArticle();
-//        spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOfflineArticle();
 
         spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
         spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
@@ -187,7 +186,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         spiceManager.addListenerIfPending(Article.class, "unused", new ArticleRequestListener());
         spiceManagerOffline.addListenerIfPending(Article.class, "unused", new ArticleRequestListener());
         //make request for it
-        //TODO
         if (article.getText() == null)
         {
             performRequest(false);
@@ -313,10 +311,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
             {
                 recyclerView.getAdapter().notifyItemRangeRemoved(0, prevSize);
             }
-            //TODO
-//                //update toolbarImage
-//                BusProvider.getInstance().post(new EventArtsReceived(artsList));
-//            }
         }
 
         @Override

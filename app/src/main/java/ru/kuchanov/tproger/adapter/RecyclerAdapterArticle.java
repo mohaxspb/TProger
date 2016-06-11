@@ -14,6 +14,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -121,9 +122,8 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 vh = new ViewHolderWell(itemLayoutView);
                 break;
             case TYPE_TABLE:
-                itemLayoutView = new TextView(ctx);
-                vh = new ViewHolderTags(itemLayoutView);
-                //TODO
+                itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_article_table, parent, false);
+                vh = new ViewHolderTable(itemLayoutView);
                 break;
             case TYPE_TAGS:
                 itemLayoutView = new TextView(ctx);
@@ -370,7 +370,18 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 //TODO
                 break;
             case TYPE_TABLE:
-                //TODO
+                final ViewHolderTable holderTable = (ViewHolderTable) holder;
+                String fullHtml = "<!DOCTYPE html>\n" +
+                        "<html>\n" +
+                        "    <head>\n" +
+                        "        <meta charset=\"utf-8\">\n" +
+                        "        <style>.table{width:100%;margin-bottom:20px;}.table th,.table td{padding:8px;line-height:20px;text-align:left;vertical-align:top;border-top:1px solid #dddddd;}</style>\n" +
+                        "    </head>\n" +
+                        "    <body>";
+                fullHtml += listOfParts.get(position - 1);
+                fullHtml += "</body>\n" +
+                        "</html>";
+                holderTable.webView.loadData(fullHtml, "text/html; charset=UTF-8", null);
                 break;
             case TYPE_WELL:
                 final ViewHolderWell holderWell = (ViewHolderWell) holder;
@@ -497,13 +508,14 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         }
     }
 
-    //TODO
     public static class ViewHolderTable extends RecyclerView.ViewHolder
     {
+        WebView webView;
 
         public ViewHolderTable(View v)
         {
             super(v);
+            webView = (WebView) v;
         }
     }
 
