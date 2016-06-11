@@ -113,7 +113,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 vh = new ViewHolderAccordeon(itemLayoutView);
                 break;
             case TYPE_POLL:
-                //TODO
+                //ignore it cause it's not working on site
                 itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_article_poll, parent, false);
                 vh = new ViewHolderPoll(itemLayoutView);
                 break;
@@ -364,7 +364,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 holderAccordeon.image.setController(controller);
                 break;
             case TYPE_POLL:
-                //TODO
+                //ignore it cause it's not working on site
                 break;
             case TYPE_GALLERY:
                 //TODO
@@ -488,10 +488,9 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         }
     }
 
-    //TODO
+    //ignore it cause it's not working on site
     public static class ViewHolderPoll extends RecyclerView.ViewHolder
     {
-
         public ViewHolderPoll(View v)
         {
             super(v);

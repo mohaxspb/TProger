@@ -90,7 +90,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
             this.article = args.getParcelable(Article.KEY_ARTICLE);
 
             //TODO test some article
-//            this.article.setUrl(Const.Articles.TABLE);
+//            this.article.setUrl(Const.Articles.POLL);
         }
 
         if (article != null)
